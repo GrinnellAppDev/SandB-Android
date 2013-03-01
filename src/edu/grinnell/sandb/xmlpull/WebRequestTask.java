@@ -1,14 +1,11 @@
 package edu.grinnell.sandb.xmlpull;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.ParseException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -16,7 +13,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
-
 import edu.grinnell.sandb.xmlpull.WebRequestTask.Result;
 
 public class WebRequestTask extends AsyncTask<String, Void, Result> {
@@ -24,9 +20,7 @@ public class WebRequestTask extends AsyncTask<String, Void, Result> {
 	private Context mAppContext;
 	private RetrieveDataListener mRetrieveDataListener;
 	private ProgressDialog mStatus;
-	
-	private static final int 		MAX_ATTEMPTS 	= 3;
-	
+		
 	public static final String WRT 	= "WebRequestTask";
 	
 	public WebRequestTask(Context context, RetrieveDataListener rdl) {
@@ -38,7 +32,7 @@ public class WebRequestTask extends AsyncTask<String, Void, Result> {
 	/* Setup the progress bar. */
 	@Override
 	protected void onPreExecute() {
-		mStatus = ProgressDialog.show(mAppContext,"","Loading Feed...", true);
+		//mStatus = ProgressDialog.show(mAppContext,"","Loading Feed...", true);
 	}
 	
 	@Override
@@ -52,15 +46,12 @@ public class WebRequestTask extends AsyncTask<String, Void, Result> {
 		if (!networkEnabled(cm)) 
 			return (r.setCode(Result.NO_NETWORK));
 		
-		String menu = downloadDataFromServer(arg0[0]);
+		InputStream stream = downloadDataFromServer(arg0[0]);
 
-		if (menu == null)
+		if (stream == null)
 			return r.setCode(Result.NO_DATA);
-		else if (menu.equals(Integer.valueOf(Result.HTTP_ERROR).toString())) {
-			return r.setCode(Result.HTTP_ERROR);
-		}
 		
-		r.setValue(menu);
+		r.setStream(stream);
 		
 		return r.setCode(Result.SUCCESS);
 	}
@@ -70,17 +61,12 @@ public class WebRequestTask extends AsyncTask<String, Void, Result> {
 	@Override
 	protected void onPostExecute(Result result) {
 		
-		Log.i("getMenuTask", "menu loaded from the server");
+		Log.i(WRT, "xml loaded from server");
+		// dismiss dialogue..
+		//mStatus.dismiss();
 		
-		try {
-			// dismiss loading..
-			mStatus.dismiss();
-			// notify the UI thread listener ..
-			mRetrieveDataListener.onRetrieveData(result);
-		} catch (Exception e) {
-			Log.d("post execute", e.toString());
-		}
-		
+		// notify the UI thread listener ..
+		mRetrieveDataListener.onRetrieveData(result);
 		
 		super.onPostExecute(result);
 	}
@@ -92,33 +78,25 @@ public class WebRequestTask extends AsyncTask<String, Void, Result> {
 		return (n != null) && n.isConnectedOrConnecting();
 	}
 	
-	protected static String downloadDataFromServer(String urlstr) {
-		String r = null;
-		int attempts = 0;
-		try {				
-			while (attempts < MAX_ATTEMPTS) {
-				
-				//Log.i(HTTP, request);
-				HttpClient client = new DefaultHttpClient();
-				HttpPost post = new HttpPost(urlstr);
-				
-				HttpResponse response = client.execute(post);
-				//Log.i(HTTP, response.getStatusLine().toString());
-				// Make sure the result is okay.
-				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-					r = EntityUtils.toString(response.getEntity());
-					//Log.i(HTTP, "JSON = " + r);
-					break;
-				}
-				attempts++;
-			}
+	protected static InputStream downloadDataFromServer(String urlstr) {
+		InputStream stream = null;
+		try {
+			URL url = new URL(urlstr);
+	        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	        conn.setReadTimeout(10000 /* milliseconds */);
+	        conn.setConnectTimeout(15000 /* milliseconds */);
+	        conn.setRequestMethod("GET");
+	        conn.setDoInput(true);
+	        // Starts the query
+	        conn.connect();
+	        stream = conn.getInputStream();
 		} catch (IOException e) {
 			Log.e(WRT, e.toString());
 			Log.e(WRT, e.getMessage());
 		} catch (ParseException p) {
 			Log.e("ParseException", p.toString());} 
 		
-		return (attempts == MAX_ATTEMPTS) ? Integer.valueOf(Result.HTTP_ERROR).toString() : r;
+		return stream;
 	}
 
 	
@@ -140,16 +118,16 @@ public class WebRequestTask extends AsyncTask<String, Void, Result> {
 		public static final int NO_DATA = 5;
 		
 		private int code;
-		private String value;
+		private InputStream stream;
 		
-		public Result (int resultCode, String resultValue) {
+		public Result (int resultCode, InputStream resultStream) {
 			code = resultCode;
-			value = resultValue;
+			stream = resultStream;
 		}
 		public Result () {this(-1, null);}
 		public int getCode() {return code;}
-		public String getValue() {return value;}
+		public InputStream getStream() {return stream;}
 		public Result setCode(int c) {code = c; return this;}
-		public Result setValue(String v) {value = v; return this;}
+		public Result setStream(InputStream s) {stream = s; return this;}
 	}
 }
