@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.xmlpull.XMLParseTask.Article;
 
@@ -26,13 +27,13 @@ public class ArticleListFragment extends ListFragment {
 
     public interface Callbacks {
 
-        public void onItemSelected(String id);
+        public void onItemSelected(int position);
         public void setListActivateState();
     }
 
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onItemSelected(String id) {
+        public void onItemSelected(int position) {
         }
         @Override
         public void setListActivateState() {
@@ -55,6 +56,11 @@ public class ArticleListFragment extends ListFragment {
     	mAdapter.addAll(data);
     	mAdapter.notifyDataSetChanged();
     	
+    }
+    
+    public void setEmptyText(String text) {
+    	TextView empty = (TextView) getListView().getEmptyView();
+    	empty.setText(text);
     }
         
     @Override
@@ -109,7 +115,8 @@ public class ArticleListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
-        //mCallbacks.onItemSelected(((Article) listView.getAdapter().getItem(position)).id);
+        mCallbacks.onItemSelected(position);
+        // mCallbacks.onItemSelected((Article) listView.getAdapter().getItem(position));
     }
 
     @Override

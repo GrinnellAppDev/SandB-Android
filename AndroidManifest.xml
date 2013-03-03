@@ -28,6 +28,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity
+            android:name="edu.grinnell.sandb.ArticleDetailActivity"
+            android:label="@string/title_article_detail" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.grinnell.sandb.MainActivity" />
+        </activity>
+
+        
     </application>
 
 </manifest>

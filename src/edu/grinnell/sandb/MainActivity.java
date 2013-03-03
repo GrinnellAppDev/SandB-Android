@@ -4,19 +4,17 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.ListFragment;
+import android.content.Intent;
 import android.os.Bundle;
-import android.provider.MediaStore.Audio.ArtistColumns;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
-import android.widget.TextView;
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.xmlpull.WebRequestTask;
 import edu.grinnell.sandb.xmlpull.WebRequestTask.Result;
 import edu.grinnell.sandb.xmlpull.XMLParseTask;
 import edu.grinnell.sandb.xmlpull.XMLParseTask.Article;
+import edu.grinnell.sandb.xmlpull.XmlContent;
 
 public class MainActivity extends FragmentActivity implements ArticleListFragment.Callbacks {
 
@@ -24,9 +22,9 @@ public class MainActivity extends FragmentActivity implements ArticleListFragmen
 	
 	private WebRequestTask mWRT;
 	
-	//private TextView mMainText;
-	private List<Article> mArticles;
 	private ArticleListFragment mListFrag;
+	
+	private boolean mTwoPane = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,26 +33,33 @@ public class MainActivity extends FragmentActivity implements ArticleListFragmen
 		
 		mListFrag = (ArticleListFragment) 
 				getSupportFragmentManager().findFragmentById(R.id.articles_fragment);
-		mArticles = new ArrayList<Article>();
-		//mMainText = (TextView) findViewById(R.id.maintext);
+		XmlContent.articles = new ArrayList<Article>();
 		
+		if (XmlContent.articles != null && XmlContent.articles.size() > 0)
+			mListFrag.update(XmlContent.articles);
+		else {
 		
-		
-		mWRT = new WebRequestTask(this, 
-				new WebRequestTask.RetrieveDataListener() {
+			mWRT = new WebRequestTask(this, 
+					new WebRequestTask.RetrieveDataListener() {
+				
+				@Override
+				public void onRetrieveData(Result result) {
+					
+					InputStream s = result.getStream();
+					Log.d("DataReceived", "resultingStream: " + result.getStream());
+	
+					//mMainText.setText(result.getStream().toString());
+					if (s != null)
+						parseXmlFromStream(result.getStream());
+					else {
+						mListFrag.setEmptyText(getString(R.string.no_articles));
+						Log.d("DataReceived", "stream is NULL!");
+					}
+				}
+			});
 			
-			@Override
-			public void onRetrieveData(Result result) {
-				Log.d("DataReceived", "resultingStream: " + result.getStream().toString());
-
-				//mMainText.setText(result.getStream().toString());
-				parseXmlFromStream(result.getStream());
-			}
-		});
-		
-		mWRT.execute(FEED_URL);
-		
-		
+			mWRT.execute(FEED_URL);
+		}
 		
 	}
 	
@@ -65,9 +70,8 @@ public class MainActivity extends FragmentActivity implements ArticleListFragmen
 			@Override
 			public void onDataParsed(List<Article> articles) {
 				Log.d("ParseDataListener", "onDataParsed!");
-				mArticles = articles;
+				XmlContent.articles = articles;
 				mListFrag.update(articles);
-				//mMainText.setText(articles.toString());
 			}
 		});
 		
@@ -82,9 +86,14 @@ public class MainActivity extends FragmentActivity implements ArticleListFragmen
 	}
 
 	@Override
-	public void onItemSelected(String id) {
-		// TODO Auto-generated method stub
-		
+	public void onItemSelected(int position) {
+		if(mTwoPane) {
+			// add two pane layout
+		} else {
+			Intent detailIntent = new Intent(this, ArticleDetailActivity.class);
+            detailIntent.putExtra(ArticleDetailFragment.ARTICLE_ID_KEY, position);
+            startActivity(detailIntent);
+		}		
 	}
 
 	@Override

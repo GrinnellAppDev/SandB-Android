@@ -91,10 +91,10 @@ public class WebRequestTask extends AsyncTask<String, Void, Result> {
 	        conn.connect();
 	        stream = conn.getInputStream();
 		} catch (IOException e) {
-			Log.e(WRT, e.toString());
-			Log.e(WRT, e.getMessage());
+			Log.e(WRT, "exception: " + e.toString());
+			Log.e(WRT, "message: " + e.getMessage());
 		} catch (ParseException p) {
-			Log.e("ParseException", p.toString());} 
+			Log.e(WRT, "ParseException: " + p.toString());} 
 		
 		return stream;
 	}
