@@ -78,12 +78,12 @@ public class URLImageGetterAsync implements ImageGetter {
             // from the HTTP call
             urlDrawable.drawable = result;
 
-            //URLImageGetterAsync.this.container.requestLayout();
+            // URLImageGetterAsync.this.container.requestLayout();
             TextView t = (TextView) URLImageGetterAsync.this.container;
             t.setText(t.getText());
             
             // redraw the image by invalidating the container
-            // aURLImageGetterAsync.this.container.invalidate();
+            // URLImageGetterAsync.this.container.invalidate();
         }
 
         /***
