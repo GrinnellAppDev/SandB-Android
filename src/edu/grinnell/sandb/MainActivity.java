@@ -104,6 +104,7 @@ public class MainActivity extends FragmentActivity implements ArticleListFragmen
 		if(mTwoPane) {
 			// add two pane layout
 		} else {
+			if (mSendFeedLoaded != null) mSendFeedLoaded.cancel();
 			Intent detailIntent = new Intent(this, ArticleDetailActivity.class);
             detailIntent.putExtra(ArticleDetailFragment.ARTICLE_ID_KEY, position);
             startActivity(detailIntent);

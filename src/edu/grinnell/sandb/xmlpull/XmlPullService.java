@@ -59,8 +59,7 @@ public class XmlPullService extends IntentService {
 		try {	
 			finished.send();
 		} catch (CanceledException e) {
-			Log.e(TAG, "Intent canceled by MainActivity..");
-			e.printStackTrace();
+			Log.w(TAG, "Intent canceled by MainActivity..");
 		}
 		
 		stopSelf();

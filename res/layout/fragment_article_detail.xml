@@ -13,7 +13,7 @@
             style="?android:attr/textAppearanceLarge"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/pad5"
+            android:paddingBottom="@dimen/pad3"
             android:paddingTop="@dimen/pad3"
             android:textColor="@color/gmdarkred"
             android:textIsSelectable="true" />
