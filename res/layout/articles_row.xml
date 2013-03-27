@@ -20,8 +20,10 @@
         <TextView
             android:id="@+id/titleText"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:paddingRight="@dimen/pad3"
+            android:textColor="@color/gmdarkred"
+            android:gravity="center_vertical"
             android:text="Title"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
