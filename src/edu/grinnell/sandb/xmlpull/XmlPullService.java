@@ -56,7 +56,7 @@ public class XmlPullService extends IntentService {
 	
 	private void finishUp() {
 		
-		try {
+		try {	
 			finished.send();
 		} catch (CanceledException e) {
 			Log.e(TAG, "Intent canceled by MainActivity..");
@@ -78,6 +78,7 @@ public class XmlPullService extends IntentService {
 				parseXmlFromStream(result.getStream());
 			else {
 				Log.d("DataReceived", "stream is NULL!");
+				finishUp();
 			}
 			
 			mWRT = null;

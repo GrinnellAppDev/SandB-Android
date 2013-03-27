@@ -1,6 +1,7 @@
 package edu.grinnell.sandb.xmlpull;
 
 import java.io.IOException;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -21,6 +22,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Xml;
 import edu.grinnell.sandb.xmlpull.XMLParseTask.Article;
+import edu.grinnell.sandb.Utility;
 
 public class XMLParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 
@@ -132,7 +134,7 @@ public class XMLParseTask extends AsyncTask<InputStream, Void, List<Article>> {
             }
             String name = parser.getName();
             if (name.equals("title")) {
-                title = readTitle(parser);
+                title = Utility.captializeWords(readTitle(parser));
             } else if (name.equals("guid")) {
                 link = readGuid(parser);
             } else if (name.equals("link")) {
