@@ -17,7 +17,7 @@ import edu.grinnell.sandb.xmlpull.XMLParseTask.Article;
 
 public class ArticleListFragment extends ListFragment {
 	
-	public static final String REFRESH = "edu.grinnell.sandb.REFRESH";
+	public static final String UPDATE = "edu.grinnell.sandb.UPDATE";
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
     private static final String ALF = "ArticleListFragment";
 

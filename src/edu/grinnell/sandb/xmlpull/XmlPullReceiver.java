@@ -18,8 +18,11 @@ public class XmlPullReceiver extends BroadcastReceiver {
 		Log.d(TAG, "Intent Received: " + intent.getAction());
 		if (FEED_PROCESSED.equals(intent.getAction())) {
 			Intent i = new Intent(context, MainActivity.class);
-			i.setAction(ArticleListFragment.REFRESH);
-			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			i.setAction(ArticleListFragment.UPDATE);
+			i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | 
+					   Intent.FLAG_ACTIVITY_CLEAR_TOP | 
+					   Intent.FLAG_ACTIVITY_NEW_TASK);
+			
 			context.startActivity(i);
 		}
 	}

@@ -50,7 +50,9 @@ public class MainActivity extends FragmentActivity implements ArticleListFragmen
 	@Override
 	protected void onNewIntent(Intent i) {
 		String action = i.getAction();
-		if (ArticleListFragment.REFRESH.equals(action)) {
+		Log.d(TAG, "onNewIntent called | " + action);
+
+		if (ArticleListFragment.UPDATE.equals(action)) {
 			mListFrag.update();
 		}
 	}
