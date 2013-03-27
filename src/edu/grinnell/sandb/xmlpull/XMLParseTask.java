@@ -1,17 +1,11 @@
 package edu.grinnell.sandb.xmlpull;
 
 import java.io.IOException;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringReader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -21,8 +15,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Xml;
-import edu.grinnell.sandb.xmlpull.XMLParseTask.Article;
 import edu.grinnell.sandb.Utility;
+import edu.grinnell.sandb.data.Article;
 
 public class XMLParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 
@@ -153,7 +147,7 @@ public class XMLParseTask extends AsyncTask<InputStream, Void, List<Article>> {
                 skip(parser);
             }
         }
-        return new Article(title, guid, link, comments, description, date, category, body);
+        return new edu.grinnell.sandb.data.Article(title, guid, link, comments, description, date, category, body);
     }
 
 	
@@ -163,45 +157,6 @@ public class XMLParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 		public void onDataParsed(List<Article> articles);
 	}
 	
-	public static class Article {
-		public String title;
-		public String id;
-		public String link;
-		public String comments;
-		public Date pubDate;
-		public String category;
-		public String description;
-		public String body;
-		
-		public Article (String articleTitle, String articleBody) {
-			title = articleTitle;
-			body  = articleBody;
-		}
-		
-		public Article (String articleTitle, String guid, String articleLink, String commentsLink,
-				String description, String publicationDate, String category, String articleBody) {
-			title = articleTitle;
-			id = guid;
-			link = articleLink;
-			comments = commentsLink;
-			this.category = category;
-			this.description = description;
-			body = articleBody;
-			try {
-				if (publicationDate != null) {
-					pubDate = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss ZZZZ", 
-							Locale.ENGLISH).parse(publicationDate);
-				} else {
-					pubDate = new Date();
-				}
-			} catch (ParseException pe) {
-				Log.d(XMP, "new Article", pe);
-			}
-		}
-		
-		public Article() {this("", "", "", "", "", "", "", "");}
-
-	}
 	
     // Processes title tags in the feed.
     private static String readTitle(XmlPullParser parser) throws IOException, XmlPullParserException {

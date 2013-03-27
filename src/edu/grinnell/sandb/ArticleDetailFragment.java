@@ -1,9 +1,5 @@
 package edu.grinnell.sandb;
 
-import edu.grinnell.grinnellsandb.R;
-import edu.grinnell.sandb.img.URLImageGetterAsync;
-import edu.grinnell.sandb.xmlpull.XMLParseTask.Article;
-import edu.grinnell.sandb.xmlpull.FeedContent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -11,8 +7,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.TextView;
+import edu.grinnell.grinnellsandb.R;
+import edu.grinnell.sandb.data.Article;
+import edu.grinnell.sandb.img.URLImageGetterAsync;
+import edu.grinnell.sandb.xmlpull.FeedContent;
 
 
 public class ArticleDetailFragment extends Fragment {
@@ -40,14 +39,11 @@ public class ArticleDetailFragment extends Fragment {
         
     	View rootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         
-        ((TextView) rootView.findViewById(R.id.article_title)).setText(mArticle.title);
+        ((TextView) rootView.findViewById(R.id.article_title)).setText(mArticle.getTitle());
         TextView body = (TextView) rootView.findViewById(R.id.article_body);
-        body.setText(Html.fromHtml(mArticle.body, new URLImageGetterAsync(body, getActivity()), null));
-        
-        //Log.d(ADF, "getActivity(): " + getActivity().toString());
-        
-        Log.d(ADF, mArticle.title);
-        //Log.d(ADF, mArticle.body);
+        body.setText(Html.fromHtml(mArticle.getBody(), new URLImageGetterAsync(body, getActivity()), null));
+                
+        Log.d(ADF, mArticle.getTitle());
         
         return rootView;
     }

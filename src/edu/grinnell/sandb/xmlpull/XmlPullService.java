@@ -8,8 +8,8 @@ import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Intent;
 import android.util.Log;
+import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.xmlpull.WebRequestTask.Result;
-import edu.grinnell.sandb.xmlpull.XMLParseTask.Article;
 
 public class XmlPullService extends IntentService {
 

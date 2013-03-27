@@ -9,7 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import edu.grinnell.grinnellsandb.R;
-import edu.grinnell.sandb.xmlpull.XMLParseTask.Article;
+import edu.grinnell.sandb.data.Article;
 
 public class ArticleListAdapter extends ArrayAdapter<Article> {
 	private MainActivity mActivity;
@@ -52,8 +52,8 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 		
 		if (a != null) {
 			
-			holder.title.setText(a.title);
-			holder.description.setText(a.description);
+			holder.title.setText(a.getTitle());
+			holder.description.setText(a.getDescription());
 			//Resources r = mActivity.getResources();
 			holder.title.setPadding(3, 3, 3, 3);
 			

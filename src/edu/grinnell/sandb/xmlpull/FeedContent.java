@@ -2,7 +2,7 @@ package edu.grinnell.sandb.xmlpull;
 
 import java.util.List;
 
-import edu.grinnell.sandb.xmlpull.XMLParseTask.Article;
+import edu.grinnell.sandb.data.Article;
 
 public class FeedContent {
 

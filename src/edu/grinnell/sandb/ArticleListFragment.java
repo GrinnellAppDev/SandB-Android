@@ -12,8 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 import edu.grinnell.grinnellsandb.R;
+import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.xmlpull.FeedContent;
-import edu.grinnell.sandb.xmlpull.XMLParseTask.Article;
 
 public class ArticleListFragment extends ListFragment {
 	
