@@ -37,6 +37,13 @@
                 android:value="edu.grinnell.sandb.MainActivity" />
         </activity>
 
+        <service android:name="edu.grinnell.sandb.xmlpull.XmlPullService" android:exported="false"/>
+        
+        <receiver android:name="edu.grinnell.sandb.xmlpull.XmlPullReceiver" android:exported="false">
+        	<intent-filter>
+                <action android:name="edu.grinnell.sandb.xmlpull.FEED_PROCESSED" />
+        	</intent-filter>
+		</receiver>
         
     </application>
 

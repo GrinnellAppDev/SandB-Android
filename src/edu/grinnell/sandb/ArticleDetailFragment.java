@@ -3,7 +3,7 @@ package edu.grinnell.sandb;
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.img.URLImageGetterAsync;
 import edu.grinnell.sandb.xmlpull.XMLParseTask.Article;
-import edu.grinnell.sandb.xmlpull.XmlContent;
+import edu.grinnell.sandb.xmlpull.FeedContent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -27,8 +27,8 @@ public class ArticleDetailFragment extends Fragment {
 		
 		Bundle b = getArguments();
 		
-		if(b != null && XmlContent.articles != null)
-			mArticle = XmlContent.articles.get(b.getInt(ARTICLE_ID_KEY, 0));
+		if(b != null && FeedContent.articles != null)
+			mArticle = FeedContent.articles.get(b.getInt(ARTICLE_ID_KEY, 0));
 		else
 			mArticle = new Article("Title","","","","","","","Body"); // maybe navigateUp instead
 		

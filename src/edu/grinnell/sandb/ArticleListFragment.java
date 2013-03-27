@@ -12,10 +12,12 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 import edu.grinnell.grinnellsandb.R;
+import edu.grinnell.sandb.xmlpull.FeedContent;
 import edu.grinnell.sandb.xmlpull.XMLParseTask.Article;
 
 public class ArticleListFragment extends ListFragment {
 	
+	public static final String REFRESH = "edu.grinnell.sandb.REFRESH";
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
     private static final String ALF = "ArticleListFragment";
 
@@ -50,10 +52,10 @@ public class ArticleListFragment extends ListFragment {
         mCallbacks = (Callbacks) activity;
     }
      
-    public void update(List<Article> data) {
-    	mData = data;
+    public void update() {
+    	mData = FeedContent.articles;
     	mAdapter.clear();
-    	mAdapter.addAll(data);
+    	mAdapter.addAll(mData);
     	mAdapter.notifyDataSetChanged();
     	
     }

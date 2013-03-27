@@ -1,27 +1,24 @@
 package edu.grinnell.sandb;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import edu.grinnell.grinnellsandb.R;
-import edu.grinnell.sandb.xmlpull.WebRequestTask;
-import edu.grinnell.sandb.xmlpull.WebRequestTask.Result;
-import edu.grinnell.sandb.xmlpull.XMLParseTask;
+import edu.grinnell.sandb.xmlpull.FeedContent;
 import edu.grinnell.sandb.xmlpull.XMLParseTask.Article;
-import edu.grinnell.sandb.xmlpull.XmlContent;
+import edu.grinnell.sandb.xmlpull.XmlPullReceiver;
+import edu.grinnell.sandb.xmlpull.XmlPullService;
 
 public class MainActivity extends FragmentActivity implements ArticleListFragment.Callbacks {
-
-	public String FEED_URL = "http://www.thesandb.com/feed";
 	
-	private WebRequestTask mWRT;
+	private static final String TAG = "MainActivity";
 	
+	private PendingIntent mSendFeedLoaded;
 	private ArticleListFragment mListFrag;
 	
 	private boolean mTwoPane = false;
@@ -33,49 +30,36 @@ public class MainActivity extends FragmentActivity implements ArticleListFragmen
 		
 		mListFrag = (ArticleListFragment) 
 				getSupportFragmentManager().findFragmentById(R.id.articles_fragment);
-		XmlContent.articles = new ArrayList<Article>();
 		
-		if (XmlContent.articles != null && XmlContent.articles.size() > 0)
-			mListFrag.update(XmlContent.articles);
-		else {
-		
-			mWRT = new WebRequestTask(this, 
-					new WebRequestTask.RetrieveDataListener() {
-				
-				@Override
-				public void onRetrieveData(Result result) {
-					
-					InputStream s = result.getStream();
-					Log.d("DataReceived", "resultingStream: " + result.getStream());
-	
-					//mMainText.setText(result.getStream().toString());
-					if (s != null)
-						parseXmlFromStream(result.getStream());
-					else {
-						mListFrag.setEmptyText(getString(R.string.no_articles));
-						Log.d("DataReceived", "stream is NULL!");
-					}
-				}
-			});
-			
-			mWRT.execute(FEED_URL);
+		if (FeedContent.articles != null && FeedContent.articles.size() > 0) {
+			Log.d(TAG, "Content alreay exits..");
+			mListFrag.update();
+		} else {
+			Log.d(TAG, "Perparing to start service..");
+			Intent feedLoaded = new Intent();
+			feedLoaded.setAction(XmlPullReceiver.FEED_PROCESSED);
+			mSendFeedLoaded = PendingIntent.getBroadcast(this, 0, feedLoaded, 0);
+			Intent loadFeed = new Intent(this, XmlPullService.class);
+			loadFeed.setAction(XmlPullService.DOWNLOAD_FEED);
+			loadFeed.putExtra(XmlPullService.RESULT_ACTION, mSendFeedLoaded);
+			startService(loadFeed);
 		}
 		
 	}
+
+	@Override
+	protected void onNewIntent(Intent i) {
+		String action = i.getAction();
+		if (ArticleListFragment.REFRESH.equals(action)) {
+			mListFrag.update();
+		}
+	}
 	
-	private void parseXmlFromStream(InputStream xmlStream) {
-		XMLParseTask xpt= new XMLParseTask(this, 
-				new XMLParseTask.ParseDataListener() {
-			
-			@Override
-			public void onDataParsed(List<Article> articles) {
-				Log.d("ParseDataListener", "onDataParsed!");
-				XmlContent.articles = articles;
-				mListFrag.update(articles);
-			}
-		});
-		
-		xpt.execute(xmlStream);
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (mSendFeedLoaded != null) 
+			mSendFeedLoaded.cancel();
 	}
 
 	@Override

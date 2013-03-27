@@ -4,11 +4,11 @@ import java.util.List;
 
 import edu.grinnell.sandb.xmlpull.XMLParseTask.Article;
 
-public class XmlContent {
+public class FeedContent {
 
 	public static List<Article> articles;
 	
-	private XmlContent() {
+	private FeedContent() {
 		
 	}
 }
