@@ -1,7 +1,9 @@
 package edu.grinnell.sandb;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,10 +28,13 @@ public class ArticleDetailFragment extends Fragment {
 		
 		Bundle b = getArguments();
 		
-		if(b != null && FeedContent.articles != null)
+		if (b != null && FeedContent.articles != null) {
 			mArticle = FeedContent.articles.get(b.getInt(ARTICLE_ID_KEY, 0));
-		else
-			mArticle = new Article("Title","","","","","","","Body"); // maybe navigateUp instead
+		} else {
+			// Navigate Up..
+			Intent upIntent = new Intent(getActivity(), MainActivity.class);
+			NavUtils.navigateUpTo(getActivity(), upIntent);
+		}
 		
 	}
 	

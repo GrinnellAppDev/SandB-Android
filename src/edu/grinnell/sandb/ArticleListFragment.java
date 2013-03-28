@@ -19,7 +19,6 @@ public class ArticleListFragment extends ListFragment {
 	
 	public static final String UPDATE = "edu.grinnell.sandb.UPDATE";
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
-    private static final String ALF = "ArticleListFragment";
 
     private Callbacks mCallbacks = sDummyCallbacks;
     private int mActivatedPosition = ListView.INVALID_POSITION;

@@ -9,7 +9,7 @@ import android.app.PendingIntent.CanceledException;
 import android.content.Intent;
 import android.util.Log;
 import edu.grinnell.sandb.data.Article;
-import edu.grinnell.sandb.xmlpull.WebRequestTask.Result;
+import edu.grinnell.sandb.xmlpull.XmlFetchTask.Result;
 
 public class XmlPullService extends IntentService {
 
@@ -20,7 +20,7 @@ public class XmlPullService extends IntentService {
 	
 	public static final String FEED_URL = "http://www.thesandb.com/feed";
 	
-	private WebRequestTask mWRT;
+	private XmlFetchTask mWRT;
 	private PendingIntent finished;
 	
 	public XmlPullService() {
@@ -40,7 +40,7 @@ public class XmlPullService extends IntentService {
 			if (mWRT == null) {
 				Log.d(TAG, "Fetching feed from server..");
 				FeedContent.loading = true;
-				mWRT = new WebRequestTask(this, new WebRequstCallback());
+				mWRT = new XmlFetchTask(this, new WebRequstCallback());
 				mWRT.execute(FEED_URL);
 			}
 		} else {
@@ -50,7 +50,7 @@ public class XmlPullService extends IntentService {
 	}
 	
 	private void parseXmlFromStream(InputStream xmlStream) {
-		XMLParseTask xpt= new XMLParseTask(this, new DataParsedCallback());
+		XmlParseTask xpt= new XmlParseTask(this, new DataParsedCallback());
 		xpt.execute(xmlStream);
 	}
 	
@@ -65,7 +65,7 @@ public class XmlPullService extends IntentService {
 		stopSelf();
 	}
 	
-	private class WebRequstCallback implements WebRequestTask.RetrieveDataListener {
+	private class WebRequstCallback implements XmlFetchTask.RetrieveDataListener {
 		
 		@Override
 		public void onRetrieveData(Result result) {
@@ -84,7 +84,7 @@ public class XmlPullService extends IntentService {
 		}
 	}
 	
-	private class DataParsedCallback implements XMLParseTask.ParseDataListener {
+	private class DataParsedCallback implements XmlParseTask.ParseDataListener {
 
 		@Override
 		public void onDataParsed(List<Article> articles) {

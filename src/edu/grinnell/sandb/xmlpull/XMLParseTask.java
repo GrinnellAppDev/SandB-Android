@@ -10,25 +10,26 @@ import java.util.List;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import android.app.ProgressDialog;
 import android.content.Context;
+import android.database.SQLException;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Xml;
 import edu.grinnell.sandb.Utility;
 import edu.grinnell.sandb.data.Article;
+import edu.grinnell.sandb.data.ArticleTable;
 
-public class XMLParseTask extends AsyncTask<InputStream, Void, List<Article>> {
+public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 
 	private Context mAppContext;
 	private ParseDataListener mParseDataListener;
-	private ProgressDialog mStatus;
+	private ArticleTable mTable;
 	
 	private static final String ns = null;
 		
 	public static final String XMP 	= "XMLParseTask";
 	
-	public XMLParseTask(Context appContext, ParseDataListener pdl) {
+	public XmlParseTask(Context appContext, ParseDataListener pdl) {
 		super();
 		mAppContext = appContext;
 		mParseDataListener = pdl;		
@@ -37,20 +38,29 @@ public class XMLParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 	/* Setup the loading dialog. */
 	@Override
 	protected void onPreExecute() {
-		//mStatus = ProgressDialog.show(mAppContext,"","Parsing Feed...", true);
+		// Do nothing..
 	}
 	
 	@Override
 	protected List<Article> doInBackground(InputStream... arg0) {
 				
+		
+		mTable = new ArticleTable(mAppContext);
+		
 		try {
+			mTable.open();
+			mTable.clearTable();
 			return parseArticlesFromStream(arg0[0]);
 		} catch (IOException ioe) {
 			Log.e(XMP, "parseArticlesFromStream", ioe);
 		} catch (XmlPullParserException xppe) {
 			Log.e(XMP, "parseArticlesFromStream", xppe);
+		} catch (SQLException sqle) {
+			Log.e(XMP, "SQLExeption", sqle);
 		} catch (Exception e) {
 			Log.e(XMP, "parseArticlesFromStream", e);
+		} finally {
+			mTable.close();
 		}
 		return new ArrayList<Article>();
 	}
@@ -59,18 +69,14 @@ public class XMLParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 	 * is loaded. */
 	@Override
 	protected void onPostExecute(List<Article> articles) {
-		
+		super.onPostExecute(articles);
 		Log.i(XMP, "xml parsed!");
-		
-		// dismiss loading..
-		//mStatus.dismiss();
+
 		// notify the UI thread listener ..
 		mParseDataListener.onDataParsed(articles);
-		
-		super.onPostExecute(articles);
 	}
 	
-	protected static List<Article> parseArticlesFromStream(InputStream xmlstream)
+	protected List<Article> parseArticlesFromStream(InputStream xmlstream)
 		throws XmlPullParserException, IOException {
 		
 		
@@ -87,7 +93,7 @@ public class XMLParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 	        }	
 	}
 	
-	private static List<Article> readFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
+	private List<Article> readFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
         List<Article> articles = new ArrayList<Article>();
 
         parser.require(XmlPullParser.START_TAG, ns, "rss");
@@ -111,7 +117,7 @@ public class XMLParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 	// Parses the contents of an entry. If it encounters a title, summary, or link tag, hands them
     // off
     // to their respective "read" methods for processing. Otherwise, skips the tag.
-    private static Article readArticle(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private Article readArticle(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, ns, "item");
         String title = null;
         String guid = null;
@@ -130,7 +136,7 @@ public class XMLParseTask extends AsyncTask<InputStream, Void, List<Article>> {
             if (name.equals("title")) {
                 title = Utility.captializeWords(readTitle(parser));
             } else if (name.equals("guid")) {
-                link = readGuid(parser);
+                guid = readGuid(parser);
             } else if (name.equals("link")) {
                 link = readLink(parser);
             } else if (name.equals("comments")) {
@@ -147,7 +153,7 @@ public class XMLParseTask extends AsyncTask<InputStream, Void, List<Article>> {
                 skip(parser);
             }
         }
-        return new edu.grinnell.sandb.data.Article(title, guid, link, comments, description, date, category, body);
+        return mTable.createArticle(guid, title, link, date, category, description, body, comments);
     }
 
 	

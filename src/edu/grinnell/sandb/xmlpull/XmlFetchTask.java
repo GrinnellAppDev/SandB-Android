@@ -7,23 +7,21 @@ import java.net.URL;
 
 import org.apache.http.ParseException;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
-import edu.grinnell.sandb.xmlpull.WebRequestTask.Result;
+import edu.grinnell.sandb.xmlpull.XmlFetchTask.Result;
 
-public class WebRequestTask extends AsyncTask<String, Void, Result> {
+public class XmlFetchTask extends AsyncTask<String, Void, Result> {
 
 	private Context mAppContext;
 	private RetrieveDataListener mRetrieveDataListener;
-	private ProgressDialog mStatus;
 		
-	public static final String WRT 	= "WebRequestTask";
+	public static final String TAG 	= "XmlFetchTask";
 	
-	public WebRequestTask(Context context, RetrieveDataListener rdl) {
+	public XmlFetchTask(Context context, RetrieveDataListener rdl) {
 		super();
 		mAppContext = context;
 		mRetrieveDataListener = rdl;		
@@ -32,12 +30,11 @@ public class WebRequestTask extends AsyncTask<String, Void, Result> {
 	/* Setup the progress bar. */
 	@Override
 	protected void onPreExecute() {
-		//mStatus = ProgressDialog.show(mAppContext,"","Loading Feed...", true);
+		// Progress bar?
 	}
 	
 	@Override
 	protected Result doInBackground(String... arg0) {
-		// TODO Auto-generated method stub
 		ConnectivityManager cm = (ConnectivityManager)
 				mAppContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 		
@@ -60,15 +57,10 @@ public class WebRequestTask extends AsyncTask<String, Void, Result> {
 	 * is loaded. */
 	@Override
 	protected void onPostExecute(Result result) {
-		
-		Log.i(WRT, "xml loaded from server");
-		// dismiss dialogue..
-		//mStatus.dismiss();
-		
+		super.onPostExecute(result);
+		Log.i(TAG, "xml loaded from server");
 		// notify the UI thread listener ..
 		mRetrieveDataListener.onRetrieveData(result);
-		
-		super.onPostExecute(result);
 	}
 	
 	/* Return true if the device has a network adapter that is capable of 
@@ -91,10 +83,10 @@ public class WebRequestTask extends AsyncTask<String, Void, Result> {
 	        conn.connect();
 	        stream = conn.getInputStream();
 		} catch (IOException e) {
-			Log.e(WRT, "exception: " + e.toString());
-			Log.e(WRT, "message: " + e.getMessage());
+			Log.e(TAG, "exception: " + e.toString());
+			Log.e(TAG, "message: " + e.getMessage());
 		} catch (ParseException p) {
-			Log.e(WRT, "ParseException: " + p.toString());} 
+			Log.e(TAG, "ParseException: " + p.toString());} 
 		
 		return stream;
 	}

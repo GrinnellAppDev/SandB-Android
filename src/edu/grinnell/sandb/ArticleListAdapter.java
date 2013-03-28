@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.data.Article;
@@ -25,11 +24,10 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
     {
         TextView title;
         TextView description;
-        TextView date;
-        ImageView image;
+        //TextView date;
+        //ImageView image;
     }
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public View getView(int position, View convertView, ViewGroup  parent) {
 		
