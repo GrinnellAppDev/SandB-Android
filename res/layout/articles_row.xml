@@ -2,39 +2,39 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/pad5" 
+    android:paddingRight="@dimen/pad5">
+    
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <ImageView
-            android:id="@+id/articleThumb"
-            android:layout_width="wrap_content"
+   <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/pad7"
-            android:paddingBottom="@dimen/pad1"
-            android:src="@android:drawable/ic_input_get" />
-
-        <TextView
-            android:id="@+id/titleText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="@dimen/pad3"
             android:textColor="@color/gmdarkred"
             android:gravity="center_vertical"
             android:text="Title"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/descriptionText"
-        android:layout_width="wrap_content"
+   <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/pad3"
-        android:paddingTop="0dp"
-        android:text="Description" />
+        android:orientation="horizontal" 
+        android:paddingBottom="@dimen/pad3">
 
+    	<ImageView
+    		android:id="@+id/articleThumb"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_marginRight="@dimen/pad5"
+        	android:layout_marginTop="@dimen/pad3"
+        	android:src="@android:drawable/ic_input_get" />
+    
+    	<TextView
+        	android:id="@+id/descriptionText"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="Description" />
+
+     </LinearLayout>
 </LinearLayout>

@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.data.Article;
@@ -52,7 +53,6 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 			
 			holder.title.setText(a.getTitle());
 			holder.description.setText(a.getDescription());
-			//Resources r = mActivity.getResources();
 			holder.title.setPadding(3, 3, 3, 3);
 			
 			}
