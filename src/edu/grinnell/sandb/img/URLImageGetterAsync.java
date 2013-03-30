@@ -10,14 +10,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.text.Html.ImageGetter;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import edu.grinnell.grinnellsandb.R;
 
 public class URLImageGetterAsync implements ImageGetter {
 	
@@ -35,12 +33,11 @@ public class URLImageGetterAsync implements ImageGetter {
     public URLImageGetterAsync(View t, Context c) {
         this.c = c;
         this.container = t;
-        bm = BitmapFactory.decodeResource(c.getResources(), R.drawable.sandblogo);
     }
 
     public Drawable getDrawable(String source) {
     	Log.d(URLIMGP, "Getting Image: " + source);
-        URLDrawable urlDrawable = new URLDrawable(c.getResources(), bm);
+        URLDrawable urlDrawable = new URLDrawable(c.getResources());
 
         // get the actual source
         ImageGetterAsyncTask asyncTask = 
@@ -68,17 +65,21 @@ public class URLImageGetterAsync implements ImageGetter {
 
         @Override
         protected void onPostExecute(Drawable result) {
+        	if (result == null)
+        		return;
+        		
         	Log.d(URLIMGP, "ImageLoaded: " + result.toString());
         	
-            // set the correct bound according to the result from HTTP call
+        	// set the correct bound according to the result from HTTP call
             urlDrawable.setBounds(0, 0, 0 + result.getIntrinsicWidth(), 0 
                     + result.getIntrinsicHeight()); 
 
             // change the reference of the current drawable to the result
             // from the HTTP call
+            
             urlDrawable.drawable = result;
 
-            // URLImageGetterAsync.this.container.requestLayout();
+           	// URLImageGetterAsync.this.container.requestLayout();
             TextView t = (TextView) URLImageGetterAsync.this.container;
             t.setText(t.getText());
             
@@ -99,7 +100,10 @@ public class URLImageGetterAsync implements ImageGetter {
                         + drawable.getIntrinsicHeight()); 
                 return drawable;
             } catch (Exception e) {
-                return null;
+                //Bitmap bm = BitmapFactory.decodeResource(c.getResources(), R.drawable.sandblogo);
+                //return new BitmapDrawable(c.getResources(), bm);
+            	return null;
+            	
             } 
         }
 
