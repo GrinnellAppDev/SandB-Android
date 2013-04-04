@@ -1,9 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-      android:layout_width="match_parent"
-      android:layout_height="0dip"
-      android:layout_weight="1" >
-      
-    <LinearLayout 
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -31,5 +26,4 @@
           android:textAppearance="?android:attr/textAppearanceMedium"
           android:text="@string/no_articles"/>
 
-      </LinearLayout>
-</FrameLayout>
+</LinearLayout>

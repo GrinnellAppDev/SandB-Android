@@ -1,4 +1,4 @@
-	package edu.grinnell.sandb;
+package edu.grinnell.sandb;
 
 import android.content.Intent;
 import android.os.Bundle;
