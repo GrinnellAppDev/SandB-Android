@@ -48,7 +48,25 @@ public class ImageTable {
 
 		Cursor cursor = database.query(ImageStorageHelper.TABLE_IMAGES,
 				allColumns, null, null, null, null, null);
+		// SELECT allColumns.toString() from images where ISH.Column_URL = "http://im.a.ur/l;
 
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			Image image = cursorToImage(cursor);
+			images.add(image);
+			cursor.moveToNext();
+		}
+		// Make sure to close the cursor
+		cursor.close();
+		return images;
+	}
+	
+	public List<Image> findByUrl(String url) {
+		List<Image> images = new ArrayList<Image>();
+
+		Cursor cursor = database.query(ImageStorageHelper.TABLE_IMAGES,
+				allColumns, ImageStorageHelper.COLUMN_URL + "= " + url, null, null, null, null);
+		
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			Image image = cursorToImage(cursor);
