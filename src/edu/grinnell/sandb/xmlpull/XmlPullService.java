@@ -46,7 +46,6 @@ public class XmlPullService extends IntentService {
 		} else {
 			Log.d(TAG, "Unknown Intent.  Action = " + action);
 		}
-
 	}
 	
 	private void parseXmlFromStream(InputStream xmlStream) {
