@@ -60,6 +60,8 @@ public class URLImageGetterAsync implements ImageGetter {
         @Override
         protected Drawable doInBackground(String... params) {
             String source = params[0];
+            
+            //TODO: Open image table and see if the source is in the cache..
             return fetchDrawable(source);
         }
 
