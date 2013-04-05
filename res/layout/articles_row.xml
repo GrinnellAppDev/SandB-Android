@@ -13,7 +13,6 @@
             android:layout_height="wrap_content"
             android:textColor="@color/gmdarkred"
             android:gravity="center_vertical"
-            android:text="Title"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
    <LinearLayout
@@ -34,7 +33,7 @@
         	android:id="@+id/descriptionText"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-        	android:text="Description" />
+        	 />
 
      </LinearLayout>
 </LinearLayout>

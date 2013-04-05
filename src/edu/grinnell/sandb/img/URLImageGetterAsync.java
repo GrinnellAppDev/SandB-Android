@@ -39,7 +39,7 @@ public class URLImageGetterAsync implements ImageGetter {
 
     public Drawable getDrawable(String source) {
     	Log.d(URLIMGP, "Getting Image: " + source);
-        URLDrawable urlDrawable = new URLDrawable(c.getResources());
+        MutableDrawable urlDrawable = new MutableDrawable(c.getResources());
 
         // get the actual source
         ImageGetterAsyncTask asyncTask = 
@@ -53,9 +53,9 @@ public class URLImageGetterAsync implements ImageGetter {
     }
 
     public class ImageGetterAsyncTask extends AsyncTask<String, Void, Drawable>  {
-        URLDrawable urlDrawable;
+        MutableDrawable urlDrawable;
 
-        public ImageGetterAsyncTask(URLDrawable d) {
+        public ImageGetterAsyncTask(MutableDrawable d) {
             this.urlDrawable = d;
         }
 
@@ -63,7 +63,6 @@ public class URLImageGetterAsync implements ImageGetter {
         protected Drawable doInBackground(String... params) {
             String source = params[0];
             
-            //TODO: Open image table and see if thList<E>urce is in the cache..
             Image img = lookupInTable(source);
             if (img != null) {
             	Log.i("ImageGetterAsync", "loaded images from cache!");

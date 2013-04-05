@@ -75,6 +75,20 @@ public class ImageTable {
 		cursor.close();
 		return img;
 	}
+	
+	public Image findByArticleId(int articleId) {
+		Cursor cursor = database.query(ImageStorageHelper.TABLE_IMAGES,
+				allColumns, ImageStorageHelper.COLUMN_ARTICLEID + " = " + articleId, null, null, null, null);
+		
+		Image img = null;
+		cursor.moveToFirst();
+		if (!cursor.isAfterLast())
+			img = cursorToImage(cursor);
+		
+		// Make sure to close the cursor
+		cursor.close();
+		return img;
+	}
 
 	public Image createImage(int articleID, String url, byte[] image, String imgTitle) {
 

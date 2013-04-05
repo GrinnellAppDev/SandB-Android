@@ -1,8 +1,8 @@
 package edu.grinnell.sandb.data;
 
-import java.io.ByteArrayInputStream;
-
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
@@ -30,8 +30,15 @@ public class Image {
 	}
 
 	public Drawable toDrawable(Context c) {
-		ByteArrayInputStream imgStream = new ByteArrayInputStream(image);
-		return new BitmapDrawable(c.getResources(), imgStream);
+		
+		Bitmap bm = BitmapFactory.decodeByteArray(image, 0, image.length);
+		Drawable d = new BitmapDrawable(c.getResources(), bm);
+		d.setBounds(0, 0, 0 + d.getIntrinsicWidth(), 0 
+                + d.getIntrinsicHeight()); 
+		return d;	
+		
+		//return Drawable.createFromStream(new ByteArrayInputStream(image), null	);
+		
 	}
 	
 	public int getId() {

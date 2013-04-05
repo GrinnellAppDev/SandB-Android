@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.data.Article;
-import edu.grinnell.sandb.img.URLImageGetterAsync;
+import edu.grinnell.sandb.img.DbImageGetter;
 import edu.grinnell.sandb.xmlpull.FeedContent;
 
 
@@ -46,8 +46,10 @@ public class ArticleDetailFragment extends Fragment {
         
         ((TextView) rootView.findViewById(R.id.article_title)).setText(mArticle.getTitle());
         TextView body = (TextView) rootView.findViewById(R.id.article_body);
-        body.setText(Html.fromHtml(mArticle.getBody(), new URLImageGetterAsync(body, getActivity()), null));
+        //body.setText(Html.fromHtml(mArticle.getBody(), new URLImageGetterAsync(body, getActivity()), null));
                 
+        body.setText(Html.fromHtml(mArticle.getBody(), new DbImageGetter(getActivity()), null));
+        
         Log.d(ADF, mArticle.getTitle());
         
         return rootView;

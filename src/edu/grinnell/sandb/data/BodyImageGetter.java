@@ -1,15 +1,16 @@
 package edu.grinnell.sandb.data;
 
-import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 
-import org.apache.http.util.ByteArrayBuffer;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 public class BodyImageGetter {
 	
@@ -76,7 +77,31 @@ public class BodyImageGetter {
 
 	private static byte[] getImage(String imgSource, int start) {
 		// download image as byte array
+		
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+		int nRead;
+		byte[] data = new byte[16384];
+
+		InputStream is;
+		try {
+			is = fetch(imgSource);
+			while ((nRead = is.read(data, 0, data.length)) != -1) {
+				  buffer.write(data, 0, nRead);
+				}
+			buffer.flush();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+
+		return buffer.toByteArray();
+		
+		
+		/*
 		URL imgSrc;
+		
 		try {
 			imgSrc = new URL(imgSource);
 			HttpURLConnection conn;
@@ -89,7 +114,7 @@ public class BodyImageGetter {
 			while ((read = in.read()) != -1) {
 				bytesBuffer.append(read);
 			}
-
+			
 			in.close();
 			byte[] image = bytesBuffer.toByteArray();
 			return image;
@@ -99,7 +124,15 @@ public class BodyImageGetter {
 		}
 		
 		return null;
+		*/
 	}
+	
+	private static InputStream fetch(String urlString) throws MalformedURLException, IOException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        HttpGet request = new HttpGet(urlString);
+        HttpResponse response = httpClient.execute(request);
+        return response.getEntity().getContent();
+    }
 
 	// return a string starting immediately after the key, and ending at the
 	// first quotation mark

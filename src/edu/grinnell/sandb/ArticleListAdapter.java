@@ -6,9 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.data.Article;
+import edu.grinnell.sandb.img.DbImageGetter;
 
 public class ArticleListAdapter extends ArrayAdapter<Article> {
 	private MainActivity mActivity;
@@ -25,7 +27,7 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
         TextView title;
         TextView description;
         //TextView date;
-        //ImageView image;
+        ImageView image;
     }
 	
 	@Override
@@ -39,17 +41,17 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 			holder = new ViewHolder();
 			holder.title = (TextView) convertView.findViewById(R.id.titleText);
 			holder.description = (TextView) convertView.findViewById(R.id.descriptionText);
-			//holder.image = (ImageView) convertView.findViewById(R.id.articleThumb);
+			holder.image = (ImageView) convertView.findViewById(R.id.articleThumb);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		
 		final Article a = mData.get(position);
-		
+		DbImageGetter dbig = new DbImageGetter(this.mActivity);
 		
 		if (a != null) {
-			
+			dbig.fetchDrawableForArticleAsync(a, holder.image);
 			holder.title.setText(a.getTitle());
 			holder.description.setText(a.getDescription());
 			holder.title.setPadding(3, 3, 3, 3);
