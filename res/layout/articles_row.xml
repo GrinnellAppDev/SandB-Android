@@ -23,11 +23,14 @@
 
     	<ImageView
     		android:id="@+id/articleThumb"
+    		android:layout_gravity="center_vertical"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
         	android:layout_marginRight="@dimen/pad5"
-        	android:layout_marginTop="@dimen/pad3"
-        	android:src="@android:drawable/ic_input_get" />
+        	android:layout_marginTop="@dimen/pad3" 
+        	android:maxWidth="180dp"
+        	android:maxHeight="100dp"
+        	android:scaleType="centerInside"/>
     
     	<TextView
         	android:id="@+id/descriptionText"

@@ -4,6 +4,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import android.graphics.Bitmap;
+import android.util.Log;
+
 public class Utility {
 	
 	public static String captializeWords(String s) {
@@ -56,4 +59,22 @@ public class Utility {
 		return sb.toString();
 	}
 	
+	public static Bitmap resizeBitmap(Bitmap bm, int maxWidth) {
+		int w = bm.getWidth();
+        int h = bm.getHeight();
+        float s = ((float)maxWidth)/w; 
+        float sh = h*s + 0.5f;
+
+        try {
+       	 return Bitmap.createScaledBitmap(bm, maxWidth, (int) sh, true);
+        } catch (IllegalArgumentException iae) {
+       	 Log.d("generate thumb", "width: " + w + ", height: " + h + ", scale: " + s + ", sh" + sh);
+       	 return null;
+        }
+	}
+	
+	public static Bitmap generateThumb(Bitmap bm) {
+        final int TW = 300;
+		return resizeBitmap(bm, TW);
+	}
 }

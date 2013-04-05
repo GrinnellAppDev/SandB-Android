@@ -1,11 +1,13 @@
 package edu.grinnell.sandb;
 
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +50,13 @@ public class ArticleDetailFragment extends Fragment {
         TextView body = (TextView) rootView.findViewById(R.id.article_body);
         //body.setText(Html.fromHtml(mArticle.getBody(), new URLImageGetterAsync(body, getActivity()), null));
                 
-        body.setText(Html.fromHtml(mArticle.getBody(), new DbImageGetter(getActivity()), null));
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        int height = size.y;
+        DbImageGetter dbig = new DbImageGetter(getActivity(), Math.min(width, height));
+        body.setText(Html.fromHtml(mArticle.getBody(), dbig, null));
         
         Log.d(ADF, mArticle.getTitle());
         

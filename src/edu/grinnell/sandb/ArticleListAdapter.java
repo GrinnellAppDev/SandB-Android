@@ -2,32 +2,45 @@ package edu.grinnell.sandb;
 
 import java.util.List;
 
+import android.graphics.Point;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.img.DbImageGetter;
+import edu.grinnell.sandb.img.DbImageGetter.DbImageGetterAsyncTask;
 
 public class ArticleListAdapter extends ArrayAdapter<Article> {
 	private MainActivity mActivity;
 	private List<Article> mData;
+	private DbImageGetter mImageGetter;
 	
 	public ArticleListAdapter(MainActivity a, int layoutId, List<Article> data) {
 		super(a, layoutId, data);
 		mActivity = a;
 		mData = data;
+		
+		Display display = a.getWindowManager().getDefaultDisplay();
+		Point size = new Point();
+		display.getSize(size);
+		int width = size.x/3;
+		mImageGetter = new DbImageGetter(mActivity, width);
 	}
 	
-	private static class ViewHolder
+	private class ViewHolder
     {
         TextView title;
         TextView description;
         //TextView date;
         ImageView image;
+        
+        DbImageGetterAsyncTask imgTask;
     }
 	
 	@Override
@@ -47,15 +60,18 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		
+		if (holder.imgTask != null)
+			holder.imgTask.cancel(false);
+		
 		final Article a = mData.get(position);
-		DbImageGetter dbig = new DbImageGetter(this.mActivity);
 		
 		if (a != null) {
-			dbig.fetchDrawableForArticleAsync(a, holder.image);
+			holder.imgTask = mImageGetter.fetchDrawableForArticleAsync(a, holder.image);
+			holder.image.setImageResource(R.drawable.loading);
+			holder.image.startAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.loading));
 			holder.title.setText(a.getTitle());
 			holder.description.setText(a.getDescription());
 			holder.title.setPadding(3, 3, 3, 3);
-			
 			}
 		
 		return convertView;

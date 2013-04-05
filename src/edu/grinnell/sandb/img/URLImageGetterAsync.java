@@ -10,12 +10,15 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.text.Html.ImageGetter;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import edu.grinnell.sandb.Utility;
 import edu.grinnell.sandb.data.Image;
 import edu.grinnell.sandb.data.ImageTable;
 
@@ -26,15 +29,17 @@ public class URLImageGetterAsync implements ImageGetter {
     Context c;
     View container;
     Bitmap bm;
+    int maxw;
 
     /***
      * Construct the URLImageParser which will execute AsyncTask and refresh the container
      * @param t
      * @param c
      */
-    public URLImageGetterAsync(View t, Context c) {
+    public URLImageGetterAsync(View t, Context c, int maxw) {
         this.c = c;
         this.container = t;
+        this.maxw = maxw;
     }
 
     public Drawable getDrawable(String source) {
@@ -63,14 +68,21 @@ public class URLImageGetterAsync implements ImageGetter {
         protected Drawable doInBackground(String... params) {
             String source = params[0];
             
+            Bitmap bm = null;
             Image img = lookupInTable(source);
-            if (img != null) {
-            	Log.i("ImageGetterAsync", "loaded images from cache!");
-            	return img.toDrawable(c);
+            if (img != null)
+            	bm = img.toBitmap();
+            else
+            	bm = fetchRemoteBitmap(source);
+            
+            if (bm == null)
+            	return null;
+            
+            if (maxw < bm.getWidth()) {
+            	bm = Utility.resizeBitmap(bm, maxw);
             }
             
-        	Log.i("ImageGetterAsync", "loading images from network..");
-            return fetchRemoteDrawable(source);
+            return new BitmapDrawable(c.getResources(), bm);
         }
 
         @Override
@@ -86,15 +98,10 @@ public class URLImageGetterAsync implements ImageGetter {
 
             // change the reference of the current drawable to the result
             // from the HTTP call
-            
             urlDrawable.drawable = result;
 
-           	// URLImageGetterAsync.this.container.requestLayout();
             TextView t = (TextView) URLImageGetterAsync.this.container;
             t.setText(t.getText());
-            
-            // redraw the image by invalidating the container
-            // URLImageGetterAsync.this.container.invalidate();
         }
 
         private Image lookupInTable(String source) {
@@ -111,16 +118,34 @@ public class URLImageGetterAsync implements ImageGetter {
          * @param urlString
          * @return
          */
+        public Bitmap fetchRemoteBitmap(String urlString) {        	
+        	InputStream is  = null;
+        	try {
+        		is = fetch(urlString);
+        		
+        	} catch (MalformedURLException e) {
+        		e.printStackTrace();
+        	} catch (IOException e) {
+        		e.printStackTrace();
+        	} 
+        	
+        	return BitmapFactory.decodeStream(is);        	
+        }
+        
+        /***
+         * Get the Drawable from URL
+         * @param urlString
+         * @return
+         */
         public Drawable fetchRemoteDrawable(String urlString) {
-            try {
+        	
+        	try {
                 InputStream is = fetch(urlString);
                 Drawable drawable = Drawable.createFromStream(is, "src");
                 drawable.setBounds(0, 0, 0 + drawable.getIntrinsicWidth(), 0 
                         + drawable.getIntrinsicHeight()); 
                 return drawable;
             } catch (Exception e) {
-                //Bitmap bm = BitmapFactory.decodeResource(c.getResources(), R.drawable.sandblogo);
-                //return new BitmapDrawable(c.getResources(), bm);
             	return null;
             	
             } 

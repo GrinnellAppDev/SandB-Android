@@ -1,21 +1,34 @@
 package edu.grinnell.sandb.img;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.text.Html.ImageGetter;
+import android.view.animation.Animation;
 import android.widget.ImageView;
+import edu.grinnell.sandb.Utility;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.Image;
 import edu.grinnell.sandb.data.ImageTable;
 
 public class DbImageGetter implements ImageGetter {
 
+	private int transactions = 0;
+	private ImageTable table;
 	private Context c;
+	private int maxWidth = 0;
 	
 	public DbImageGetter(Context c) {
 		this.c = c;
+		table = new ImageTable(c);
+		table.open();
+	}
+	
+	public DbImageGetter(Context c, int maxWidth) {
+		this(c);
+		this.maxWidth = maxWidth;
 	}
 	
 	@Override
@@ -29,21 +42,21 @@ public class DbImageGetter implements ImageGetter {
      * @return
      */
     public Drawable fetchDrawable(String urlString) {
-    	
-    	Image img = lookupInTableByUrl(urlString);
+    	Image img = table.findByUrl(urlString);
     	return (img != null) ? img.toDrawable(c) : new BitmapDrawable(c.getResources());
     }
     
-    public void fetchDrawableForArticleAsync(Article art, ImageView container) {
+    public DbImageGetterAsyncTask fetchDrawableForArticleAsync(Article art, ImageView container) {
     	
     	DbImageGetterAsyncTask asyncTask = 
                 new DbImageGetterAsyncTask(container);
 
         asyncTask.execute(art.getId());  
+        return asyncTask;
     }
 
     public Drawable fetchDrawableForArticle(Article a) {
-    	Image img = lookupInTableByArticleId(a.getId());
+    	Image img = table.findByArticleId(a.getId());
         return (img == null) ? null : img.toDrawable(c);
     }
     
@@ -58,40 +71,28 @@ public class DbImageGetter implements ImageGetter {
         protected Drawable doInBackground(Integer... params) {
             int id = params[0];
             
-            Image img = lookupInTableByArticleId(id);
-            return (img == null) ? null : img.toDrawable(c);
+            Image img = table.findByArticleId(id);
+            
+            if (img == null) return null;
+            Bitmap bm = img.toBitmap();
+            
+            if (maxWidth > 0 && bm.getWidth() > maxWidth)
+            	bm = Utility.resizeBitmap(img.toBitmap(), maxWidth);
+            return new BitmapDrawable(c.getResources(), bm);
         }
 
         @Override
         protected void onPostExecute(Drawable result) {
-        	if (result == null)
-        		return;
-        		        	
-        	// set the correct bound according to the result from HTTP call
-            //result.setBounds(0, 0, 0 + result.getIntrinsicWidth(), 0 
-            //        + result.getIntrinsicHeight()); 
-
-            container.setImageDrawable(result);            
-        }
+        	// Cancel the loading animation
+        	Animation ani = container.getAnimation();
+        	if (ani != null) {
+            	ani.cancel();
+        	}
+            container.setImageDrawable(result);  
+        }	
     }
     
-    private Image lookupInTableByUrl(String source) {
-    	Image img = null;
-    	ImageTable table = new ImageTable(c);
-    	table.open();
-    	img = table.findByUrl(source);
+    public void close() {
     	table.close();
-    	return img;
     }
-    
-    private Image lookupInTableByArticleId(int id) {
-    	Image img = null;
-    	ImageTable table = new ImageTable(c);
-    	table.open();
-    	img = table.findByArticleId(id);
-    	table.close();
-    	return img;
-    }
-
-    
 }

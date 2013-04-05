@@ -31,14 +31,15 @@ public class Image {
 
 	public Drawable toDrawable(Context c) {
 		
-		Bitmap bm = BitmapFactory.decodeByteArray(image, 0, image.length);
+		Bitmap bm = toBitmap();
 		Drawable d = new BitmapDrawable(c.getResources(), bm);
 		d.setBounds(0, 0, 0 + d.getIntrinsicWidth(), 0 
                 + d.getIntrinsicHeight()); 
 		return d;	
-		
-		//return Drawable.createFromStream(new ByteArrayInputStream(image), null	);
-		
+	}
+	
+	public Bitmap toBitmap() {
+		return BitmapFactory.decodeByteArray(image, 0, image.length);
 	}
 	
 	public int getId() {
