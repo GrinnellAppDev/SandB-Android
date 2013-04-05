@@ -16,6 +16,8 @@ import android.text.Html.ImageGetter;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import edu.grinnell.sandb.data.Image;
+import edu.grinnell.sandb.data.ImageTable;
 
 public class URLImageGetterAsync implements ImageGetter {
 	
@@ -61,8 +63,15 @@ public class URLImageGetterAsync implements ImageGetter {
         protected Drawable doInBackground(String... params) {
             String source = params[0];
             
-            //TODO: Open image table and see if the source is in the cache..
-            return fetchDrawable(source);
+            //TODO: Open image table and see if thList<E>urce is in the cache..
+            Image img = lookupInTable(source);
+            if (img != null) {
+            	Log.i("ImageGetterAsync", "loaded images from cache!");
+            	return img.toDrawable(c);
+            }
+            
+        	Log.i("ImageGetterAsync", "loading images from network..");
+            return fetchRemoteDrawable(source);
         }
 
         @Override
@@ -89,12 +98,21 @@ public class URLImageGetterAsync implements ImageGetter {
             // URLImageGetterAsync.this.container.invalidate();
         }
 
+        private Image lookupInTable(String source) {
+        	Image img = null;
+        	ImageTable table = new ImageTable(c);
+        	table.open();
+        	img = table.findByUrl(source);
+        	table.close();
+        	return img;
+        }
+        
         /***
          * Get the Drawable from URL
          * @param urlString
          * @return
          */
-        public Drawable fetchDrawable(String urlString) {
+        public Drawable fetchRemoteDrawable(String urlString) {
             try {
                 InputStream is = fetch(urlString);
                 Drawable drawable = Drawable.createFromStream(is, "src");

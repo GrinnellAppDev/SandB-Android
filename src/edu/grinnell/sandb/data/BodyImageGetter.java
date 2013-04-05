@@ -31,8 +31,10 @@ public class BodyImageGetter {
 		//TODO on preexecute open table increment variable
 		@Override
 		protected void onPreExecute () {
-			if (numTasks++ == 0)
+			if (numTasks++ == 0) {
 				mImageTable.open();
+				mImageTable.clearTable();
+			}
 		}
 		
 		@Override

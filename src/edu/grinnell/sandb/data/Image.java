@@ -1,5 +1,11 @@
 package edu.grinnell.sandb.data;
 
+import java.io.ByteArrayInputStream;
+
+import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+
 /* Class to store the article images and image titles in a db */
 public class Image {
 
@@ -23,6 +29,11 @@ public class Image {
 		id = ID;
 	}
 
+	public Drawable toDrawable(Context c) {
+		ByteArrayInputStream imgStream = new ByteArrayInputStream(image);
+		return new BitmapDrawable(c.getResources(), imgStream);
+	}
+	
 	public int getId() {
 		return id;
 	}

@@ -61,21 +61,19 @@ public class ImageTable {
 		return images;
 	}
 	
-	public List<Image> findByUrl(String url) {
-		List<Image> images = new ArrayList<Image>();
-
+	public Image findByUrl(String url) {
+		Log.d("ImageTable.findByUrl", "url: " + url);
 		Cursor cursor = database.query(ImageStorageHelper.TABLE_IMAGES,
-				allColumns, ImageStorageHelper.COLUMN_URL + "= " + url, null, null, null, null);
+				allColumns, ImageStorageHelper.COLUMN_URL + " = '" + url + "'", null, null, null, null);
 		
+		Image img = null;
 		cursor.moveToFirst();
-		while (!cursor.isAfterLast()) {
-			Image image = cursorToImage(cursor);
-			images.add(image);
-			cursor.moveToNext();
-		}
+		if (!cursor.isAfterLast())
+			img = cursorToImage(cursor);
+		
 		// Make sure to close the cursor
 		cursor.close();
-		return images;
+		return img;
 	}
 
 	public Image createImage(int articleID, String url, byte[] image, String imgTitle) {
