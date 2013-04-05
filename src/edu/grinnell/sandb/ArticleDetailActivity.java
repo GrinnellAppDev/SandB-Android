@@ -2,19 +2,21 @@ package edu.grinnell.sandb;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
-import android.view.MenuItem;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.MenuItem;
+
 import edu.grinnell.grinnellsandb.R;
 
-public class ArticleDetailActivity extends FragmentActivity {
+public class ArticleDetailActivity extends SherlockFragmentActivity {
 	
 	@Override
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
 		setContentView(R.layout.activity_article_detail);
 		
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		if (ofJoy == null) {
             Bundle arguments = new Bundle();

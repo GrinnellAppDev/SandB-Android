@@ -3,7 +3,6 @@ package edu.grinnell.sandb;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
 import android.util.Log;
@@ -12,13 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.actionbarsherlock.app.SherlockFragment;
+
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.img.DbImageGetter;
 import edu.grinnell.sandb.xmlpull.FeedContent;
 
 
-public class ArticleDetailFragment extends Fragment {
+public class ArticleDetailFragment extends SherlockFragment {
 
 	public static final String ARTICLE_ID_KEY = "article_id";
 	private static final String ADF = "ArticleDetailFragment";
