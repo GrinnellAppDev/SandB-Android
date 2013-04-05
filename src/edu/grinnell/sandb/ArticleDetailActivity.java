@@ -1,10 +1,12 @@
 package edu.grinnell.sandb;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+
 import edu.grinnell.grinnellsandb.R;
 
-public class ArticleDetailActivity extends FragmentActivity {
+public class ArticleDetailActivity extends SherlockFragmentActivity {
 	
 	
 	@Override
@@ -12,7 +14,7 @@ public class ArticleDetailActivity extends FragmentActivity {
 		super.onCreate(ofJoy);
 		setContentView(R.layout.activity_article_detail);
 		
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		if (ofJoy == null) {
             Bundle arguments = new Bundle();
