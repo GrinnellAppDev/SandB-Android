@@ -9,10 +9,10 @@ public class ImageStorageHelper extends SQLiteOpenHelper {
 
 	public static final String TABLE_IMAGES = "images";
 	public static final String COLUMN_ID = "_id";
-	public static final String COLUMN_ARTICLEID = "article id";
-	public static final String COLUMN_URL = "url string";
+	public static final String COLUMN_ARTICLEID = "article_id";
+	public static final String COLUMN_URL = "url";
 	public static final String COLUMN_IMAGE = "image";
-	public static final String COLUMN_IMGTITLE = "image title";
+	public static final String COLUMN_IMGTITLE = "image_title";
 
 
 	private static final String DATABASE_NAME = "images.db";
@@ -22,11 +22,11 @@ public class ImageStorageHelper extends SQLiteOpenHelper {
 	// Database creation sql statement
 	public static final String DATABASE_CREATE = "create table "
 	    + TABLE_IMAGES + "(" + COLUMN_ID
-	    + " integer primary key " 
-	    + COLUMN_ARTICLEID + "integer"
-	    + COLUMN_URL + "url text"
+	    + " integer primary key, " 
+	    + COLUMN_ARTICLEID + " integer, "
+	    + COLUMN_URL + " text, "
 	    + COLUMN_IMAGE + " blob, " 
-	    + COLUMN_IMGTITLE + " text, "
+	    + COLUMN_IMGTITLE + " text "
 	    + ");";
 
 	public ImageStorageHelper(Context context) {
