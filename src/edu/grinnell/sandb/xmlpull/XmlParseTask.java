@@ -18,6 +18,7 @@ import android.util.Xml;
 import edu.grinnell.sandb.Utility;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
+import edu.grinnell.sandb.data.BodyImageGetter;
 
 public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 
@@ -96,6 +97,8 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 	private List<Article> readFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
         List<Article> articles = new ArrayList<Article>();
 
+        BodyImageGetter big = new BodyImageGetter(mAppContext);
+        
         parser.require(XmlPullParser.START_TAG, ns, "rss");
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -106,7 +109,9 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
             if (name.equals("channel")) {
                 continue;
             } else if (name.equals("item")) {
-            	articles.add(readArticle(parser));
+            	Article article = readArticle(parser);
+            	articles.add(article);
+            	big.buildImageCache(article);
             } else {
                 skip(parser);
             }
@@ -153,6 +158,7 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
                 skip(parser);
             }
         }
+        
         return mTable.createArticle(guid, title, link, date, category, description, body, comments);
     }
 

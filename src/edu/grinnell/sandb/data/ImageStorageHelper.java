@@ -9,6 +9,8 @@ public class ImageStorageHelper extends SQLiteOpenHelper {
 
 	public static final String TABLE_IMAGES = "images";
 	public static final String COLUMN_ID = "_id";
+	public static final String COLUMN_ARTICLEID = "article id";
+	public static final String COLUMN_URL = "url string";
 	public static final String COLUMN_IMAGE = "image";
 	public static final String COLUMN_IMGTITLE = "image title";
 
@@ -20,7 +22,9 @@ public class ImageStorageHelper extends SQLiteOpenHelper {
 	// Database creation sql statement
 	public static final String DATABASE_CREATE = "create table "
 	    + TABLE_IMAGES + "(" + COLUMN_ID
-	    + " integer primary key corresponds with article, " 
+	    + " integer primary key " 
+	    + COLUMN_ARTICLEID + "integer"
+	    + COLUMN_URL + "url text"
 	    + COLUMN_IMAGE + " blob, " 
 	    + COLUMN_IMGTITLE + " text, "
 	    + ");";
