@@ -1,13 +1,11 @@
 package edu.grinnell.sandb;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NavUtils;
-import android.view.MenuItem;
 import edu.grinnell.grinnellsandb.R;
 
 public class ArticleDetailActivity extends FragmentActivity {
+	
 	
 	@Override
 	public void onCreate(Bundle ofJoy) {
@@ -27,20 +25,5 @@ public class ArticleDetailActivity extends FragmentActivity {
                     .commit();
         }
 	}
-	
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-        	
-        	Intent upIntent = new Intent(this, MainActivity.class);
-        	upIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP 
-        			| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            NavUtils.navigateUpTo(this, upIntent);
-            
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-	
+    
 }

@@ -8,5 +8,9 @@
     <string name="menu_refresh">Refresh</string>
     <string name="loading_articles">Loading articles..</string>
     <string name="no_articles">No Articles Available.</string>
-
+    <string name="share">Share Article</string>
+    <string name="menu_share">Share</string>
+    
+    
+    
 </resources>

@@ -13,7 +13,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.data.Article;
-import edu.grinnell.sandb.img.DbImageGetter;
 import edu.grinnell.sandb.xmlpull.FeedContent;
 
 public class ArticleListFragment extends ListFragment {
