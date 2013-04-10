@@ -51,12 +51,15 @@ public class ArticleTable {
 	    database.delete(ArticleStorageHelper.TABLE_ARTICLES, ArticleStorageHelper.COLUMN_ID
 	        + " = " + id, null);
 	}
-
-	public List<Article> getAllArticles() {
+	
+	public List<Article> findByCategory(String category) {
 		List<Article> articles = new ArrayList<Article>();
 
+		String where = (category == null) ? null:
+			"category=" + category; 
+		
 		Cursor cursor = database.query(ArticleStorageHelper.TABLE_ARTICLES,
-				allColumns, null, null, null, null, null);
+				allColumns, where, null, null, null, null);
 
 	    cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
@@ -67,6 +70,10 @@ public class ArticleTable {
 	    // Make sure to close the cursor
 	    cursor.close();
 	    return articles;
+	  }
+	  
+	public List<Article> getAllArticles() {
+	    return findByCategory(null);
 	  }
 	  
 	  public Article createArticle(String guid, String articleTitle, String articleLink,

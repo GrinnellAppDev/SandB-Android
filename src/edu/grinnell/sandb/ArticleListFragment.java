@@ -144,5 +144,6 @@ public class ArticleListFragment extends ListFragment {
         mActivatedPosition = position;
     }
     
+    //TODO get category
     
 }
