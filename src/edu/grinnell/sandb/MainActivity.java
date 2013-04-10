@@ -28,13 +28,13 @@ public class MainActivity extends FragmentActivity implements ArticleListFragmen
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		
-		
 		mLoading = (View) findViewById(R.id.loading);
 		mListFrag = (ArticleListFragment) 
 				getSupportFragmentManager().findFragmentById(R.id.articles_fragment);
 		
 		FeedContent.loadCache(this);
+		
+		
 		
 		if (FeedContent.articles != null && FeedContent.articles.size() > 0) {
 			Log.d(TAG, "Content alreay exits..");

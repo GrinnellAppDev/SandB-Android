@@ -13,9 +13,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.data.Article;
+import edu.grinnell.sandb.data.ArticleTable;
 import edu.grinnell.sandb.xmlpull.FeedContent;
 
 public class ArticleListFragment extends ListFragment {
+	
+	public static String ARTICLE_CATEGORY_KEY = "category";
+	public String mCategory;
 	
 	public static final String UPDATE = "edu.grinnell.sandb.UPDATE";
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
@@ -52,7 +56,7 @@ public class ArticleListFragment extends ListFragment {
     }
      
     public void update() {
-    	mData = FeedContent.articles;
+    	mData = loadDataFromCache(mCategory);
     	mAdapter.clear();
     	mAdapter.addAll(mData);
     	mAdapter.notifyDataSetChanged();
@@ -68,13 +72,32 @@ public class ArticleListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        mData = new ArrayList<Article>();
+        //TODO restore from instance state
+        Bundle b = getArguments();
+        if (b != null)
+        	mCategory = b.getString(ARTICLE_CATEGORY_KEY, null);
+        else mCategory = null;
+        
+        mData = loadDataFromCache(mCategory);
+        
+        if (mData == null)
+        	mData = new ArrayList<Article>();
         mAdapter = new ArticleListAdapter((MainActivity) getActivity(), 
         		R.layout.articles_row, 
         		mData);
         
     }
 
+    private List<Article> loadDataFromCache(String category) {
+        //TODO load data async style
+        ArticleTable table = new ArticleTable(getActivity());
+        table.open();
+        List<Article> data;
+        data = table.findByCategory(category);
+        table.close();
+        return data;
+    }
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {

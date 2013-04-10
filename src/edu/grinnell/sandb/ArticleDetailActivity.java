@@ -25,6 +25,5 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
                     .add(R.id.article_detail_container, fragment)
                     .commit();
         }
-	}
-    
+	}   
 }
