@@ -8,7 +8,6 @@ import edu.grinnell.grinnellsandb.R;
 
 public class ArticleDetailActivity extends SherlockFragmentActivity {
 	
-	
 	@Override
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);

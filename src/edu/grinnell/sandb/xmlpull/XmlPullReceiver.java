@@ -1,11 +1,11 @@
 package edu.grinnell.sandb.xmlpull;
 
-import edu.grinnell.sandb.ArticleListFragment;
-import edu.grinnell.sandb.MainActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import edu.grinnell.sandb.ArticleListFragment;
+import edu.grinnell.sandb.MainActivity;
 
 public class XmlPullReceiver extends BroadcastReceiver {
 
