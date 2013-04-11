@@ -30,7 +30,8 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 		Point size = new Point();
 		display.getSize(size);
 		int width = size.x/3;
-		mImageGetter = new DbImageGetter(mActivity, width);
+		int height = (int) (width * 0.80);
+		mImageGetter = new DbImageGetter(mActivity, width, height);
 	}
 	
 	private class ViewHolder

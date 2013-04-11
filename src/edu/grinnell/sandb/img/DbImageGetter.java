@@ -19,6 +19,7 @@ public class DbImageGetter implements ImageGetter {
 	private ImageTable table;
 	private Context c;
 	private int maxWidth = 0;
+	private int maxHeight = 0;
 	
 	public DbImageGetter(Context c) {
 		this.c = c;
@@ -26,9 +27,10 @@ public class DbImageGetter implements ImageGetter {
 		table.open();
 	}
 	
-	public DbImageGetter(Context c, int maxWidth) {
+	public DbImageGetter(Context c, int maxWidth, int maxHeight) {
 		this(c);
 		this.maxWidth = maxWidth;
+		this.maxHeight = maxHeight;
 	}
 	
 	@Override
@@ -75,9 +77,7 @@ public class DbImageGetter implements ImageGetter {
             
             if (img == null) return null;
             Bitmap bm = img.toBitmap();
-            
-            if (maxWidth > 0 && bm.getWidth() > maxWidth)
-            	bm = Utility.resizeBitmap(img.toBitmap(), maxWidth);
+            bm = Utility.resizeBitmap(img.toBitmap(), maxWidth, maxHeight);
             return new BitmapDrawable(c.getResources(), bm);
         }
 

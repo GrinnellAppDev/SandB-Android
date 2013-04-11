@@ -1,12 +1,10 @@
 package edu.grinnell.sandb;
 
 import android.content.Intent;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,8 +67,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 		int width = 1280;
 		int height = 720;
 		
-		DbImageGetter dbig = new DbImageGetter(getSherlockActivity(), Math.min(width,
-				height));
+		DbImageGetter dbig = new DbImageGetter(getSherlockActivity(), width, height);
 		body.setText(Html.fromHtml(mArticle.getBody(), dbig, null));
 
 		Log.d(TAG, mArticle.getTitle());

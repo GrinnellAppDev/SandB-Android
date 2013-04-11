@@ -23,19 +23,21 @@
 
     	<ImageView
     		android:id="@+id/articleThumb"
+    		android:contentDescription="article thumb"
     		android:layout_gravity="center_vertical"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
         	android:layout_marginRight="@dimen/pad5"
         	android:layout_marginTop="@dimen/pad3" 
-        	android:maxWidth="180dp"
-        	android:maxHeight="100dp"
-        	android:scaleType="centerInside"/>
+        	android:width="180dp"
+        	android:maxWidth="200dp"
+        	android:scaleType="centerCrop"/>
     
     	<TextView
         	android:id="@+id/descriptionText"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
+        	
         	 />
 
      </LinearLayout>

@@ -59,22 +59,30 @@ public class Utility {
 		return sb.toString();
 	}
 	
-	public static Bitmap resizeBitmap(Bitmap bm, int maxWidth) {
+	public static Bitmap resizeBitmap(Bitmap bm, int maxWidth, int maxHeight) {
 		int w = bm.getWidth();
         int h = bm.getHeight();
-        float s = ((float)maxWidth)/w; 
-        float sh = h*s + 0.5f;
+        
+        float s, sw, sh;
+        if (w > h && w > 0) {
+        	s = ((float)maxWidth)/w; 
+        	sw = maxWidth;
+        	sh = h*s + 0.5f;
+        } else if (h > 0){
+        	s = ((float)maxWidth)/w;
+        	sw = w*s + 0.5f;
+        	sh = maxHeight;
+        } else {
+        	s = 1;
+        	sw = w;
+        	sh = h;
+        }
 
         try {
-       	 return Bitmap.createScaledBitmap(bm, maxWidth, (int) sh, true);
+       	 return Bitmap.createScaledBitmap(bm, (int) sw, (int) sh, true);
         } catch (IllegalArgumentException iae) {
        	 Log.d("generate thumb", "width: " + w + ", height: " + h + ", scale: " + s + ", sh" + sh);
        	 return null;
         }
-	}
-	
-	public static Bitmap generateThumb(Bitmap bm) {
-        final int TW = 300;
-		return resizeBitmap(bm, TW);
 	}
 }

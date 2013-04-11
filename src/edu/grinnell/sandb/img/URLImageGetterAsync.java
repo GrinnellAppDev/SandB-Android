@@ -30,16 +30,18 @@ public class URLImageGetterAsync implements ImageGetter {
     View container;
     Bitmap bm;
     int maxw;
+    int maxh;
 
     /***
      * Construct the URLImageParser which will execute AsyncTask and refresh the container
      * @param t
      * @param c
      */
-    public URLImageGetterAsync(View t, Context c, int maxw) {
+    public URLImageGetterAsync(View t, Context c, int maxw, int maxh) {
         this.c = c;
         this.container = t;
         this.maxw = maxw;
+        this.maxh = maxh;
     }
 
     public Drawable getDrawable(String source) {
@@ -79,7 +81,7 @@ public class URLImageGetterAsync implements ImageGetter {
             	return null;
             
             if (maxw < bm.getWidth()) {
-            	bm = Utility.resizeBitmap(bm, maxw);
+            	bm = Utility.resizeBitmap(bm, maxw, maxh);
             }
             
             return new BitmapDrawable(c.getResources(), bm);
