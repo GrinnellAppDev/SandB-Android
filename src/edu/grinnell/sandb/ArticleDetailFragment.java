@@ -19,37 +19,40 @@ import com.actionbarsherlock.view.MenuItem;
 
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.data.Article;
+import edu.grinnell.sandb.data.ArticleTable;
 import edu.grinnell.sandb.img.DbImageGetter;
-import edu.grinnell.sandb.xmlpull.FeedContent;
 
 public class ArticleDetailFragment extends SherlockFragment {
 
 	public static final String ARTICLE_ID_KEY = "article_id";
-	private static final String ADF = "ArticleDetailFragment";
 	private Article mArticle;
-
+	
+	public static final String TAG = "ArticleDetailFragment";
+	
+	public ArticleDetailFragment() {
+		super();
+	}
+	
 	@Override
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
 		
 		setHasOptionsMenu(true);
 
-		Bundle b = getArguments();
+		Bundle b = (ofJoy == null) ? getArguments() : ofJoy;
 
-		if (b != null && FeedContent.articles != null) {
-			mArticle = FeedContent.articles.get(b.getInt(ARTICLE_ID_KEY, 0));
-		} else {
-			// Navigate Up..
-			Intent upIntent = new Intent(getActivity(), MainActivity.class);
-			NavUtils.navigateUpTo(getActivity(), upIntent);
+		if (b != null) {
+			int id = b.getInt(ARTICLE_ID_KEY);
+			ArticleTable table = new ArticleTable(getSherlockActivity());
+			table.open();
+			Log.d(TAG, "Looking for article with id = " + id);
+			mArticle = table.findById(id);	
 		}
-
-			
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+			Bundle savedInstanceState) { 
 
 		View rootView = inflater.inflate(R.layout.fragment_article_detail,
 				container, false);
@@ -60,18 +63,30 @@ public class ArticleDetailFragment extends SherlockFragment {
 		// body.setText(Html.fromHtml(mArticle.getBody(), new
 		// URLImageGetterAsync(body, getActivity()), null));
 
-		Display display = getActivity().getWindowManager().getDefaultDisplay();
-		Point size = new Point();
-		display.getSize(size);
-		int width = size.x;
-		int height = size.y;
-		DbImageGetter dbig = new DbImageGetter(getActivity(), Math.min(width,
+		// display = getSherlockActivity().getWindowManager().getDefaultDisplay();
+		//Point size = new Point();
+		//display.getSize(size);
+		int width = 1280;
+		int height = 720;
+		
+		DbImageGetter dbig = new DbImageGetter(getSherlockActivity(), Math.min(width,
 				height));
 		body.setText(Html.fromHtml(mArticle.getBody(), dbig, null));
 
-		Log.d(ADF, mArticle.getTitle());
+		Log.d(TAG, mArticle.getTitle());
 
 		return rootView;
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (mArticle == null) {
+			// Navigate Up..
+			Intent upIntent = new Intent(getSherlockActivity(), MainActivity.class);
+			NavUtils.navigateUpTo(getSherlockActivity(), upIntent);
+		}
+
 	}
 	
 	@Override
@@ -90,10 +105,8 @@ public class ArticleDetailFragment extends SherlockFragment {
 		case R.id.menu_share:
 			share();
 		default:
-			
 			break;
 		}
-
 		return false;
 	}
 	
@@ -109,6 +122,12 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 		//Share to any compatible app on the device
 		startActivity(Intent.createChooser(sharingIntent, "Share via"));
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		outState.putInt(ARTICLE_ID_KEY, mArticle.getId());
+		super.onSaveInstanceState(outState);
 	}
 
 }

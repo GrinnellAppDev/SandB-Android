@@ -39,7 +39,6 @@ public class XmlPullService extends IntentService {
 			
 			if (mWRT == null) {
 				Log.d(TAG, "Fetching feed from server..");
-				FeedContent.loading = true;
 				mWRT = new XmlFetchTask(this, new WebRequstCallback());
 				mWRT.execute(FEED_URL);
 			}
@@ -88,8 +87,6 @@ public class XmlPullService extends IntentService {
 		@Override
 		public void onDataParsed(List<Article> articles) {
 			Log.d("ParseDataListener", "Feed parsed!");
-			FeedContent.articles = articles;
-			FeedContent.loading = false;
 			finishUp();
 		}
 		

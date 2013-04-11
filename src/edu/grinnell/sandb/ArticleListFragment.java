@@ -1,24 +1,39 @@
 package edu.grinnell.sandb;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.actionbarsherlock.app.SherlockListFragment;
+
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
-import edu.grinnell.sandb.xmlpull.FeedContent;
 
-public class ArticleListFragment extends ListFragment {
+public class ArticleListFragment extends SherlockListFragment {
 	
 	public static String ARTICLE_CATEGORY_KEY = "category";
+	public static final Map<String, String> titleToKey = new HashMap<String, String>();
+	
+	static {
+		titleToKey.put("Arts", "Arts");
+		titleToKey.put("Sports", "Sports");
+		titleToKey.put("Community", "Community");
+		titleToKey.put("Opinion", "Opinion");
+		titleToKey.put("Features", "Features");
+	}
+
 	public String mCategory;
 	
 	public static final String UPDATE = "edu.grinnell.sandb.UPDATE";
@@ -30,6 +45,8 @@ public class ArticleListFragment extends ListFragment {
     private ArticleListAdapter mAdapter;
     private List<Article> mData;
 
+    private static final String TAG = "ArticleListFragment";
+    
     public interface Callbacks {
 
         public void onItemSelected(int position);
@@ -54,19 +71,6 @@ public class ArticleListFragment extends ListFragment {
         }
         mCallbacks = (Callbacks) activity;
     }
-     
-    public void update() {
-    	mData = loadDataFromCache(mCategory);
-    	mAdapter.clear();
-    	mAdapter.addAll(mData);
-    	mAdapter.notifyDataSetChanged();
-    	
-    }
-    
-    public void setEmptyText(String text) {
-    	TextView empty = (TextView) getListView().getEmptyView();
-    	empty.setText(text);
-    }
         
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,18 +78,19 @@ public class ArticleListFragment extends ListFragment {
         
         //TODO restore from instance state
         Bundle b = getArguments();
+        mCategory = null;
         if (b != null)
-        	mCategory = b.getString(ARTICLE_CATEGORY_KEY, null);
-        else mCategory = null;
-        
+        	mCategory = titleToKey.get(b.getString(ARTICLE_CATEGORY_KEY, null)); 
+        	
+        Log.d(TAG, "Loading data for the '" + mCategory + "' category..");
         mData = loadDataFromCache(mCategory);
         
         if (mData == null)
         	mData = new ArrayList<Article>();
-        mAdapter = new ArticleListAdapter((MainActivity) getActivity(), 
+        
+        mAdapter = new ArticleListAdapter((MainActivity) getSherlockActivity(), 
         		R.layout.articles_row, 
         		mData);
-        
     }
 
     private List<Article> loadDataFromCache(String category) {
@@ -124,23 +129,31 @@ public class ArticleListFragment extends ListFragment {
         
     }
     
+    public void update() {
+    	mData = loadDataFromCache(mCategory);
+    	mAdapter.clear();
+    	mAdapter.addAll(mData);
+    	mAdapter.notifyDataSetChanged();
+    }
+   
+    public void setEmptyText(String text) {
+    	TextView empty = (TextView) getListView().getEmptyView();
+    	empty.setText(text);
+    }
+    
     @Override
     public void onDetach() {
         super.onDetach();
         mCallbacks = sDummyCallbacks;
-    }
-    
-    @Override
-    public void onDestroy() {
-    	//mInstances.remove(mMenuKey);
-    	super.onDestroy();
     }
 
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
         mCallbacks.onItemSelected(position);
-        // mCallbacks.onItemSelected((Article) listView.getAdapter().getItem(position));
+        Intent detailIntent = new Intent(getSherlockActivity(), ArticleDetailActivity.class);
+        detailIntent.putExtra(ArticleDetailFragment.ARTICLE_ID_KEY, mData.get(position).getId());
+        startActivity(detailIntent);
     }
 
     @Override

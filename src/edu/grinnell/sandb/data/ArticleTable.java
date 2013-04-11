@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import junit.framework.Assert;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -34,11 +35,19 @@ public class ArticleTable {
 	    };
 
 	public ArticleTable(Context context) {
-	  dbHelper = new ArticleStorageHelper(context);
+		Assert.assertNotNull(context);
+		dbHelper = new ArticleStorageHelper(context);
 	}
 
 	public void open() throws SQLException {
-	  database = dbHelper.getWritableDatabase();
+		Assert.assertNotNull(dbHelper);
+		try {
+			database = dbHelper.getWritableDatabase();
+			Log.d(TAG, "Article DB opened: '" + database.toString() + "'");
+		}
+		catch (Exception e) {
+			Log.e(TAG, "method: open", e);
+		}
 	}
 
 	public void close() {
@@ -52,15 +61,35 @@ public class ArticleTable {
 	        + " = " + id, null);
 	}
 	
+	public Article findById(int id) {
+		String where = ArticleStorageHelper.COLUMN_ID + " = " + id; 
+		Log.d(TAG, "Looking for article where " + where);
+		Cursor cursor = database.query(ArticleStorageHelper.TABLE_ARTICLES,
+				allColumns, where, null, null, null, null);
+
+		Article a = null;
+	    if (cursor != null) {
+	    	cursor.moveToFirst();
+	    	if (!cursor.isAfterLast())
+	    		a = cursorToArticle(cursor);
+	    }
+	    
+	    // Make sure to close the cursor
+	    cursor.close();
+	    return a;
+	  }
+	
 	public List<Article> findByCategory(String category) {
 		List<Article> articles = new ArrayList<Article>();
 
-		String where = (category == null) ? null:
-			"category=" + category; 
+		String where = (category == null) ? null :
+			ArticleStorageHelper.COLUMN_CATEGORY + " = \"" + category + "\""; 
 		
 		Cursor cursor = database.query(ArticleStorageHelper.TABLE_ARTICLES,
 				allColumns, where, null, null, null, null);
 
+	    if (cursor == null) 
+	    	return articles;
 	    cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	Article article = cursorToArticle(cursor);
@@ -117,7 +146,9 @@ public class ArticleTable {
 
 	  private Article cursorToArticle(Cursor cursor) {
 		  
-		  return new Article(cursor.getInt(0),
+		  Article a = null;
+		  try {
+			  a = new Article(cursor.getInt(0),
 				  cursor.getString(1),
 				  cursor.getString(2),
 				  cursor.getString(3),
@@ -126,6 +157,11 @@ public class ArticleTable {
 				  cursor.getString(6), 
 				  cursor.getString(7),
 				  cursor.getString(8));
+		  } catch (Exception e) {
+			  e.printStackTrace();
+		  }
+		  
+		  return a;
 	  }
 	  
 	  public void clearTable() {

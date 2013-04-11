@@ -19,7 +19,7 @@ public class ArticleStorageHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_COMMENTS = "comments";
 
 	private static final String DATABASE_NAME = "articles.db";
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 7;
 
 	// Database creation sql statement
 	public static final String DATABASE_CREATE = "create table "

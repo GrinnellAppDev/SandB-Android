@@ -11,6 +11,11 @@
     <string name="share">Share Article</string>
     <string name="menu_share">Share</string>
     
-    
-    
+    <string name="all">All</string>
+    <string name="arts">Arts</string>
+    <string name="sports">Sports</string>
+    <string name="community">Community</string>
+    <string name="opinion">Opinion</string>
+    <string name="features">Features</string>
+        
 </resources>
