@@ -63,6 +63,8 @@ public class BodyImageGetter {
 		byte[] image = null;
 		String title = "";
 		
+		//TODO need to take the resolution tags off the images to download full versions
+		//maybe if would be quicker to not download full versions though?
 		while ((divStart = body.indexOf("<div", divStart+1)) >= 0) {
 		
 			url = getSubstring("src=\"", body, divStart);		
@@ -71,11 +73,17 @@ public class BodyImageGetter {
 		
 			mImageTable.createImage(articleID, url, image, title);
 		}
-		
-		//some images do not have a <div tag first
-		//for some reason WE STILL NEED THE <div BLOCK, or else not all images will be saved
-		
+
 		while ((divStart = body.indexOf("<a", divStart+1)) >= 0){
+			
+			url = getSubstring("src=\"", body, divStart);		
+			image = getImage(url, divStart);
+			title = getSubstring("title=\"", body, divStart);
+		
+			mImageTable.createImage(articleID, url, image, title);
+		}
+		
+		while ((divStart = body.indexOf("<img", divStart+1)) >= 0){
 			
 			url = getSubstring("src=\"", body, divStart);		
 			image = getImage(url, divStart);

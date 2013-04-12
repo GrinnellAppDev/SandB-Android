@@ -1,13 +1,18 @@
 package edu.grinnell.sandb;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -18,7 +23,7 @@ import com.actionbarsherlock.view.MenuItem;
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
-import edu.grinnell.sandb.img.URLImageGetterAsync;
+import edu.grinnell.sandb.img.DbImageGetter;
 
 public class ArticleDetailFragment extends SherlockFragment {
 
@@ -58,18 +63,18 @@ public class ArticleDetailFragment extends SherlockFragment {
 		((TextView) rootView.findViewById(R.id.article_title)).setText(mArticle
 				.getTitle());
 		TextView body = (TextView) rootView.findViewById(R.id.article_body);
-		// body.setText(Html.fromHtml(mArticle.getBody(), new
-		// URLImageGetterAsync(body, getActivity()), null));
 
-		// display = getSherlockActivity().getWindowManager().getDefaultDisplay();
-		//Point size = new Point();
-		//display.getSize(size);
-		//int width = 1280;
-		//int height = 720;
+		//show first article image
+	    ImageView imgView = (ImageView) rootView.findViewById(R.id.articleImage1);
+		DbImageGetter ImageGetter = new DbImageGetter(getSherlockActivity());
+		Drawable articleImage = ImageGetter.fetchDrawableForArticle(mArticle);	
 		
-		//DbImageGetter dbig = new DbImageGetter(getSherlockActivity(), width, height);
-		//body.setText(Html.fromHtml(mArticle.getBody(), dbig, null));
-
+		if (articleImage != null) {
+		Bitmap imageBitmap = scaleImage(articleImage, rootView);
+		//imgView.setImageDrawable(articleImage);
+		imgView.setImageBitmap(imageBitmap);
+		}
+		
 		String bodyHTML = mArticle.getBody();
 
 		//make text more readable
@@ -82,12 +87,29 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 		Log.d(TAG, mArticle.getTitle());
 		
-		//TODO add imageview images
-		// image = get image from db
-		//		new 
-		
 		return rootView;
 	}
+	
+	//Scale the image to fill the screen width
+	//the images now look low-res, hmmm
+	 private Bitmap scaleImage (Drawable img, View rootView) {
+		 
+		 //convert drawable to bitmap
+		 Bitmap bm = ((BitmapDrawable) img).getBitmap();
+	       // Get display width from device
+		 DisplayMetrics metrics = new DisplayMetrics();
+		 getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+		 int displayWidth = metrics.widthPixels;
+
+	        // Calculate scaling factor
+	        float scalingFactor = ( (float) displayWidth / (float) bm.getWidth() );
+	        
+	        int scaleHeight = (int) (bm.getHeight() * scalingFactor);
+	        int scaleWidth = (int) (bm.getWidth() * scalingFactor);
+
+	        return Bitmap.createScaledBitmap(bm, scaleWidth, scaleHeight, true);	        
+	        }
 	
 	@Override
 	public void onResume() {

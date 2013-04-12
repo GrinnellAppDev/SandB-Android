@@ -179,7 +179,5 @@ public class ArticleListFragment extends SherlockListFragment {
 
         mActivatedPosition = position;
     }
-    
-    //TODO get category
-    
+        
 }
