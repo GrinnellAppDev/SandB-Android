@@ -35,7 +35,7 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
         }
         
         getSupportFragmentManager().beginTransaction()
-        .add(R.id.article_detail_container, fragment)
+        .replace(R.id.article_detail_container, fragment)
         .commit();
 	}   
 	
