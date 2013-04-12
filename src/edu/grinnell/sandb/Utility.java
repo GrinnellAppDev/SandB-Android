@@ -60,6 +60,10 @@ public class Utility {
 	}
 	
 	public static Bitmap resizeBitmap(Bitmap bm, int maxWidth, int maxHeight) {
+		
+		if (bm == null)
+			return null;
+		
 		int w = bm.getWidth();
         int h = bm.getHeight();
         

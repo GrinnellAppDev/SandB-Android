@@ -39,7 +39,8 @@ public class Image {
 	}
 	
 	public Bitmap toBitmap() {
-		return BitmapFactory.decodeByteArray(image, 0, image.length);
+		return (image != null) ? BitmapFactory.decodeByteArray(image, 0, image.length)
+				: null;
 	}
 	
 	public int getId() {
