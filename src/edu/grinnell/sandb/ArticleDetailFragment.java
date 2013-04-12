@@ -78,6 +78,8 @@ public class ArticleDetailFragment extends SherlockFragment {
 			imgView.setImageBitmap(imageBitmap);
 		}
 
+		// on click of the image, launch the image gallery
+		
 		// add image description in textview here
 
 		String bodyHTML = mArticle.getBody();
