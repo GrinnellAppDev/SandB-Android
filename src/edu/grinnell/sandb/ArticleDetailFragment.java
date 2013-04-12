@@ -29,17 +29,17 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 	public static final String ARTICLE_ID_KEY = "article_id";
 	private Article mArticle;
-	
+
 	public static final String TAG = "ArticleDetailFragment";
-	
+
 	public ArticleDetailFragment() {
 		super();
 	}
-	
+
 	@Override
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
-		
+
 		setHasOptionsMenu(true);
 
 		Bundle b = (ofJoy == null) ? getArguments() : ofJoy;
@@ -49,13 +49,13 @@ public class ArticleDetailFragment extends SherlockFragment {
 			ArticleTable table = new ArticleTable(getSherlockActivity());
 			table.open();
 			Log.d(TAG, "Looking for article with id = " + id);
-			mArticle = table.findById(id);	
+			mArticle = table.findById(id);
 		}
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) { 
+			Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_article_detail,
 				container, false);
@@ -64,75 +64,81 @@ public class ArticleDetailFragment extends SherlockFragment {
 				.getTitle());
 		TextView body = (TextView) rootView.findViewById(R.id.article_body);
 
-		//show first article image
-	    ImageView imgView = (ImageView) rootView.findViewById(R.id.articleImage1);
+		// TODO need to get first image LINK and then download full image, this
+		// is too low res
+		// show first article image
+		ImageView imgView = (ImageView) rootView
+				.findViewById(R.id.articleImage1);
 		DbImageGetter ImageGetter = new DbImageGetter(getSherlockActivity());
-		Drawable articleImage = ImageGetter.fetchDrawableForArticle(mArticle);	
-		
+		Drawable articleImage = ImageGetter.fetchDrawableForArticle(mArticle);
+
 		if (articleImage != null) {
-		Bitmap imageBitmap = scaleImage(articleImage, rootView);
-		//imgView.setImageDrawable(articleImage);
-		imgView.setImageBitmap(imageBitmap);
+			Bitmap imageBitmap = scaleImage(articleImage, rootView);
+			// imgView.setImageDrawable(articleImage);
+			imgView.setImageBitmap(imageBitmap);
 		}
-		
+
+		// add image description in textview here
+
 		String bodyHTML = mArticle.getBody();
 
-		//make text more readable
+		// make text more readable
 		bodyHTML = bodyHTML.replaceAll("<br />", "<br><br>");
-		
-		//remove images
+
+		// remove images
 		bodyHTML = bodyHTML.replaceAll("<a.+?</a>", "");
 		bodyHTML = bodyHTML.replaceAll("<div.+?</div>", "");
 		body.setText(Html.fromHtml(bodyHTML));
 
 		Log.d(TAG, mArticle.getTitle());
-		
+
 		return rootView;
 	}
-	
-	//Scale the image to fill the screen width
-	//the images now look low-res, hmmm
-	 private Bitmap scaleImage (Drawable img, View rootView) {
-		 
-		 //convert drawable to bitmap
-		 Bitmap bm = ((BitmapDrawable) img).getBitmap();
-	       // Get display width from device
-		 DisplayMetrics metrics = new DisplayMetrics();
-		 getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-		 int displayWidth = metrics.widthPixels;
+	// Scale the image to fill the screen width
+	private Bitmap scaleImage(Drawable img, View rootView) {
 
-	        // Calculate scaling factor
-	        float scalingFactor = ( (float) displayWidth / (float) bm.getWidth() );
-	        
-	        int scaleHeight = (int) (bm.getHeight() * scalingFactor);
-	        int scaleWidth = (int) (bm.getWidth() * scalingFactor);
+		// convert drawable to bitmap
+		Bitmap bm = ((BitmapDrawable) img).getBitmap();
+		// Get display width from device
+		DisplayMetrics metrics = new DisplayMetrics();
+		getActivity().getWindowManager().getDefaultDisplay()
+				.getMetrics(metrics);
 
-	        return Bitmap.createScaledBitmap(bm, scaleWidth, scaleHeight, true);	        
-	        }
-	
+		int displayWidth = metrics.widthPixels;
+
+		// Calculate scaling factor
+		float scalingFactor = ((float) displayWidth / (float) bm.getWidth());
+
+		int scaleHeight = (int) (bm.getHeight() * scalingFactor);
+		int scaleWidth = (int) (bm.getWidth() * scalingFactor);
+
+		return Bitmap.createScaledBitmap(bm, scaleWidth, scaleHeight, true);
+	}
+
 	@Override
 	public void onResume() {
 		super.onResume();
 		if (mArticle == null) {
 			// Navigate Up..
-			Intent upIntent = new Intent(getSherlockActivity(), MainActivity.class);
+			Intent upIntent = new Intent(getSherlockActivity(),
+					MainActivity.class);
 			NavUtils.navigateUpTo(getSherlockActivity(), upIntent);
 		}
 
 	}
-	
+
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		//TODO adds item for each rotation BAD
-		//if (menu.removeItem(id))
+		// TODO adds item for each rotation BAD
+		// if (menu.removeItem(id))
 		inflater.inflate(R.menu.article_detail_menu, menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-				
+
 		switch (item.getItemId()) {
 		case R.id.menu_settings:
 			// startActivityForResult(new Intent(this, PrefActiv.class), PREFS);
@@ -141,15 +147,15 @@ public class ArticleDetailFragment extends SherlockFragment {
 			share();
 			break;
 		case R.id.menu_share2:
-			share();	
+			share();
 			break;
 		default:
 			break;
 		}
 		return false;
 	}
-	
-	public void share(){
+
+	public void share() {
 
 		Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
 		sharingIntent.setType("text/plain");
@@ -159,7 +165,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 				"S&B Article Link");
 		sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
 
-		//Share to any compatible app on the device
+		// Share to any compatible app on the device
 		startActivity(Intent.createChooser(sharingIntent, "Share via"));
 	}
 

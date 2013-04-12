@@ -11,6 +11,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 public class BodyImageGetter {
 	
@@ -78,6 +79,9 @@ public class BodyImageGetter {
 			
 			url = getSubstring("src=\"", body, divStart);		
 			image = getImage(url, divStart);
+			
+			//Log.e("src", url);
+			
 			title = getSubstring("title=\"", body, divStart);
 		
 			mImageTable.createImage(articleID, url, image, title);
@@ -85,7 +89,7 @@ public class BodyImageGetter {
 		
 		while ((divStart = body.indexOf("<img", divStart+1)) >= 0){
 			
-			url = getSubstring("src=\"", body, divStart);		
+			url = getSubstring("src=\"", body, divStart);
 			image = getImage(url, divStart);
 			title = getSubstring("title=\"", body, divStart);
 		
@@ -122,42 +126,21 @@ public class BodyImageGetter {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
+		 catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			return null;
+		} 
 
 		return buffer.toByteArray();
 		
-		
-		/*
-		URL imgSrc;
-		
-		try {
-			imgSrc = new URL(imgSource);
-			HttpURLConnection conn;
-			conn = (HttpURLConnection) imgSrc.openConnection();
-			BufferedInputStream in = new BufferedInputStream(
-					conn.getInputStream());
-
-			int read = 0;
-			ByteArrayBuffer bytesBuffer = new ByteArrayBuffer(1024);
-			while ((read = in.read()) != -1) {
-				bytesBuffer.append(read);
-			}
-			
-			in.close();
-			byte[] image = bytesBuffer.toByteArray();
-			return image;
-
-		} catch (IOException e) {
-			Log.d("Image Download Error=", e.toString());
-		}
-		
-		return null;
-		*/
 	}
 	
-	private static InputStream fetch(String urlString) throws MalformedURLException, IOException {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+	private static InputStream fetch(String urlString) throws IllegalArgumentException, MalformedURLException, IOException {
+        
+		DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpGet request = new HttpGet(urlString);
         HttpResponse response = httpClient.execute(request);
+		
         return response.getEntity().getContent();
     }
 

@@ -22,16 +22,16 @@
         android:paddingBottom="@dimen/pad3">
 
     	<ImageView
-    		android:id="@+id/articleThumb"
-    		android:contentDescription="article thumb"
-    		android:layout_gravity="center_vertical"
-        	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	android:layout_marginRight="@dimen/pad5"
-        	android:layout_marginTop="@dimen/pad3" 
-        	android:width="180dp"
-        	android:maxWidth="200dp"
-        	android:scaleType="centerCrop"/>
+    	    android:id="@+id/articleThumb"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_gravity="center_vertical|top"
+    	    android:layout_marginRight="@dimen/pad5"
+    	    android:layout_marginTop="@dimen/pad3"
+    	    android:contentDescription="article thumb"
+    	    android:maxHeight="200dp"
+    	    android:scaleType="centerCrop"
+    	    android:width="180dp" />
     
     	<TextView
         	android:id="@+id/descriptionText"
