@@ -63,16 +63,35 @@ public class BodyImageGetter {
 		byte[] image = null;
 		String title = "";
 		
-		while ((divStart = body.indexOf("<div", divStart+1)) >= 0){
+		while ((divStart = body.indexOf("<div", divStart+1)) >= 0) {
 		
-		url = getSubstring("src=\"", body, divStart);		
-		image = getImage(url, divStart);
-		title = getSubstring("title=\"", body, divStart);
+			url = getSubstring("src=\"", body, divStart);		
+			image = getImage(url, divStart);
+			title = getSubstring("title=\"", body, divStart);
 		
-		mImageTable.createImage(articleID, url, image, title);
+			mImageTable.createImage(articleID, url, image, title);
+		}
+		
+		//some images do not have a <div tag first
+		//for some reason WE STILL NEED THE <div BLOCK, or else not all images will be saved
+		
+		while ((divStart = body.indexOf("<a", divStart+1)) >= 0){
+			
+			url = getSubstring("src=\"", body, divStart);		
+			image = getImage(url, divStart);
+			title = getSubstring("title=\"", body, divStart);
+		
+			mImageTable.createImage(articleID, url, image, title);
 		}
 	}
 	
+	private void addImage(int articleId, String body, int tagNum) {
+		String url = getSubstring("src=\"", body, tagNum);
+		byte[] image = getImage(url, tagNum);
+		String title = getSubstring("title=\"", body, tagNum);
+	
+		mImageTable.createImage(articleId, url, image, title);
+	}
 	//TODO on post execute close table decrement variable
 
 	private static byte[] getImage(String imgSource, int start) {

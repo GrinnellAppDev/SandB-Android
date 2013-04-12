@@ -18,7 +18,7 @@ import com.actionbarsherlock.view.MenuItem;
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
-import edu.grinnell.sandb.img.DbImageGetter;
+import edu.grinnell.sandb.img.URLImageGetterAsync;
 
 public class ArticleDetailFragment extends SherlockFragment {
 
@@ -64,14 +64,28 @@ public class ArticleDetailFragment extends SherlockFragment {
 		// display = getSherlockActivity().getWindowManager().getDefaultDisplay();
 		//Point size = new Point();
 		//display.getSize(size);
-		int width = 1280;
-		int height = 720;
+		//int width = 1280;
+		//int height = 720;
 		
-		DbImageGetter dbig = new DbImageGetter(getSherlockActivity(), width, height);
-		body.setText(Html.fromHtml(mArticle.getBody(), dbig, null));
+		//DbImageGetter dbig = new DbImageGetter(getSherlockActivity(), width, height);
+		//body.setText(Html.fromHtml(mArticle.getBody(), dbig, null));
+
+		String bodyHTML = mArticle.getBody();
+
+		//make text more readable
+		bodyHTML = bodyHTML.replaceAll("<br />", "<br><br>");
+		
+		//remove images
+		bodyHTML = bodyHTML.replaceAll("<a.+?</a>", "");
+		bodyHTML = bodyHTML.replaceAll("<div.+?</div>", "");
+		body.setText(Html.fromHtml(bodyHTML));
 
 		Log.d(TAG, mArticle.getTitle());
-
+		
+		//TODO add imageview images
+		// image = get image from db
+		//		new 
+		
 		return rootView;
 	}
 	
@@ -89,18 +103,24 @@ public class ArticleDetailFragment extends SherlockFragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		// Inflate the menu; this adds items to the action bar if it is present.
+		//TODO adds item for each rotation BAD
+		//if (menu.removeItem(id))
 		inflater.inflate(R.menu.article_detail_menu, menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		
+				
 		switch (item.getItemId()) {
 		case R.id.menu_settings:
 			// startActivityForResult(new Intent(this, PrefActiv.class), PREFS);
 			break;
 		case R.id.menu_share:
 			share();
+			break;
+		case R.id.menu_share2:
+			share();	
+			break;
 		default:
 			break;
 		}

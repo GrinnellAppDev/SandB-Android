@@ -78,6 +78,7 @@ public class DbImageGetter implements ImageGetter {
             if (img == null) return null;
             Bitmap bm = img.toBitmap();
             bm = Utility.resizeBitmap(img.toBitmap(), maxWidth, maxHeight);
+            
             return new BitmapDrawable(c.getResources(), bm);
         }
 

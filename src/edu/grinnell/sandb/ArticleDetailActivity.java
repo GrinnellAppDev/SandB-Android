@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
