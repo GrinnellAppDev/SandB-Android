@@ -90,12 +90,11 @@ public class ArticleDetailFragment extends SherlockFragment {
 				imgTable.open();
 				
 				int id = mArticle.getId();
-				
-		   // 	String imgURLS[] = new String[20];
-		   // 	imgURLS = imgTable.findURLSbyArticleId(id);
-		    		    	
+
 		    	Intent intent = new Intent(getSherlockActivity(), ImagePagerActivity.class);
 				intent.putExtra("ArticleImages", imgTable.findURLSbyArticleId(id));
+				intent.putExtra("ImageTitles", imgTable.findTitlesbyArticleId(id));
+
 				imgTable.close();
 				startActivity(intent);
 		    }};

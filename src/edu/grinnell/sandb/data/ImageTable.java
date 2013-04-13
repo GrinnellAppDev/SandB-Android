@@ -111,6 +111,28 @@ public class ImageTable {
 		
 		return resizedURLS;
 	}
+	
+	public String[] findTitlesbyArticleId(int articleId) {
+		Cursor cursor = database.query(ImageStorageHelper.TABLE_IMAGES,
+				allColumns, ImageStorageHelper.COLUMN_ARTICLEID + " = " + articleId, null, null, null, null);
+		
+		String titles[] = null;
+    	titles = new String[20];
+    	int i = 0;
+		
+    	cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			titles[i] = cursorToTitle(cursor);
+			i++;
+			cursor.moveToNext();
+		}
+		
+		String resizedTitles[] = new String[i];
+		for (int j=0; j < i; j++)
+			resizedTitles[j] = titles[j];
+		
+		return resizedTitles;
+	}
 
 	public Image createImage(int articleID, String url, byte[] image, String imgTitle) {
 
@@ -144,6 +166,10 @@ public class ImageTable {
 	
 	private String cursorToURL(Cursor cursor) {
 		return new String(cursor.getString(2));
+	}
+	
+	private String cursorToTitle(Cursor cursor) {
+		return new String(cursor.getString(4));
 	}
 
 	public void clearTable() {

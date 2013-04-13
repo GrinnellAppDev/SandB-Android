@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -39,6 +40,9 @@ public class ImagePagerActivity extends Activity {
 
 		Bundle bundle = getIntent().getExtras();
 		String[] imageUrls = bundle.getStringArray("ArticleImages");
+		String[] imageTitles = bundle.getStringArray("ImageTitles");
+		
+		
 		//int pagerPosition = bundle.getInt(Extra.IMAGE_POSITION, 0);
 
 		/*
@@ -59,7 +63,8 @@ public class ImagePagerActivity extends Activity {
 			.build();
 
 		pager = (ViewPager) findViewById(R.id.pager);
-		pager.setAdapter(new ImagePagerAdapter(imageUrls));
+		pager.setAdapter(new ImagePagerAdapter(imageUrls, imageTitles));
+				
 	//	pager.setCurrentItem(pagerPosition);
 	}
 /*
@@ -71,10 +76,12 @@ public class ImagePagerActivity extends Activity {
 	private class ImagePagerAdapter extends PagerAdapter {
 
 		private String[] images;
+		private String[] titles;
 		private LayoutInflater inflater;
 
-		ImagePagerAdapter(String[] images) {
+		ImagePagerAdapter(String[] images, String[] titles) {
 			this.images = images;
+			this.titles = titles;
 			inflater = getLayoutInflater();
 		}
 
@@ -137,6 +144,10 @@ public class ImagePagerActivity extends Activity {
 				}
 			});
 
+			
+			TextView titleView = (TextView) imageLayout.findViewById(R.id.title);
+			titleView.setText(titles[position]);
+			
 			((ViewPager) view).addView(imageLayout, 0);
 			return imageLayout;
 		}
