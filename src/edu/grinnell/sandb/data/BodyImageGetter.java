@@ -72,6 +72,8 @@ public class BodyImageGetter {
 			url = getSubstring("src=\"", body, tagStart);
 			image = getImage(url, tagStart);
 			title = getSubstring("title=\"", body, tagStart);
+			
+			//check to make sure image has not yet been added
 			mImageTable.createImage(articleId, url, image, title);
 		}
 

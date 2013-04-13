@@ -105,7 +105,11 @@ public class ImageTable {
 			cursor.moveToNext();
 		}
 		
-		return imgURLS;
+		String resizedURLS[] = new String[i];
+		for (int j=0; j < i; j++)
+			resizedURLS[j] = imgURLS[j];
+		
+		return resizedURLS;
 	}
 
 	public Image createImage(int articleID, String url, byte[] image, String imgTitle) {
