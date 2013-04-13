@@ -11,6 +11,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,15 +24,17 @@ import com.actionbarsherlock.view.MenuItem;
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
+import edu.grinnell.sandb.data.ImageTable;
 import edu.grinnell.sandb.img.DbImageGetter;
 
 public class ArticleDetailFragment extends SherlockFragment {
 
 	public static final String ARTICLE_ID_KEY = "article_id";
 	private Article mArticle;
-
+	
 	public static final String TAG = "ArticleDetailFragment";
 
+	
 	public ArticleDetailFragment() {
 		super();
 	}
@@ -51,6 +54,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 			Log.d(TAG, "Looking for article with id = " + id);
 			mArticle = table.findById(id);
 		}
+		
 	}
 
 	@Override
@@ -69,6 +73,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 		// show first article image
 		ImageView imgView = (ImageView) rootView
 				.findViewById(R.id.articleImage1);
+		
 		DbImageGetter ImageGetter = new DbImageGetter(getSherlockActivity());
 		Drawable articleImage = ImageGetter.fetchDrawableForArticle(mArticle);
 
@@ -77,9 +82,26 @@ public class ArticleDetailFragment extends SherlockFragment {
 			// imgView.setImageDrawable(articleImage);
 			imgView.setImageBitmap(imageBitmap);
 		}
-
-		// on click of the image, launch the image gallery
 		
+		OnClickListener imgClick = new OnClickListener() {
+		    public void onClick(View v) {
+		    	
+				ImageTable imgTable = new ImageTable(getSherlockActivity());
+				imgTable.open();
+				
+				int id = mArticle.getId();
+				
+		   // 	String imgURLS[] = new String[20];
+		   // 	imgURLS = imgTable.findURLSbyArticleId(id);
+		    		    	
+		    	Intent intent = new Intent(getSherlockActivity(), ImagePagerActivity.class);
+				intent.putExtra("ArticleImages", imgTable.findURLSbyArticleId(id));
+				imgTable.close();
+				startActivity(intent);
+		    }};
+
+		imgView.setOnClickListener(imgClick);
+				
 		// add image description in textview here
 
 		String bodyHTML = mArticle.getBody();

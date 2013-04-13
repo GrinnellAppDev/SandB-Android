@@ -89,6 +89,24 @@ public class ImageTable {
 		cursor.close();
 		return img;
 	}
+	
+	public String[] findURLSbyArticleId(int articleId) {
+		Cursor cursor = database.query(ImageStorageHelper.TABLE_IMAGES,
+				allColumns, ImageStorageHelper.COLUMN_ARTICLEID + " = " + articleId, null, null, null, null);
+		
+		String imgURLS[] = null;
+    	imgURLS = new String[20];
+    	int i = 0;
+		
+    	cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			imgURLS[i] = cursorToURL(cursor);
+			i++;
+			cursor.moveToNext();
+		}
+		
+		return imgURLS;
+	}
 
 	public Image createImage(int articleID, String url, byte[] image, String imgTitle) {
 
@@ -118,6 +136,10 @@ public class ImageTable {
 
 		return new Image(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getBlob(3),
 				cursor.getString(4));
+	}
+	
+	private String cursorToURL(Cursor cursor) {
+		return new String(cursor.getString(2));
 	}
 
 	public void clearTable() {
