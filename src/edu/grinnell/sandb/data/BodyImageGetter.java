@@ -70,12 +70,15 @@ public class BodyImageGetter {
 
 		while ((tagStart = body.indexOf(tag, tagStart + 1)) >= 0) {
 			url = getSubstring("src=\"", body, tagStart);
+			
+			//check to make sure image has not yet been added
+			if ((Image) mImageTable.findByUrl(url) != null)
+				return;
+
 			image = getImage(url, tagStart);
 			title = getSubstring("title=\"", body, tagStart);
 			
-			//check to make sure image has not yet been added
-			if ((Image) mImageTable.findByUrl(url) == null)
-				mImageTable.createImage(articleId, url, image, title);
+			mImageTable.createImage(articleId, url, image, title);
 		}
 
 	}
