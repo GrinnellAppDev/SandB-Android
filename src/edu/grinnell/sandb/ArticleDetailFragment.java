@@ -68,8 +68,6 @@ public class ArticleDetailFragment extends SherlockFragment {
 				.getTitle());
 		TextView body = (TextView) rootView.findViewById(R.id.article_body);
 
-		// TODO need to get first image LINK and then download full image, this
-		// is too low res
 		// show first article image
 		ImageView imgView = (ImageView) rootView
 				.findViewById(R.id.articleImage1);
@@ -77,6 +75,12 @@ public class ArticleDetailFragment extends SherlockFragment {
 		DbImageGetter ImageGetter = new DbImageGetter(getSherlockActivity());
 		Drawable articleImage = ImageGetter.fetchDrawableForArticle(mArticle);
 
+		//TODO get first image url
+		//remove end of url that is decreasing image size
+		//download, display here(use imageview6)
+		//maybe display in webview?
+		//maybe ALSO display image from database, then update view when highres is downloaded
+		
 		if (articleImage != null) {
 			Bitmap imageBitmap = scaleImage(articleImage, rootView);
 			// imgView.setImageDrawable(articleImage);
@@ -90,9 +94,13 @@ public class ArticleDetailFragment extends SherlockFragment {
 				imgTable.open();
 				
 				int id = mArticle.getId();
+				String[] URLS = imgTable.findURLSbyArticleId(id);
+				
+				//TODO fix urls to be full sized images
+				//make sure images are displaying in full resolution in imageview
 
 		    	Intent intent = new Intent(getSherlockActivity(), ImagePagerActivity.class);
-				intent.putExtra("ArticleImages", imgTable.findURLSbyArticleId(id));
+				intent.putExtra("ArticleImages", URLS);
 				intent.putExtra("ImageTitles", imgTable.findTitlesbyArticleId(id));
 
 				imgTable.close();
@@ -101,7 +109,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 		imgView.setOnClickListener(imgClick);
 				
-		// add image description in textview here
+		// add nice looking image description in bellow image textview here
 
 		String bodyHTML = mArticle.getBody();
 
