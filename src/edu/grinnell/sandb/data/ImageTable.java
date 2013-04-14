@@ -142,9 +142,7 @@ public class ImageTable {
 		values.put(ImageStorageHelper.COLUMN_URL, url);
 		values.put(ImageStorageHelper.COLUMN_IMAGE, image);
 		values.put(ImageStorageHelper.COLUMN_IMGTITLE, imgTitle);
-		
-		//TODO: NULL POINTER EXCEPTION HERE
-		
+				
 		long insertId = database.insert(ImageStorageHelper.TABLE_IMAGES, null,
 				values);
 		

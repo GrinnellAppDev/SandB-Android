@@ -29,7 +29,6 @@ public class BodyImageGetter {
 
 	public class ImageHelper extends AsyncTask<Article, Integer, Integer> {
 
-		// TODO on preexecute open table increment variable
 		@Override
 		protected void onPreExecute() {
 			if (numTasks++ == 0) {
@@ -58,7 +57,7 @@ public class BodyImageGetter {
 	public void readImage(String body, int articleID) {
 
 		addImage(body, articleID, "<div");
-		addImage(body, articleID, "<a");
+//		addImage(body, articleID, "<a");
 		addImage(body, articleID, "<img");
 	}
 

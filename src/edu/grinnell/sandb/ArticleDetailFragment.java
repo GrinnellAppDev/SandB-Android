@@ -96,6 +96,9 @@ public class ArticleDetailFragment extends SherlockFragment {
 				int id = mArticle.getId();
 				String[] URLS = imgTable.findURLSbyArticleId(id);
 				
+				for (int i = 0; i < URLS.length; i++)
+					URLS[i] = getHiResImage(URLS[i]);
+				
 				//TODO fix urls to be full sized images
 				//make sure images are displaying in full resolution in imageview
 
@@ -124,6 +127,17 @@ public class ArticleDetailFragment extends SherlockFragment {
 		Log.d(TAG, mArticle.getTitle());
 
 		return rootView;
+	}
+	
+	//remove the ends of each image URL to download full sized images
+	private String getHiResImage(String lowResImg){
+		//add "contains" for error testing
+		int readTo = lowResImg.lastIndexOf("-");
+
+		String hiResImg = lowResImg.substring(0, readTo);
+		hiResImg = hiResImg.concat(".jpg");
+
+		return hiResImg;
 	}
 
 	// Scale the image to fill the screen width
