@@ -52,7 +52,8 @@
             android:label="@string/title_activity_image_viewer"
             android:theme="@style/FullscreenTheme" >
         </activity>
-        <activity android:name="edu.grinnell.sandb.ImagePagerActivity"></activity>
+        <activity android:name="edu.grinnell.sandb.ImagePagerActivity" >
+        </activity>
     </application>
 
 </manifest>

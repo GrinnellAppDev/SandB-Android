@@ -39,7 +39,11 @@ public class ImagePagerActivity extends SherlockActivity {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		getSupportActionBar().hide();
+
 		setContentView(R.layout.image_pager);
+
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		

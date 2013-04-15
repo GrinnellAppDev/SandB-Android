@@ -19,6 +19,7 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 	@Override
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
+		
 		setContentView(R.layout.activity_article_detail);
 		
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
