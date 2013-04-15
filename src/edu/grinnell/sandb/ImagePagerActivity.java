@@ -1,9 +1,10 @@
 package edu.grinnell.sandb;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -14,6 +15,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -24,7 +27,7 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 import edu.grinnell.grinnellsandb.R;
 
-public class ImagePagerActivity extends Activity {
+public class ImagePagerActivity extends SherlockActivity {
 	
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
 
@@ -38,6 +41,8 @@ public class ImagePagerActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.image_pager);
 
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		
 		Bundle bundle = getIntent().getExtras();
 		String[] imageUrls = bundle.getStringArray("ArticleImages");
 		String[] imageTitles = bundle.getStringArray("ImageTitles");
@@ -170,4 +175,19 @@ public class ImagePagerActivity extends Activity {
 		public void startUpdate(View container) {
 		}
 	}
+	
+	@Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+        	
+        	Intent upIntent = new Intent(this, MainActivity.class);
+        	upIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP 
+        			| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            NavUtils.navigateUpTo(this, upIntent);
+            
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }
