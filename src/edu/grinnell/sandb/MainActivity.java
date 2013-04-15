@@ -22,6 +22,7 @@ import edu.grinnell.sandb.xmlpull.XmlPullService;
 public class MainActivity extends SherlockFragmentActivity implements ArticleListFragment.Callbacks {
 	
 	private static final String TAG = "MainActivity";
+	private static final String SELECTED_TAB = "selected_tab";
 	
 	private PendingIntent mSendFeedLoaded;
 	private ArticleListFragment mListFrag;
@@ -41,6 +42,11 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 	    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 	    addTabs(actionBar);
+	    
+		
+		if (savedInstanceState != null) {
+			actionBar.setSelectedNavigationItem(savedInstanceState.getInt(SELECTED_TAB));
+		}
 		
 	    //TODO
 //		Log.d(TAG, "Perparing to start service..");
@@ -208,15 +214,11 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 			
 	}
 	
-	/*
     @Override
     public void onSaveInstanceState(Bundle state)
     {
-        getSupportFragmentManager()
-        	.beginTransaction()
-        		.detach(mListFrag)
-        		.commit();
+        state.putInt(SELECTED_TAB, getSupportActionBar().getSelectedNavigationIndex());
         super.onSaveInstanceState(state);
     }
-    */
+    
 }
