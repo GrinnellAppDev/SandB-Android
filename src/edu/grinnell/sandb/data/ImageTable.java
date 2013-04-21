@@ -105,11 +105,14 @@ public class ImageTable {
 			cursor.moveToNext();
 		}
 		
+		if (i > 0) {
 		String resizedURLS[] = new String[i];
 		for (int j=0; j < i; j++)
 			resizedURLS[j] = imgURLS[j];
-		
 		return resizedURLS;
+		}
+		else return null;
+		
 	}
 	
 	public String[] findTitlesbyArticleId(int articleId) {

@@ -11,7 +11,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,21 +19,26 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
 import edu.grinnell.sandb.data.ImageTable;
-import edu.grinnell.sandb.img.DbImageGetter;
 
 public class ArticleDetailFragment extends SherlockFragment {
 
 	public static final String ARTICLE_ID_KEY = "article_id";
 	private Article mArticle;
-	
+
 	public static final String TAG = "ArticleDetailFragment";
 
-	
+	protected ImageLoader imageLoader = ImageLoader.getInstance();
+
 	public ArticleDetailFragment() {
 		super();
 	}
@@ -54,7 +58,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 			Log.d(TAG, "Looking for article with id = " + id);
 			mArticle = table.findById(id);
 		}
-		
+
 	}
 
 	@Override
@@ -71,48 +75,51 @@ public class ArticleDetailFragment extends SherlockFragment {
 		// show first article image
 		ImageView imgView = (ImageView) rootView
 				.findViewById(R.id.articleImage1);
-		
-		DbImageGetter ImageGetter = new DbImageGetter(getSherlockActivity());
-		Drawable articleImage = ImageGetter.fetchDrawableForArticle(mArticle);
 
-		//TODO get first image url
-		//remove end of url that is decreasing image size
-		//download, display here(use imageview6)
-		//maybe display in webview?
-		//maybe ALSO display image from database, then update view when highres is downloaded
+		// DbImageGetter ImageGetter = new DbImageGetter(getSherlockActivity());
+		// Drawable articleImage =
+		// ImageGetter.fetchDrawableForArticle(mArticle);
+
+		ImageTable imgTable = new ImageTable(getSherlockActivity());
+		imgTable.open();
+
+		int id = mArticle.getId();
+		String[] URLS = imgTable.findURLSbyArticleId(id);
 		
-		if (articleImage != null) {
-			Bitmap imageBitmap = scaleImage(articleImage, rootView);
-			// imgView.setImageDrawable(articleImage);
-			imgView.setImageBitmap(imageBitmap);
+		if (URLS != null){
+			String imgUrl = URLS[0];
+			imgUrl = getHiResImage(imgUrl);
+			loadImage(imgUrl, imgView);
 		}
-		
-		OnClickListener imgClick = new OnClickListener() {
-		    public void onClick(View v) {
-		    	
-				ImageTable imgTable = new ImageTable(getSherlockActivity());
-				imgTable.open();
-				
-				int id = mArticle.getId();
-				String[] URLS = imgTable.findURLSbyArticleId(id);
-				
-				for (int i = 0; i < URLS.length; i++)
-					URLS[i] = getHiResImage(URLS[i]);
-				
-				//TODO fix urls to be full sized images
-				//make sure images are displaying in full resolution in imageview
 
-		    	Intent intent = new Intent(getSherlockActivity(), ImagePagerActivity.class);
-				intent.putExtra("ArticleImages", URLS);
-				intent.putExtra("ImageTitles", imgTable.findTitlesbyArticleId(id));
-
-				imgTable.close();
-				startActivity(intent);
-		    }};
-
-		imgView.setOnClickListener(imgClick);
-				
-		// add nice looking image description in bellow image textview here
+		/*
+		 * // TODO display hi res image in article
+		 * 
+		 * if (articleImage != null) { Bitmap imageBitmap =
+		 * scaleImage(articleImage, rootView); //
+		 * imgView.setImageDrawable(articleImage);
+		 * imgView.setImageBitmap(imageBitmap); }
+		 * 
+		 * OnClickListener imgClick = new OnClickListener() { public void
+		 * onClick(View v) {
+		 * 
+		 * ImageTable imgTable = new ImageTable(getSherlockActivity());
+		 * imgTable.open();
+		 * 
+		 * int id = mArticle.getId(); String[] URLS =
+		 * imgTable.findURLSbyArticleId(id);
+		 * 
+		 * for (int i = 0; i < URLS.length; i++) { URLS[i] =
+		 * getHiResImage(URLS[i]); System.out.println(URLS[i]); }
+		 * 
+		 * Intent intent = new Intent(getSherlockActivity(),
+		 * ImagePagerActivity.class); intent.putExtra("ArticleImages", URLS);
+		 * intent.putExtra("ImageTitles", imgTable.findTitlesbyArticleId(id));
+		 * 
+		 * imgTable.close(); startActivity(intent); } };
+		 * 
+		 * imgView.setOnClickListener(imgClick);
+		 */
 
 		String bodyHTML = mArticle.getBody();
 
@@ -128,16 +135,23 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 		return rootView;
 	}
-	
-	//remove the ends of each image URL to download full sized images
-	private String getHiResImage(String lowResImg){
-		//add "contains" for error testing
+
+	// remove the ends of each image URL to download full sized images
+	private String getHiResImage(String lowResImg) {
+		// add "contains" for error testing
+
+		if (lowResImg == null) {
+			return null;
+		}
+
 		int readTo = lowResImg.lastIndexOf("-");
 
-		String hiResImg = lowResImg.substring(0, readTo);
-		hiResImg = hiResImg.concat(".jpg");
-
-		return hiResImg;
+		if (readTo != -1) {
+			String hiResImg = lowResImg.substring(0, readTo);
+			hiResImg = hiResImg.concat(".jpg");
+			return hiResImg;
+		} else
+			return lowResImg;
 	}
 
 	// Scale the image to fill the screen width
@@ -218,6 +232,27 @@ public class ArticleDetailFragment extends SherlockFragment {
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putInt(ARTICLE_ID_KEY, mArticle.getId());
 		super.onSaveInstanceState(outState);
+	}
+
+	public void loadImage(String imgUrl, ImageView imageView) {
+
+		DisplayImageOptions options;
+
+		options = new DisplayImageOptions.Builder()
+				// change these images to error messages
+				.showImageForEmptyUri(R.drawable.sandblogo)
+				.showImageOnFail(R.drawable.sandblogo).resetViewBeforeLoading()
+				.cacheOnDisc().imageScaleType(ImageScaleType.EXACTLY)
+				.bitmapConfig(Bitmap.Config.RGB_565)
+				.displayer(new FadeInBitmapDisplayer(300)).build();
+
+		// ImageView imageView = (ImageView) getActivity()
+		// .findViewById(R.id.image);
+
+		ImageLoaderConfiguration configuration = ImageLoaderConfiguration
+				.createDefault(getActivity().getApplicationContext());
+		imageLoader.init(configuration);
+		imageLoader.displayImage(imgUrl, imageView, options, null);
 	}
 
 }

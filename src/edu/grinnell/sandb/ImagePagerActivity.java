@@ -44,7 +44,6 @@ public class ImagePagerActivity extends SherlockActivity {
 
 		setContentView(R.layout.image_pager);
 
-
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		Bundle bundle = getIntent().getExtras();

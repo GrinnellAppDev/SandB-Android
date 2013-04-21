@@ -20,6 +20,8 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
 		
+		//should set the title as the article date or something
+		setTitle("");
 		setContentView(R.layout.activity_article_detail);
 		
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
