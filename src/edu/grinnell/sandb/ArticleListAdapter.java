@@ -51,7 +51,8 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 		// TextView date;
 		ImageView image;
 
-		DbImageGetterAsyncTask imgTask;
+		//DbImageGetterAsyncTask imgTask;
+		String imgTask;
 	}
 
 	@Override
@@ -73,11 +74,12 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		if (holder.imgTask != null)
-			holder.imgTask.cancel(false);
+//		if (holder.imgTask != null)
+//			holder.imgTask.cancel(false);
 
 		final Article a = mData.get(position);
 
+		//TODO rework loading animate to respond to UIL listener
 		if (a != null) {
 			getArticleImage(a, holder.image);
 			holder.image.setImageResource(R.drawable.loading);
@@ -92,7 +94,10 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 	}
 
 	public void getArticleImage(Article a, ImageView imgView) {
-
+		
+		imgView.setAdjustViewBounds(true);
+		imgView.setMaxWidth(400);
+	
 		ImageTable imgTable = new ImageTable(imgView.getContext());
 		imgTable.open();
 
@@ -106,6 +111,7 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 		DisplayImageOptions options;
 
 		options = new DisplayImageOptions.Builder()
+				.imageScaleType(ImageScaleType.EXACTLY)
 				// change these images to error messages
 				.showImageForEmptyUri(R.drawable.sandblogo)
 				.showImageOnFail(R.drawable.sandblogo).resetViewBeforeLoading()
@@ -116,7 +122,7 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 		ImageLoaderConfiguration configuration = ImageLoaderConfiguration
 				.createDefault(imgView.getContext().getApplicationContext());
 		imageLoader.init(configuration);
-		imageLoader.displayImage(imgUrl, imgView, options, null);
+		imageLoader.displayImage(imgUrl, imgView, options, null);		
 		}
 	}
 }
