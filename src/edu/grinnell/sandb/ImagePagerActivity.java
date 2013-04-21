@@ -36,7 +36,7 @@ public class ImagePagerActivity extends SherlockActivity {
 	DisplayImageOptions options;
 
 	ViewPager pager;
-
+	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 

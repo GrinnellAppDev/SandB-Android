@@ -11,6 +11,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -73,13 +74,10 @@ public class ArticleDetailFragment extends SherlockFragment {
 		TextView body = (TextView) rootView.findViewById(R.id.article_body);
 
 		// show first article image
+		//TODO add animated placeholder for during download
 		ImageView imgView = (ImageView) rootView
 				.findViewById(R.id.articleImage1);
-
-		// DbImageGetter ImageGetter = new DbImageGetter(getSherlockActivity());
-		// Drawable articleImage =
-		// ImageGetter.fetchDrawableForArticle(mArticle);
-
+		
 		ImageTable imgTable = new ImageTable(getSherlockActivity());
 		imgTable.open();
 
@@ -92,35 +90,29 @@ public class ArticleDetailFragment extends SherlockFragment {
 			loadImage(imgUrl, imgView);
 		}
 
-		/*
-		 * // TODO display hi res image in article
-		 * 
-		 * if (articleImage != null) { Bitmap imageBitmap =
-		 * scaleImage(articleImage, rootView); //
-		 * imgView.setImageDrawable(articleImage);
-		 * imgView.setImageBitmap(imageBitmap); }
-		 * 
-		 * OnClickListener imgClick = new OnClickListener() { public void
-		 * onClick(View v) {
-		 * 
-		 * ImageTable imgTable = new ImageTable(getSherlockActivity());
-		 * imgTable.open();
-		 * 
-		 * int id = mArticle.getId(); String[] URLS =
-		 * imgTable.findURLSbyArticleId(id);
-		 * 
-		 * for (int i = 0; i < URLS.length; i++) { URLS[i] =
-		 * getHiResImage(URLS[i]); System.out.println(URLS[i]); }
-		 * 
-		 * Intent intent = new Intent(getSherlockActivity(),
-		 * ImagePagerActivity.class); intent.putExtra("ArticleImages", URLS);
-		 * intent.putExtra("ImageTitles", imgTable.findTitlesbyArticleId(id));
-		 * 
-		 * imgTable.close(); startActivity(intent); } };
-		 * 
-		 * imgView.setOnClickListener(imgClick);
-		 */
-
+		imgTable.close();
+		
+		//open image pager if image is clicked
+		OnClickListener imgClick = new OnClickListener() { public void
+			  onClick(View v) {
+			  
+			  ImageTable imgTable = new ImageTable(getSherlockActivity());
+			  imgTable.open();
+			  
+			  int id = mArticle.getId(); String[] URLS =
+			  imgTable.findURLSbyArticleId(id);
+			  
+			  for (int i = 0; i < URLS.length; i++) { URLS[i] =
+			  getHiResImage(URLS[i]); System.out.println(URLS[i]); }
+			  
+			  Intent intent = new Intent(getSherlockActivity(),
+			  ImagePagerActivity.class); intent.putExtra("ArticleImages", URLS);
+			  intent.putExtra("ImageTitles", imgTable.findTitlesbyArticleId(id));
+			  
+			  imgTable.close(); startActivity(intent); } };
+			  
+			  imgView.setOnClickListener(imgClick);
+		
 		String bodyHTML = mArticle.getBody();
 
 		// make text more readable
