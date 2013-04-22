@@ -1,13 +1,9 @@
 package edu.grinnell.sandb;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,21 +16,19 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
 import edu.grinnell.sandb.data.ImageTable;
+import edu.grinnell.sandb.img.UniversalLoaderUtility;
 
 public class ArticleDetailFragment extends SherlockFragment {
 
 	public static final String ARTICLE_ID_KEY = "article_id";
 	private Article mArticle;
+	protected UniversalLoaderUtility mLoader;
 
 	public static final String TAG = "ArticleDetailFragment";
 
@@ -74,45 +68,54 @@ public class ArticleDetailFragment extends SherlockFragment {
 		TextView body = (TextView) rootView.findViewById(R.id.article_body);
 
 		// show first article image
-		//TODO add animated placeholder for during download
+		// TODO add animated placeholder for during download
+		mLoader = new UniversalLoaderUtility();
+
 		ImageView imgView = (ImageView) rootView
 				.findViewById(R.id.articleImage1);
-		
+
 		ImageTable imgTable = new ImageTable(getSherlockActivity());
 		imgTable.open();
 
 		int id = mArticle.getId();
 		String[] URLS = imgTable.findURLSbyArticleId(id);
-		
-		if (URLS != null){
+
+		if (URLS != null) {
 			String imgUrl = URLS[0];
 			imgUrl = getHiResImage(imgUrl);
-			loadImage(imgUrl, imgView);
+			mLoader.getImage(imgUrl, imgView, getActivity().getBaseContext());
 		}
 
 		imgTable.close();
-		
-		//open image pager if image is clicked
-		OnClickListener imgClick = new OnClickListener() { public void
-			  onClick(View v) {
-			  
-			  ImageTable imgTable = new ImageTable(getSherlockActivity());
-			  imgTable.open();
-			  
-			  int id = mArticle.getId(); String[] URLS =
-			  imgTable.findURLSbyArticleId(id);
-			  
-			  for (int i = 0; i < URLS.length; i++) { URLS[i] =
-			  getHiResImage(URLS[i]); System.out.println(URLS[i]); }
-			  
-			  Intent intent = new Intent(getSherlockActivity(),
-			  ImagePagerActivity.class); intent.putExtra("ArticleImages", URLS);
-			  intent.putExtra("ImageTitles", imgTable.findTitlesbyArticleId(id));
-			  
-			  imgTable.close(); startActivity(intent); } };
-			  
-			  imgView.setOnClickListener(imgClick);
-		
+
+		// open image pager if image is clicked
+		OnClickListener imgClick = new OnClickListener() {
+			public void onClick(View v) {
+
+				ImageTable imgTable = new ImageTable(getSherlockActivity());
+				imgTable.open();
+
+				int id = mArticle.getId();
+				String[] URLS = imgTable.findURLSbyArticleId(id);
+
+				for (int i = 0; i < URLS.length; i++) {
+					URLS[i] = getHiResImage(URLS[i]);
+					System.out.println(URLS[i]);
+				}
+
+				Intent intent = new Intent(getSherlockActivity(),
+						ImagePagerActivity.class);
+				intent.putExtra("ArticleImages", URLS);
+				intent.putExtra("ImageTitles",
+						imgTable.findTitlesbyArticleId(id));
+
+				imgTable.close();
+				startActivity(intent);
+			}
+		};
+
+		imgView.setOnClickListener(imgClick);
+
 		String bodyHTML = mArticle.getBody();
 
 		// make text more readable
@@ -146,6 +149,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 			return lowResImg;
 	}
 
+	/*
 	// Scale the image to fill the screen width
 	private Bitmap scaleImage(Drawable img, View rootView) {
 
@@ -166,6 +170,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 		return Bitmap.createScaledBitmap(bm, scaleWidth, scaleHeight, true);
 	}
+	*/
 
 	@Override
 	public void onResume() {
@@ -225,26 +230,4 @@ public class ArticleDetailFragment extends SherlockFragment {
 		outState.putInt(ARTICLE_ID_KEY, mArticle.getId());
 		super.onSaveInstanceState(outState);
 	}
-
-	public void loadImage(String imgUrl, ImageView imageView) {
-
-		DisplayImageOptions options;
-
-		options = new DisplayImageOptions.Builder()
-				// change these images to error messages
-				.showImageForEmptyUri(R.drawable.sandblogo)
-				.showImageOnFail(R.drawable.sandblogo).resetViewBeforeLoading()
-				.cacheOnDisc().imageScaleType(ImageScaleType.EXACTLY)
-				.bitmapConfig(Bitmap.Config.RGB_565)
-				.displayer(new FadeInBitmapDisplayer(300)).build();
-
-		// ImageView imageView = (ImageView) getActivity()
-		// .findViewById(R.id.image);
-
-		ImageLoaderConfiguration configuration = ImageLoaderConfiguration
-				.createDefault(getActivity().getApplicationContext());
-		imageLoader.init(configuration);
-		imageLoader.displayImage(imgUrl, imageView, options, null);
-	}
-
 }
