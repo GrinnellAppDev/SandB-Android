@@ -154,6 +154,7 @@ public class ArticleListFragment extends SherlockListFragment {
         Intent detailIntent = new Intent(getSherlockActivity(), ArticleDetailActivity.class);
         detailIntent.putExtra(ArticleDetailFragment.ARTICLE_ID_KEY, mData.get(position).getId());
         startActivity(detailIntent);
+        getSherlockActivity().overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
     }
 
     @Override

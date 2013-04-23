@@ -36,7 +36,7 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
         } else {
         	Log.e(TAG, "no bundle for fragment..");
         }
-        
+                
         getSupportFragmentManager().beginTransaction()
         .replace(R.id.article_detail_container, fragment)
         .commit();
@@ -56,4 +56,10 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 
         return super.onOptionsItemSelected(item);
     }
+	
+	@Override
+	public void onBackPressed() {
+	    super.onBackPressed();
+	    overridePendingTransition(R.anim.article_slide_in, R.anim.article_slide_out);
+	}
 }
