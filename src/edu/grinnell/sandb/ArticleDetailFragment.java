@@ -39,9 +39,10 @@ public class ArticleDetailFragment extends SherlockFragment {
 	}
 
 	@Override
+//	public void onCreate(Bundle ofJoy) {
+//		super.onCreate(ofJoy);
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
-
 		setHasOptionsMenu(true);
 
 		Bundle b = (ofJoy == null) ? getArguments() : ofJoy;
@@ -79,13 +80,15 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 		int id = mArticle.getId();
 		String[] URLS = imgTable.findURLSbyArticleId(id);
-
+		
 		if (URLS != null) {
 			String imgUrl = URLS[0];
+		//	Drawable lowResImg = imgTable.findByUrl(imgUrl).toDrawable(getSherlockActivity());
+		//	imgView.setImageBitmap(scaleImage(lowResImg, imgView));
 			imgUrl = getHiResImage(imgUrl);
-			mLoader.getImage(imgUrl, imgView, getActivity().getBaseContext());
+			mLoader.loadImage(imgUrl, imgView, getActivity().getBaseContext());
 		}
-
+		
 		imgTable.close();
 
 		// open image pager if image is clicked
@@ -149,7 +152,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 			return lowResImg;
 	}
 
-	/*
+/*	
 	// Scale the image to fill the screen width
 	private Bitmap scaleImage(Drawable img, View rootView) {
 
@@ -170,7 +173,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 		return Bitmap.createScaledBitmap(bm, scaleWidth, scaleHeight, true);
 	}
-	*/
+*/	
 
 	@Override
 	public void onResume() {

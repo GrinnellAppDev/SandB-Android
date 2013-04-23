@@ -7,7 +7,6 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -76,10 +75,10 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 				
 		//TODO rework loading animate to respond to UIL listener
 		if (a != null) {
-			mLoader.getArticleImage(a, holder.image, getContext());
-			holder.image.setImageResource(R.drawable.loading);
-			holder.image.startAnimation(AnimationUtils.loadAnimation(mActivity,
-					R.anim.loading));
+			mLoader.loadArticleImage(a, holder.image, getContext());
+			//holder.image.setImageResource(R.drawable.loading);
+			//holder.image.startAnimation(AnimationUtils.loadAnimation(mActivity,
+			//		R.anim.loading));
 			holder.title.setText(a.getTitle());
 			holder.description.setText(a.getDescription());
 			holder.title.setPadding(3, 3, 3, 3);

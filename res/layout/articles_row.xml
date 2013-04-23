@@ -29,9 +29,12 @@
     	    android:layout_marginRight="@dimen/pad5"
     	    android:layout_marginTop="@dimen/pad3"
     	    android:contentDescription="article thumb"
-    	    android:maxHeight="200dp"
     	    android:scaleType="centerCrop"
-    	    android:width="180dp" />
+    	    android:width="180dp" 
+    		android:adjustViewBounds= "true"
+    	    android:maxHeight="100dp"
+    	    android:maxWidth="150dp" 
+    	    />
     
     	<TextView
         	android:id="@+id/descriptionText"

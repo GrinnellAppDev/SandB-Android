@@ -216,6 +216,7 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
         String description = readText(parser);
         parser.require(XmlPullParser.END_TAG, ns, "description");
         description = description.replaceAll("&#160;", "");
+        description = description.replaceAll("&#38;", "&");
         return description;
     }
     

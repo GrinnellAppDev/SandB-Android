@@ -22,7 +22,7 @@ public class UniversalLoaderUtility {
 
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
 	protected ProgressBar spinner = null;
-	
+
 	public UniversalLoaderUtility() {
 	}
 
@@ -35,6 +35,7 @@ public class UniversalLoaderUtility {
 		@Override
 		public void onLoadingFailed(String imageUri, View view,
 				FailReason failReason) {
+			@SuppressWarnings("unused")
 			String message = null;
 			switch (failReason.getType()) {
 			case IO_ERROR:
@@ -56,35 +57,31 @@ public class UniversalLoaderUtility {
 		}
 	};
 
-	public void getImage(String imgUrl, ImageView imgView,
-			Context context) {
+	// load image based on URL
+	public void loadImage(String imgUrl, ImageView imgView, Context context) {
 
-			DisplayImageOptions options;
+		DisplayImageOptions options;
 
-			options = new DisplayImageOptions.Builder()
-					.imageScaleType(ImageScaleType.EXACTLY)
-					// change these images to error messages
-					.showImageForEmptyUri(R.drawable.sandblogo)
-					.showImageOnFail(R.drawable.sandblogo)
-					.resetViewBeforeLoading().cacheOnDisc()
-					.imageScaleType(ImageScaleType.EXACTLY)
-					.bitmapConfig(Bitmap.Config.RGB_565)
-					.displayer(new FadeInBitmapDisplayer(300)).build();
+		options = new DisplayImageOptions.Builder()
+				.imageScaleType(ImageScaleType.EXACTLY)
+				// change these images to error messages
+				.showImageForEmptyUri(R.drawable.sandblogo)
+				.showImageOnFail(R.drawable.sandblogo).resetViewBeforeLoading()
+				.cacheOnDisc().imageScaleType(ImageScaleType.EXACTLY)
+				.bitmapConfig(Bitmap.Config.RGB_565)
+				.displayer(new FadeInBitmapDisplayer(300)).build();
 
-			spinner = new ProgressBar(context, null,
-					android.R.attr.progressBarStyleSmall);
+		spinner = new ProgressBar(context, null,
+				android.R.attr.progressBarStyleSmall);
 
-			ImageLoaderConfiguration configuration = ImageLoaderConfiguration
-					.createDefault(imgView.getContext().getApplicationContext());
-			imageLoader.init(configuration);
-			imageLoader.displayImage(imgUrl, imgView, options, listener);
-		}
+		ImageLoaderConfiguration configuration = ImageLoaderConfiguration
+				.createDefault(imgView.getContext().getApplicationContext());
+		imageLoader.init(configuration);
+		imageLoader.displayImage(imgUrl, imgView, options, listener);
+	}
 
-	public void getArticleImage(Article a, ImageView imgView, Context context) {
-
-		imgView.setAdjustViewBounds(true);
-		imgView.setMaxHeight(300);
-		imgView.setMaxWidth(400);
+	// load first image from an article, in low res
+	public void loadArticleImage(Article a, ImageView imgView, Context context) {
 
 		ImageTable imgTable = new ImageTable(imgView.getContext());
 		imgTable.open();
@@ -93,7 +90,7 @@ public class UniversalLoaderUtility {
 		String[] URLS = imgTable.findURLSbyArticleId(id);
 		imgTable.close();
 
-		if (URLS != null) {
+		try {
 			String imgUrl = URLS[0];
 
 			DisplayImageOptions options;
@@ -111,11 +108,12 @@ public class UniversalLoaderUtility {
 			spinner = new ProgressBar(context, null,
 					android.R.attr.progressBarStyleSmall);
 
-			
 			ImageLoaderConfiguration configuration = ImageLoaderConfiguration
 					.createDefault(imgView.getContext().getApplicationContext());
 			imageLoader.init(configuration);
 			imageLoader.displayImage(imgUrl, imgView, options, listener);
+		} catch (NullPointerException e) {
+			imageLoader.displayImage(null, imgView, null, listener);
 		}
 	}
 }
