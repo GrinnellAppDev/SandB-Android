@@ -21,7 +21,7 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 	private MainActivity mActivity;
 	private List<Article> mData;
 //	private DbImageGetter mImageGetter;
-	protected ImageLoader imageLoader = ImageLoader.getInstance();
+//	protected ImageLoader imageLoader = ImageLoader.getInstance();
 	protected UniversalLoaderUtility mLoader;
 
 
@@ -68,22 +68,19 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-//		if (holder.imgTask != null)
-//			holder.imgTask.cancel(false);
-
 		final Article a = mData.get(position);
 				
-		//TODO rework loading animate to respond to UIL listener
 		if (a != null) {
 			mLoader.loadArticleImage(a, holder.image, getContext());
-			//holder.image.setImageResource(R.drawable.loading);
-			//holder.image.startAnimation(AnimationUtils.loadAnimation(mActivity,
-			//		R.anim.loading));
 			holder.title.setText(a.getTitle());
 			holder.description.setText(a.getDescription());
 			holder.title.setPadding(3, 3, 3, 3);
 		}
 
 		return convertView;
+	}
+	
+	public ImageLoader getImageLoader() {
+		return mLoader.getImageLoader();
 	}
 }

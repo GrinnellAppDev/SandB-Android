@@ -74,7 +74,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 		ImageView imgView = (ImageView) rootView
 				.findViewById(R.id.articleImage1);
-
+/*
 		ImageTable imgTable = new ImageTable(getSherlockActivity());
 		imgTable.open();
 
@@ -90,7 +90,9 @@ public class ArticleDetailFragment extends SherlockFragment {
 		}
 		
 		imgTable.close();
-
+*/
+		mLoader.loadHiResArticleImage(mArticle, imgView, getActivity().getBaseContext());
+		
 		// open image pager if image is clicked
 		OnClickListener imgClick = new OnClickListener() {
 			public void onClick(View v) {
@@ -102,7 +104,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 				String[] URLS = imgTable.findURLSbyArticleId(id);
 
 				for (int i = 0; i < URLS.length; i++) {
-					URLS[i] = getHiResImage(URLS[i]);
+					URLS[i] = mLoader.getHiResImage(URLS[i]);
 					System.out.println(URLS[i]);
 				}
 
@@ -118,7 +120,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 		};
 
 		imgView.setOnClickListener(imgClick);
-
+		
 		String bodyHTML = mArticle.getBody();
 
 		// make text more readable
@@ -133,7 +135,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 		return rootView;
 	}
-
+/*
 	// remove the ends of each image URL to download full sized images
 	private String getHiResImage(String lowResImg) {
 		// add "contains" for error testing
@@ -151,7 +153,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 		} else
 			return lowResImg;
 	}
-
+*/
 /*	
 	// Scale the image to fill the screen width
 	private Bitmap scaleImage(Drawable img, View rootView) {

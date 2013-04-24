@@ -3,6 +3,7 @@ package edu.grinnell.sandb.img;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -26,13 +27,11 @@ public class UniversalLoaderUtility {
 	public UniversalLoaderUtility() {
 	}
 
+	public ImageLoader getImageLoader() {
+		return imageLoader;
+	}
+
 	protected SimpleImageLoadingListener listener = new SimpleImageLoadingListener() {
-		/*
-		@Override
-		public void onLoadingStarted(String imageUri, View view) {
-			spinner.setVisibility(View.VISIBLE);
-		}
-		*/
 
 		@Override
 		public void onLoadingFailed(String imageUri, View view,
@@ -66,7 +65,7 @@ public class UniversalLoaderUtility {
 
 		options = new DisplayImageOptions.Builder()
 				.imageScaleType(ImageScaleType.EXACTLY)
-				// change these images to error messages
+				.showImageForEmptyUri(R.drawable.sandblogo)
 				.showImageForEmptyUri(R.drawable.sandblogo)
 				.showImageOnFail(R.drawable.sandblogo).resetViewBeforeLoading()
 				.cacheOnDisc().imageScaleType(ImageScaleType.EXACTLY)
@@ -84,7 +83,6 @@ public class UniversalLoaderUtility {
 
 	// load first image from an article, in low res
 	public void loadArticleImage(Article a, ImageView imgView, Context context) {
-
 		ImageTable imgTable = new ImageTable(imgView.getContext());
 		imgTable.open();
 
@@ -92,8 +90,9 @@ public class UniversalLoaderUtility {
 		String[] URLS = imgTable.findURLSbyArticleId(id);
 		imgTable.close();
 
-		try {
-			//throw exception if no image
+		// try {
+		if (URLS != null) {
+			// throw exception if no image
 			String imgUrl = URLS[0];
 
 			DisplayImageOptions options;
@@ -101,15 +100,11 @@ public class UniversalLoaderUtility {
 			options = new DisplayImageOptions.Builder()
 					.imageScaleType(ImageScaleType.EXACTLY)
 					// change these images to error messages
-					.showImageForEmptyUri(R.drawable.sandblogo)
 					.showImageOnFail(R.drawable.sandblogo)
 					.resetViewBeforeLoading().cacheOnDisc()
 					.imageScaleType(ImageScaleType.EXACTLY)
 					.bitmapConfig(Bitmap.Config.RGB_565)
 					.displayer(new FadeInBitmapDisplayer(300)).build();
-
-			spinner = new ProgressBar(context, null,
-					android.R.attr.progressBarStyleSmall);
 
 			ImageLoaderConfiguration configuration = ImageLoaderConfiguration
 					.createDefault(imgView.getContext().getApplicationContext());
@@ -117,9 +112,77 @@ public class UniversalLoaderUtility {
 			imageLoader.displayImage(imgUrl, imgView, options, listener);
 			imgView.setVisibility(View.VISIBLE);
 
-		} catch (NullPointerException e) {
-			//imageLoader.displayImage(null, imgView, null, listener);
+		}
+		// catch (NullPointerException e) {
+		else {
+			imgTable.close();
+			// imageLoader.displayImage(null, imgView, null, listener);
 			imgView.setVisibility(View.GONE);
 		}
+	}
+
+	// load first image from an article, in low res
+	public void loadHiResArticleImage(Article a, ImageView imgView,
+			Context context) {
+
+		ImageTable imgTable = new ImageTable(imgView.getContext());
+		imgTable.open();
+
+		int id = a.getId();
+		String[] URLS = imgTable.findURLSbyArticleId(id);
+
+		try {
+			// throw exception if no image
+			String imgUrl = URLS[0];
+			String hiResImgUrl = getHiResImage(imgUrl);
+
+			DisplayImageOptions options;
+
+			options = new DisplayImageOptions.Builder()
+					.imageScaleType(ImageScaleType.EXACTLY)
+					// change these images to error messages
+					.showStubImage(R.drawable.loading)
+					.showImageOnFail(R.drawable.sandblogo)
+					.resetViewBeforeLoading().cacheOnDisc()
+					.imageScaleType(ImageScaleType.EXACTLY)
+					.bitmapConfig(Bitmap.Config.RGB_565)
+					.displayer(new FadeInBitmapDisplayer(300)).build();
+
+			imgView.startAnimation(AnimationUtils.loadAnimation(context,
+					R.anim.loading));
+
+			spinner = new ProgressBar(context, null,
+					android.R.attr.progressBarStyleSmall);
+
+			ImageLoaderConfiguration configuration = ImageLoaderConfiguration
+					.createDefault(imgView.getContext().getApplicationContext());
+			imageLoader.init(configuration);
+			imageLoader.displayImage(hiResImgUrl, imgView, options, listener);
+			imgView.setVisibility(View.VISIBLE);
+			imgTable.close();
+
+		} catch (NullPointerException e) {
+			imgTable.close();
+			// imageLoader.displayImage(null, imgView, null, listener);
+			imgView.setVisibility(View.GONE);
+		}
+	}
+
+	// remove the ends of each image URL to download full sized images
+	public String getHiResImage(String lowResImg) {
+		// add "contains" for error testing
+
+		if (lowResImg == null) {
+			return null;
+		}
+
+		int readTo = lowResImg.lastIndexOf("-");
+
+		if (readTo != -1) {
+			String hiResImg = lowResImg.substring(0, readTo);
+			hiResImg = hiResImg.concat(".jpg");
+			return hiResImg;
+		} else
+			return lowResImg;
 	}
 }

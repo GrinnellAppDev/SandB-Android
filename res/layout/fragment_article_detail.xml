@@ -16,7 +16,8 @@
         android:paddingBottom="@dimen/pad3"
         android:paddingTop="@dimen/pad3"
         android:textColor="@color/gmdarkred"
-        android:textIsSelectable="true" />
+        android:textIsSelectable="true"
+        android:fontFamily="sans-serif-condensed" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,8 +36,8 @@
 
             <ImageView
                 android:id="@+id/articleImage1"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginLeft="4dp"
                 android:layout_marginRight="8dp"
@@ -54,7 +55,8 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="15dp"
                 android:textColor="@android:color/black"
-                android:textIsSelectable="true" />
+                android:textIsSelectable="true"
+                android:fontFamily="sans-serif-light" />
         </LinearLayout>
     </ScrollView>
 

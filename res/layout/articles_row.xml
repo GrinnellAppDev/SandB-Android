@@ -13,7 +13,8 @@
             android:layout_height="wrap_content"
             android:textColor="@color/gmdarkred"
             android:gravity="center_vertical"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:fontFamily="sans-serif-condensed" />
 
    <LinearLayout
         android:layout_width="match_parent"
@@ -21,27 +22,26 @@
         android:orientation="horizontal" 
         android:paddingBottom="@dimen/pad3">
 
+
     	<ImageView
     	    android:id="@+id/articleThumb" 
     	    android:layout_height="100dp"
     	    android:layout_width="120dp"   
-    	     
-    	    android:layout_gravity="center_vertical|top"
+    	    android:layout_gravity="center|top"
     	    android:layout_marginRight="@dimen/pad5"
     	    android:layout_marginTop="@dimen/pad3"
     	    android:contentDescription="article thumb"
     	    android:scaleType="fitCenter"
     	    android:width="180dp" 
-    		android:adjustViewBounds= "true"
-    	    android:maxHeight="100dp"
-    	    android:maxWidth="150dp" 
     	    />
-    
+    	
     	<TextView
         	android:id="@+id/descriptionText"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-        	
+        	android:fontFamily="sans-serif-light"
+        	android:paddingLeft="5dp"
+        	android:paddingTop="2dp"
         	 />
 
      </LinearLayout>
