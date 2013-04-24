@@ -13,7 +13,9 @@
         android:padding="@dimen/pad3"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:background="@android:color/holo_orange_light"
-        android:text="@string/loading_articles" />
+        android:text="@string/loading_articles" 
+        android:drawableLeft="@drawable/loading"
+        />
         
        	<android.support.v4.view.ViewPager
     		android:id="@+id/pager"
