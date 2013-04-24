@@ -1,9 +1,7 @@
 package edu.grinnell.sandb;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,7 +32,6 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 	
 	private PendingIntent mSendFeedLoaded;
 	private ArticleListFragment mListFrag;
-	private List<ArticleListFragment> mFragmentList;
 	private View mLoading;
 	private ViewPager mPager;
 	private TabsAdapter mTabsAdapter;
