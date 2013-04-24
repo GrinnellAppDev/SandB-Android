@@ -38,14 +38,6 @@
             android:name="edu.grinnell.sandb.xmlpull.XmlPullService"
             android:exported="false" />
 
-        <receiver
-            android:name="edu.grinnell.sandb.xmlpull.XmlPullReceiver"
-            android:exported="false" >
-            <intent-filter>
-                <action android:name="edu.grinnell.sandb.xmlpull.FEED_PROCESSED" />
-            </intent-filter>
-        </receiver>
-
         <activity
             android:name="edu.grinnell.grinnellsandb.ImageViewer"
             android:configChanges="orientation|keyboardHidden|screenSize"

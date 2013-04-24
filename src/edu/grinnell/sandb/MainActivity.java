@@ -3,12 +3,15 @@ package edu.grinnell.sandb;
 import java.util.ArrayList;
 
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -37,6 +40,7 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 	private TabsAdapter mTabsAdapter;
 	
 	private boolean mUpdateInProgress;
+	private BroadcastReceiver mUpdateReceiver;
 	
 	private boolean mTwoPane = false;
 	
@@ -63,10 +67,18 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 		}
 
 	    //TODO
+		mUpdateReceiver = new XmlPullReceiver();
+		registerReceiver(mUpdateReceiver, new IntentFilter(XmlPullReceiver.FEED_PROCESSED));
 //		Log.d(TAG, "Perparing to start service..");
 //		mLoading.setVisibility(View.VISIBLE);
 //		startXmlPullService();
 	    
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		registerReceiver(mUpdateReceiver, new IntentFilter(XmlPullReceiver.FEED_PROCESSED));
 	}
 
 	private void startXmlPullService() {
@@ -87,14 +99,15 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 		if (ArticleListFragment.UPDATE.equals(action)) {
 			mUpdateInProgress = false;
 			mLoading.setVisibility(View.GONE);
-			mListFrag.update();
-			findViewById(android.R.id.content).invalidate();
+			mTabsAdapter.refresh();
 		}
 	}
 	
 	@Override
 	protected void onPause() {
+		unregisterReceiver(mUpdateReceiver);
 		super.onPause();
+		
 		//if (mSendFeedLoaded != null) 
 		//	mSendFeedLoaded.cancel();
 	}
@@ -233,7 +246,21 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 		@Override
 		public void onTabReselected(Tab tab, FragmentTransaction ft) {
 		}
+		
+		public void refresh() {
+			for (int i = 0; i < getCount(); i++) {
+				Fragment f = getSupportFragmentManager().findFragmentByTag(
+						getFragmentTag(i));
+				if (f != null)
+					((ArticleListFragment) f).update();
+			}
+		}
+		
+		private String getFragmentTag(int pos){
+		    return "android:switcher:"+R.id.pager+":"+pos;
+		}
 	}
+	
 	
     @Override
     public void onSaveInstanceState(Bundle state)
@@ -241,5 +268,4 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
         state.putInt(SELECTED_TAB, getSupportActionBar().getSelectedNavigationIndex());
         super.onSaveInstanceState(state);
     }
-    
 }
