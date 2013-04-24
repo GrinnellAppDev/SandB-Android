@@ -78,7 +78,7 @@ public class ArticleListFragment extends SherlockListFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		setRetainInstance(true);
 		// TODO restore from instance state
 		Bundle b = getArguments();
 		mCategory = null;
