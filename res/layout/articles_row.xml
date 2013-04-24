@@ -22,14 +22,15 @@
         android:paddingBottom="@dimen/pad3">
 
     	<ImageView
-    	    android:id="@+id/articleThumb"
-    	    android:layout_width="wrap_content"
-    	    android:layout_height="wrap_content"
+    	    android:id="@+id/articleThumb" 
+    	    android:layout_height="100dp"
+    	    android:layout_width="120dp"   
+    	     
     	    android:layout_gravity="center_vertical|top"
     	    android:layout_marginRight="@dimen/pad5"
     	    android:layout_marginTop="@dimen/pad3"
     	    android:contentDescription="article thumb"
-    	    android:scaleType="centerCrop"
+    	    android:scaleType="fitCenter"
     	    android:width="180dp" 
     		android:adjustViewBounds= "true"
     	    android:maxHeight="100dp"

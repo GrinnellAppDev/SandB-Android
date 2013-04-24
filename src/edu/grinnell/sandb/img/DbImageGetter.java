@@ -15,6 +15,7 @@ import edu.grinnell.sandb.data.ImageTable;
 
 public class DbImageGetter implements ImageGetter {
 
+	@SuppressWarnings("unused")
 	private int transactions = 0;
 	private ImageTable table;
 	private Context c;

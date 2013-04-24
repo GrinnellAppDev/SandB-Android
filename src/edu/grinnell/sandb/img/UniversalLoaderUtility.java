@@ -27,10 +27,12 @@ public class UniversalLoaderUtility {
 	}
 
 	protected SimpleImageLoadingListener listener = new SimpleImageLoadingListener() {
+		/*
 		@Override
 		public void onLoadingStarted(String imageUri, View view) {
 			spinner.setVisibility(View.VISIBLE);
 		}
+		*/
 
 		@Override
 		public void onLoadingFailed(String imageUri, View view,
@@ -91,6 +93,7 @@ public class UniversalLoaderUtility {
 		imgTable.close();
 
 		try {
+			//throw exception if no image
 			String imgUrl = URLS[0];
 
 			DisplayImageOptions options;
@@ -112,8 +115,11 @@ public class UniversalLoaderUtility {
 					.createDefault(imgView.getContext().getApplicationContext());
 			imageLoader.init(configuration);
 			imageLoader.displayImage(imgUrl, imgView, options, listener);
+			imgView.setVisibility(View.VISIBLE);
+
 		} catch (NullPointerException e) {
-			imageLoader.displayImage(null, imgView, null, listener);
+			//imageLoader.displayImage(null, imgView, null, listener);
+			imgView.setVisibility(View.GONE);
 		}
 	}
 }
