@@ -16,7 +16,7 @@
         android:allowBackup="true"
         android:icon="@drawable/sandblogo_a2"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Sherlock.Light.DarkActionBar" >
+        android:theme="@style/Theme.Grin" >
         <activity
             android:name="edu.grinnell.sandb.MainActivity"
             android:label="@string/app_name" >
