@@ -169,7 +169,7 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 		public void onDataParsed(List<Article> articles);
 	}
 	
-	
+	// TODO: This is repetitive..
     // Processes title tags in the feed.
     private static String readTitle(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, ns, "title");
