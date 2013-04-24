@@ -36,6 +36,8 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 	private ViewPager mPager;
 	private TabsAdapter mTabsAdapter;
 	
+	private boolean mUpdateInProgress;
+	
 	private boolean mTwoPane = false;
 	
 	@Override
@@ -83,8 +85,9 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 		Log.d(TAG, "onNewIntent called | " + action);
 
 		if (ArticleListFragment.UPDATE.equals(action)) {
-			mListFrag.update();
+			mUpdateInProgress = false;
 			mLoading.setVisibility(View.GONE);
+			mListFrag.update();
 			findViewById(android.R.id.content).invalidate();
 		}
 	}
@@ -108,8 +111,11 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 		
 		switch (item.getItemId()) {
 		case R.id.menu_refresh:
-			mLoading.setVisibility(View.VISIBLE);
-			this.startXmlPullService();
+			if (!mUpdateInProgress) {
+				mLoading.setVisibility(View.VISIBLE);
+				mUpdateInProgress = true;
+				this.startXmlPullService();
+			}	
 			break;
 		case R.id.menu_settings:
 			// startActivityForResult(new Intent(this, PrefActiv.class), PREFS);
@@ -157,7 +163,7 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 		final class TabInfo {
 			private final Class<?> clss;
 			private final Bundle args;
-
+		
 			TabInfo(Class<?> _class, Bundle _args) {
 				clss = _class;
 				args = _args;
@@ -189,8 +195,11 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 		@Override
 		public Fragment getItem(int position) {
 			TabInfo info = mTabs.get(position);
-			return Fragment.instantiate(MainActivity.this, info.clss.getName(),
-					info.args);
+			mListFrag = (ArticleListFragment) 
+				Fragment.instantiate(MainActivity.this, 
+						info.clss.getName(),
+						info.args);	
+			return mListFrag;
 		}
 
 		@Override
