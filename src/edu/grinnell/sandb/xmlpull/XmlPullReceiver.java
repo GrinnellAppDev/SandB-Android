@@ -15,7 +15,7 @@ public class XmlPullReceiver extends BroadcastReceiver {
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.d(TAG, "Intent Received: " + intent.getAction());
+		Log.i(TAG, "Intent Received: " + intent.getAction());
 		if (FEED_PROCESSED.equals(intent.getAction())) {
 			Intent i = new Intent(context, MainActivity.class);
 			i.setAction(ArticleListFragment.UPDATE);

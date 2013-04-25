@@ -44,12 +44,15 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 	private boolean mUpdateInProgress;
 	private BroadcastReceiver mUpdateReceiver;
 	
+	private MainPrefs mPrefs;
+	
 	private boolean mTwoPane = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		mPrefs = new MainPrefs(this);
 		
 		mLoading = (View) findViewById(R.id.loading);
 		mLoadingImage = (ImageView) mLoading.findViewById(R.id.spinner);
@@ -69,37 +72,55 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 	    //TODO
 		mUpdateReceiver = new XmlPullReceiver();
 		registerReceiver(mUpdateReceiver, new IntentFilter(XmlPullReceiver.FEED_PROCESSED));
-//		Log.d(TAG, "Perparing to start service..");
-//		mLoading.setVisibility(View.VISIBLE);
-//		startXmlPullService();
-	    
+
+		
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
+		mPrefs.refresh();
 		registerReceiver(mUpdateReceiver, new IntentFilter(XmlPullReceiver.FEED_PROCESSED));
+		if (mPrefs.firstRun) {
+			if (!mUpdateInProgress) {
+				mLoading.setVisibility(View.VISIBLE);
+				mLoadingImage.startAnimation(AnimationUtils.loadAnimation(this,
+						R.anim.loading));
+				mUpdateInProgress = true;
+			}
+			startXmlPullService(true);
+		} else {
+			startXmlPullService(false);
+		}
 	}
-
-	private void startXmlPullService() {
+	
+	private void startXmlPullService(boolean forced) {
+		Intent loadFeed = new Intent(this, XmlPullService.class);
 		Intent feedLoaded = new Intent();
 		feedLoaded.setAction(XmlPullReceiver.FEED_PROCESSED);
-		mSendFeedLoaded = PendingIntent.getBroadcast(this, 0, feedLoaded, 0);
-		Intent loadFeed = new Intent(this, XmlPullService.class);
-		loadFeed.setAction(XmlPullService.DOWNLOAD_FEED);
+		mSendFeedLoaded = PendingIntent.getBroadcast(this, 0, feedLoaded, PendingIntent.FLAG_UPDATE_CURRENT);
 		loadFeed.putExtra(XmlPullService.RESULT_ACTION, mSendFeedLoaded);
+		
+		if (forced) {
+			loadFeed.setAction(XmlPullService.DOWNLOAD_FEED);
+		} else {
+			loadFeed.putExtra(XmlPullService.LAST_CHECKED_MS, mPrefs.lastUpdated);
+			loadFeed.setAction(XmlPullService.CHECK_DOWNLOAD);
+		}
 		startService(loadFeed);
 	}
 	
 	@Override
 	protected void onNewIntent(Intent i) {
 		String action = i.getAction();
-		Log.d(TAG, "onNewIntent called | " + action);
+		Log.i(TAG, "onNewIntent called | " + action);
 
 		if (ArticleListFragment.UPDATE.equals(action)) {
-			mUpdateInProgress = false;
-			mLoadingImage.getAnimation().cancel();
-			mLoading.setVisibility(View.GONE);
+			if (mUpdateInProgress) {
+				mUpdateInProgress = false;
+				mLoadingImage.getAnimation().cancel();
+				mLoading.setVisibility(View.GONE);
+			}
 			mTabsAdapter.refresh();
 		}
 	}
@@ -130,7 +151,7 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 				mLoadingImage.startAnimation(AnimationUtils.loadAnimation(this,
 						R.anim.loading));
 				mUpdateInProgress = true; 
-				this.startXmlPullService();
+				this.startXmlPullService(true);
 			}	
 			break;
 		case R.id.menu_settings:
@@ -263,7 +284,6 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 		    return "android:switcher:"+R.id.pager+":"+pos;
 		}
 	}
-	
 	
     @Override
     public void onSaveInstanceState(Bundle state)

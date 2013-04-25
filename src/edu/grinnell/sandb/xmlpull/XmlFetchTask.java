@@ -47,7 +47,6 @@ public class XmlFetchTask extends AsyncTask<String, Void, Result> {
 
 		if (stream == null)
 			return r.setCode(Result.NO_DATA);
-		
 		r.setStream(stream);
 		
 		return r.setCode(Result.SUCCESS);
@@ -58,7 +57,6 @@ public class XmlFetchTask extends AsyncTask<String, Void, Result> {
 	@Override
 	protected void onPostExecute(Result result) {
 		super.onPostExecute(result);
-		Log.i(TAG, "xml loaded from server");
 		// notify the UI thread listener ..
 		mRetrieveDataListener.onRetrieveData(result);
 	}
