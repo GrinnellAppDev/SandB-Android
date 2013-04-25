@@ -14,6 +14,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
@@ -35,6 +37,7 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 	private PendingIntent mSendFeedLoaded;
 	private ArticleListFragment mListFrag;
 	private View mLoading;
+	private ImageView mLoadingImage;
 	private ViewPager mPager;
 	private TabsAdapter mTabsAdapter;
 	
@@ -49,13 +52,11 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 		setContentView(R.layout.activity_main);
 		
 		mLoading = (View) findViewById(R.id.loading);
+		mLoadingImage = (ImageView) mLoading.findViewById(R.id.spinner);
 		
 	    // setup action bar for tabs
 	    ActionBar actionBar = getSupportActionBar();
 	    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-	    //mFragmentList = new ArrayList<ArticleListFragment>(actionBar.getNavigationItemCount());
-	    
 
 	    mPager = (ViewPager) findViewById(R.id.pager);
 	    mTabsAdapter = new TabsAdapter(getSupportFragmentManager(), mPager);
@@ -97,6 +98,7 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 
 		if (ArticleListFragment.UPDATE.equals(action)) {
 			mUpdateInProgress = false;
+			mLoadingImage.getAnimation().cancel();
 			mLoading.setVisibility(View.GONE);
 			mTabsAdapter.refresh();
 		}
@@ -125,7 +127,9 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 		case R.id.menu_refresh:
 			if (!mUpdateInProgress) {
 				mLoading.setVisibility(View.VISIBLE);
-				mUpdateInProgress = true;
+				mLoadingImage.startAnimation(AnimationUtils.loadAnimation(this,
+						R.anim.loading));
+				mUpdateInProgress = true; 
 				this.startXmlPullService();
 			}	
 			break;
