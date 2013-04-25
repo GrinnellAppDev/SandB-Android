@@ -9,10 +9,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import edu.grinnell.sandb.data.Article;
-
 import android.content.Context;
 import android.os.AsyncTask;
+import edu.grinnell.sandb.data.Article;
 
 public class BodyImageGetter {
 
@@ -76,7 +75,7 @@ public class BodyImageGetter {
 			if ((Image) mImageTable.findByUrl(url) != null)
 				return;
 
-			image = getImage(url, tagStart);
+			//image = getImage(url, tagStart);
 			title = getSubstring("title=\"", body, tagStart);
 			
 			mImageTable.createImage(articleId, url, image, title);
