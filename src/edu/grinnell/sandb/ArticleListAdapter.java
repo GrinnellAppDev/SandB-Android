@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import edu.grinnell.grinnellsandb.R;
+import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.img.UniversalLoaderUtility;
 

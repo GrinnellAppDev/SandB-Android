@@ -25,7 +25,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
-import edu.grinnell.grinnellsandb.R;
+import edu.grinnell.sandb.R;
 
 public class ImagePagerActivity extends SherlockActivity {
 	
@@ -113,8 +113,6 @@ public class ImagePagerActivity extends SherlockActivity {
 			ImageView imageView = (ImageView) imageLayout.findViewById(R.id.image);
 			final ProgressBar spinner = (ProgressBar) imageLayout.findViewById(R.id.loading);
 
-			ImageLoaderConfiguration configuration = ImageLoaderConfiguration.createDefault(getApplicationContext());
-			imageLoader.init(configuration);
 			imageLoader.displayImage(images[position], imageView, options, new SimpleImageLoadingListener() {
 				@Override
 				public void onLoadingStarted(String imageUri, View view) {
