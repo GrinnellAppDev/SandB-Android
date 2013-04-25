@@ -136,6 +136,7 @@ public class ArticleListFragment extends SherlockListFragment {
 		mAdapter.clear();
 		mAdapter.addAll(mData);
 		mAdapter.notifyDataSetChanged();
+		getListView().invalidateViews();
 	}
 
 	public void setEmptyText(String text) {

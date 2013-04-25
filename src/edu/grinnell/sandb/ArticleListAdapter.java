@@ -49,10 +49,11 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-
+		holder.image.setVisibility(View.VISIBLE);
 		final Article a = mData.get(position);
 				
 		if (a != null) {
+			holder.image.setVisibility(View.VISIBLE);
 			mLoader.loadArticleImage(a, holder.image, mActivity);
 			holder.title.setText(a.getTitle());
 			holder.description.setText(a.getDescription());
