@@ -23,7 +23,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-import edu.grinnell.grinnellsandb.R;
+import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.xmlpull.XmlPullReceiver;
 import edu.grinnell.sandb.xmlpull.XmlPullService;
 
@@ -118,7 +118,6 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 		if (ArticleListFragment.UPDATE.equals(action)) {
 			if (mUpdateInProgress) {
 				mUpdateInProgress = false;
-				mLoadingImage.getAnimation().cancel();
 				mLoading.setVisibility(View.GONE);
 			}
 			mTabsAdapter.refresh();

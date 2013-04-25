@@ -18,7 +18,7 @@ import android.util.Xml;
 import edu.grinnell.sandb.Utility;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
-import edu.grinnell.sandb.data.BodyImageGetter;
+import edu.grinnell.sandb.img.BodyImageGetter;
 
 public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 
@@ -72,8 +72,6 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 	protected void onPostExecute(List<Article> articles) {
 		super.onPostExecute(articles);
 		Log.i(XMP, "xml parsed!");
-
-		// notify the UI thread listener ..
 		mParseDataListener.onDataParsed(articles);
 	}
 	
@@ -97,7 +95,7 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 	private List<Article> readFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
         List<Article> articles = new ArrayList<Article>();
 
-        BodyImageGetter big = new BodyImageGetter(mAppContext);
+        //BodyImageGetter big = new BodyImageGetter(mAppContext);
         
         parser.require(XmlPullParser.START_TAG, ns, "rss");
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -111,7 +109,7 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
             } else if (name.equals("item")) {
             	Article article = readArticle(parser);
             	articles.add(article);
-            	big.buildImageCache(article);
+            	//big.buildImageCache(article);
             } else {
                 skip(parser);
             }

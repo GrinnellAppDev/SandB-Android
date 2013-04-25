@@ -12,7 +12,7 @@ import android.content.Intent;
 import android.util.Log;
 import edu.grinnell.sandb.MainPrefs;
 import edu.grinnell.sandb.data.Article;
-import edu.grinnell.sandb.xmlpull.CheckUrlAgeTask.CheckAgeListener;
+import edu.grinnell.sandb.xmlpull.XmlCheckAgeTask.CheckAgeListener;
 import edu.grinnell.sandb.xmlpull.XmlFetchTask.Result;
 
 public class XmlPullService extends IntentService {
@@ -27,7 +27,7 @@ public class XmlPullService extends IntentService {
 	public static final String FEED_URL = "http://www.thesandb.com/feed";
 	
 	private XmlFetchTask mWRT;
-	private CheckUrlAgeTask mCUAT;
+	private XmlCheckAgeTask mCUAT;
 	private PendingIntent finished;
 	
 	private MainPrefs mPrefs;
@@ -68,7 +68,7 @@ public class XmlPullService extends IntentService {
 	private void checkAndDownload(long lastCheckedMs) {
 		if (mCUAT == null) {
 			Log.i(TAG, "Checking feed age..");
-			mCUAT = new CheckUrlAgeTask(new CheckAndDownloadListener(lastCheckedMs));
+			mCUAT = new XmlCheckAgeTask(new CheckAndDownloadListener(lastCheckedMs));
 			mCUAT.execute(FEED_URL);
 		}
 	}
