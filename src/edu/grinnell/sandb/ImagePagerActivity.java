@@ -19,45 +19,27 @@ import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
-import edu.grinnell.sandb.R;
-
 public class ImagePagerActivity extends SherlockActivity {
 	
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
 
-	//private static final String STATE_POSITION = "STATE_POSITION";
-
 	DisplayImageOptions options;
-
 	ViewPager pager;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		getSupportActionBar().hide();
-
 		setContentView(R.layout.image_pager);
-
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		Bundle bundle = getIntent().getExtras();
 		String[] imageUrls = bundle.getStringArray("ArticleImages");
 		String[] imageTitles = bundle.getStringArray("ImageTitles");
-		
-		
-		//int pagerPosition = bundle.getInt(Extra.IMAGE_POSITION, 0);
-
-		/*
-		if (savedInstanceState != null) {
-			pagerPosition = savedInstanceState.getInt(STATE_POSITION);
-		}
-		*/
 
 		options = new DisplayImageOptions.Builder()
 		//change these images to error messages
@@ -72,15 +54,8 @@ public class ImagePagerActivity extends SherlockActivity {
 
 		pager = (ViewPager) findViewById(R.id.pager);
 		pager.setAdapter(new ImagePagerAdapter(imageUrls, imageTitles));
-				
-	//	pager.setCurrentItem(pagerPosition);
 	}
-/*
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		outState.putInt(STATE_POSITION, pager.getCurrentItem());
-	}
-*/
+	
 	private class ImagePagerAdapter extends PagerAdapter {
 
 		private String[] images;
@@ -140,7 +115,6 @@ public class ImagePagerActivity extends SherlockActivity {
 							break;
 					}
 					Toast.makeText(ImagePagerActivity.this, message, Toast.LENGTH_SHORT).show();
-
 					spinner.setVisibility(View.GONE);
 				}
 
@@ -149,7 +123,6 @@ public class ImagePagerActivity extends SherlockActivity {
 					spinner.setVisibility(View.GONE);
 				}
 			});
-
 			
 			TextView titleView = (TextView) imageLayout.findViewById(R.id.title);
 			titleView.setText(titles[position]);
@@ -188,7 +161,6 @@ public class ImagePagerActivity extends SherlockActivity {
             
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

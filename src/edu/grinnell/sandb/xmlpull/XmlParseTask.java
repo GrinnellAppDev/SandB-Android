@@ -18,7 +18,6 @@ import android.util.Xml;
 import edu.grinnell.sandb.Utility;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
-import edu.grinnell.sandb.img.BodyImageGetter;
 
 public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 

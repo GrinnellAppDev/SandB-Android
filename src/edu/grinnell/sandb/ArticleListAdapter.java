@@ -2,26 +2,18 @@ package edu.grinnell.sandb;
 
 import java.util.List;
 
-import android.graphics.Point;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.nostra13.universalimageloader.core.ImageLoader;
-
-import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.img.UniversalLoaderUtility;
 
 public class ArticleListAdapter extends ArrayAdapter<Article> {
 	private MainActivity mActivity;
 	private List<Article> mData;
-//	private DbImageGetter mImageGetter;
-//	protected ImageLoader imageLoader = ImageLoader.getInstance();
 	protected UniversalLoaderUtility mLoader;
 
 
@@ -29,13 +21,6 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 		super(a, layoutId, data);
 		mActivity = a;
 		mData = data;
-
-		Display display = a.getWindowManager().getDefaultDisplay();
-		Point size = new Point();
-		display.getSize(size);
-//		int width = size.x / 3;
-//		int height = (int) (width * 0.80);
-//		mImageGetter = new DbImageGetter(mActivity, width, height);
 		mLoader = new UniversalLoaderUtility();
 	}
 
@@ -44,9 +29,6 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 		TextView description;
 		// TextView date;
 		ImageView image;
-
-		//DbImageGetterAsyncTask imgTask;
-	//	String imgTask;
 	}
 
 	@Override
@@ -71,16 +53,12 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 		final Article a = mData.get(position);
 				
 		if (a != null) {
-			mLoader.loadArticleImage(a, holder.image, getContext());
+			mLoader.loadArticleImage(a, holder.image, mActivity);
 			holder.title.setText(a.getTitle());
 			holder.description.setText(a.getDescription());
 			holder.title.setPadding(3, 3, 3, 3);
 		}
 
 		return convertView;
-	}
-	
-	public ImageLoader getImageLoader() {
-		return mLoader.getImageLoader();
 	}
 }
