@@ -105,7 +105,7 @@ public class XmlPullService extends IntentService {
 				i.putExtra(LAST_CHECKED_MS, now);
 				PendingIntent pi = PendingIntent.getService(XmlPullService.this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
 				m.set(AlarmManager.RTC, AlarmManager.INTERVAL_DAY, pi);
-				finishUp();
+				stopSelf();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

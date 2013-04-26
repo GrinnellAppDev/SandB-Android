@@ -7,8 +7,11 @@ import java.net.URL;
 import java.util.Date;
 
 import android.os.AsyncTask;
+import android.util.Log;
  
 public class XmlCheckAgeTask extends AsyncTask<String, Integer, Long> {
+	
+	public static final String TAG = "XmlCheckAgeTask";
 	
 	public static interface CheckAgeListener {
 		public void receive(Long result);
@@ -40,9 +43,9 @@ public class XmlCheckAgeTask extends AsyncTask<String, Integer, Long> {
 	    	con = (HttpURLConnection) new URL(url).openConnection();
 	    	date = con.getLastModified();
 	    	if (date == 0)
-	    		System.out.println("No last-modified information.");
+	    		Log.i(TAG, "No last-modified information.");
 			else
-				System.out.println("Last-Modified: " + new Date(date));
+				Log.i(TAG, "Last-Modified: " + new Date(date));
 	    } catch (MalformedURLException e) {
 	    	e.printStackTrace();
 	    } catch (IOException e) {
