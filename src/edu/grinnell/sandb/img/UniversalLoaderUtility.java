@@ -53,6 +53,8 @@ public class UniversalLoaderUtility {
 				message = "Unknown error";
 				break;
 			}
+			((ImageView) view).getAnimation().cancel();
+			view.setVisibility(View.GONE);
 		}
 	};
 
@@ -63,10 +65,9 @@ public class UniversalLoaderUtility {
 
 		options = new DisplayImageOptions.Builder()
 				.imageScaleType(ImageScaleType.EXACTLY)
-				.showImageForEmptyUri(R.drawable.sandblogo)
-				.showImageForEmptyUri(R.drawable.sandblogo)
-				.showImageOnFail(R.drawable.sandblogo).resetViewBeforeLoading()
-				.cacheOnDisc().imageScaleType(ImageScaleType.EXACTLY)
+				.resetViewBeforeLoading()
+				.cacheOnDisc()
+				.imageScaleType(ImageScaleType.EXACTLY)
 				.bitmapConfig(Bitmap.Config.RGB_565)
 				.displayer(new FadeInBitmapDisplayer(300)).build();
 
@@ -131,11 +132,9 @@ public class UniversalLoaderUtility {
 			DisplayImageOptions options;
 
 			options = new DisplayImageOptions.Builder()
-					.imageScaleType(ImageScaleType.EXACTLY)
-					// change these images to error messages
 					.showStubImage(R.drawable.loading)
-					.showImageOnFail(R.drawable.sandblogo)
-					.resetViewBeforeLoading().cacheOnDisc()
+					.resetViewBeforeLoading()
+					.cacheOnDisc()
 					.imageScaleType(ImageScaleType.EXACTLY)
 					.bitmapConfig(Bitmap.Config.RGB_565)
 					.displayer(new FadeInBitmapDisplayer(300)).build();
