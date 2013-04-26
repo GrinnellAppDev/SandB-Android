@@ -3,6 +3,7 @@ package edu.grinnell.sandb.img;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -56,7 +57,8 @@ public class UniversalLoaderUtility {
 				message = "Unknown error";
 				break;
 			}
-			((ImageView) view).getAnimation().cancel();
+			Animation a = ((ImageView) view).getAnimation();
+			if (a != null) a.cancel();
 			view.setVisibility(View.GONE);
 		}
 	};
