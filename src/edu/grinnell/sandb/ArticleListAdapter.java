@@ -1,6 +1,8 @@
 package edu.grinnell.sandb;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +29,7 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 	private class ViewHolder {
 		TextView title;
 		TextView description;
-		// TextView date;
+		TextView pubdate;
 		ImageView image;
 	}
 
@@ -40,9 +42,12 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 			LayoutInflater li = mActivity.getLayoutInflater();
 			convertView = li.inflate(R.layout.articles_row, parent, false);
 			holder = new ViewHolder();
-			holder.title = (TextView) convertView.findViewById(R.id.titleText);
+			holder.title = (TextView) convertView
+					.findViewById(R.id.titleText);
 			holder.description = (TextView) convertView
 					.findViewById(R.id.descriptionText);
+			holder.pubdate = (TextView) convertView
+					.findViewById(R.id.pubdateText);
 			holder.image = (ImageView) convertView
 					.findViewById(R.id.articleThumb);
 			convertView.setTag(holder);
@@ -56,8 +61,10 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 			holder.image.setVisibility(View.VISIBLE);
 			mLoader.loadArticleImage(a, holder.image, mActivity);
 			holder.title.setText(a.getTitle());
-			holder.description.setText(a.getDescription());
 			holder.title.setPadding(3, 3, 3, 3);
+			holder.description.setText(a.getDescription());
+			SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm", Locale.getDefault());
+			holder.pubdate.setText(sdf.format(a.getPubDate()));
 		}
 
 		return convertView;

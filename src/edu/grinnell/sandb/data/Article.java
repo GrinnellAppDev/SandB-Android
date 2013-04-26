@@ -71,4 +71,8 @@ public class Article {
 	public String getBody() {
 		return body;
 	}
+	
+	public Date getPubDate() {
+		return pubDate;
+	}
 }
