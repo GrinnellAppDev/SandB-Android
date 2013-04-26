@@ -30,6 +30,7 @@
     	    android:layout_gravity="center|top"
     	    android:layout_marginRight="@dimen/pad5"
     	    android:layout_marginTop="@dimen/pad3"
+    	    android:layout_marginBottom="@dimen/pad3"
     	    android:contentDescription="article thumb"
     	    android:scaleType="fitCenter"
     	    android:width="180dp" 

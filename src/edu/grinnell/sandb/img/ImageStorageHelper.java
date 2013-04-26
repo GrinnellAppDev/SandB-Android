@@ -1,4 +1,4 @@
-package edu.grinnell.sandb.data;
+package edu.grinnell.sandb.img;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

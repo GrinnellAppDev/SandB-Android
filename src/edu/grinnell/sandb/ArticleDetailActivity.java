@@ -9,7 +9,7 @@ import android.util.Log;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
-import edu.grinnell.grinnellsandb.R;
+import edu.grinnell.sandb.R;
 
 public class ArticleDetailActivity extends SherlockFragmentActivity {
 	

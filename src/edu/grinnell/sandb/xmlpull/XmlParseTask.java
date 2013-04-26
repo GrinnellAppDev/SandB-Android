@@ -18,7 +18,7 @@ import android.util.Xml;
 import edu.grinnell.sandb.Utility;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
-import edu.grinnell.sandb.data.BodyImageGetter;
+import edu.grinnell.sandb.img.BodyImageGetter;
 
 public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 
@@ -51,7 +51,7 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 		try {
 			mTable.open();
 			mTable.clearTable();
-			return parseArticlesFromStream(arg0[0]);
+			return parseArticlesFromStream(arg0[0], mAppContext, mTable);
 		} catch (IOException ioe) {
 			Log.e(XMP, "parseArticlesFromStream", ioe);
 		} catch (XmlPullParserException xppe) {
@@ -72,12 +72,10 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 	protected void onPostExecute(List<Article> articles) {
 		super.onPostExecute(articles);
 		Log.i(XMP, "xml parsed!");
-
-		// notify the UI thread listener ..
 		mParseDataListener.onDataParsed(articles);
 	}
 	
-	protected List<Article> parseArticlesFromStream(InputStream xmlstream)
+	protected static List<Article> parseArticlesFromStream(InputStream xmlstream, Context c, ArticleTable t)
 		throws XmlPullParserException, IOException {
 		
 		
@@ -88,16 +86,17 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 	            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
 	            parser.setInput(in);
 	            parser.nextTag();
-	            return readFeed(parser);
+	            return readFeed(parser, c, t);
 	        } finally {
 	            in.close();
 	        }	
 	}
 	
-	private List<Article> readFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
+	private static List<Article> readFeed(XmlPullParser parser, Context c, ArticleTable t) 
+			throws XmlPullParserException, IOException {
         List<Article> articles = new ArrayList<Article>();
 
-        BodyImageGetter big = new BodyImageGetter(mAppContext);
+        BodyImageGetter big = new BodyImageGetter(c);
         
         parser.require(XmlPullParser.START_TAG, ns, "rss");
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -109,7 +108,7 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
             if (name.equals("channel")) {
                 continue;
             } else if (name.equals("item")) {
-            	Article article = readArticle(parser);
+            	Article article = readArticle(parser, t);
             	articles.add(article);
             	big.buildImageCache(article);
             } else {
@@ -122,7 +121,7 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 	// Parses the contents of an entry. If it encounters a title, summary, or link tag, hands them
     // off
     // to their respective "read" methods for processing. Otherwise, skips the tag.
-    private Article readArticle(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private static Article readArticle(XmlPullParser parser, ArticleTable table) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, ns, "item");
         String title = null;
         String guid = null;
@@ -159,7 +158,7 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
             }
         }
         
-        return mTable.createArticle(guid, title, link, date, category, description, body, comments);
+        return table.createArticle(guid, title, link, date, category, description, body, comments);
     }
 
 	

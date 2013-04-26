@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 
-import edu.grinnell.grinnellsandb.R;
+import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
 

@@ -9,15 +9,13 @@ import android.widget.ProgressBar;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
-import edu.grinnell.grinnellsandb.R;
+import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.data.Article;
-import edu.grinnell.sandb.data.ImageTable;
 
 public class UniversalLoaderUtility {
 
@@ -58,6 +56,8 @@ public class UniversalLoaderUtility {
 				message = "Unknown error";
 				break;
 			}
+			((ImageView) view).getAnimation().cancel();
+			view.setVisibility(View.GONE);
 		}
 	};
 
@@ -68,19 +68,15 @@ public class UniversalLoaderUtility {
 
 		options = new DisplayImageOptions.Builder()
 				.imageScaleType(ImageScaleType.EXACTLY)
-				.showImageForEmptyUri(R.drawable.sandblogo)
-				.showImageForEmptyUri(R.drawable.sandblogo)
-				.showImageOnFail(R.drawable.sandblogo).resetViewBeforeLoading()
-				.cacheOnDisc().imageScaleType(ImageScaleType.EXACTLY)
+				.resetViewBeforeLoading()
+				.cacheOnDisc()
+				.imageScaleType(ImageScaleType.EXACTLY)
 				.bitmapConfig(Bitmap.Config.RGB_565)
 				.displayer(new FadeInBitmapDisplayer(300)).build();
 
 		spinner = new ProgressBar(context, null,
 				android.R.attr.progressBarStyleSmall);
 
-		ImageLoaderConfiguration configuration = ImageLoaderConfiguration
-				.createDefault(imgView.getContext().getApplicationContext());
-		imageLoader.init(configuration);
 		imageLoader.displayImage(imgUrl, imgView, options, listener);
 	}
 
@@ -109,9 +105,6 @@ public class UniversalLoaderUtility {
 					.bitmapConfig(Bitmap.Config.RGB_565)
 					.displayer(new FadeInBitmapDisplayer(300)).build();
 
-			ImageLoaderConfiguration configuration = ImageLoaderConfiguration
-					.createDefault(imgView.getContext().getApplicationContext());
-			imageLoader.init(configuration);
 			imageLoader.displayImage(imgUrl, imgView, options, listener);
 			imgView.setVisibility(View.VISIBLE);
 
@@ -142,11 +135,9 @@ public class UniversalLoaderUtility {
 			DisplayImageOptions options;
 
 			options = new DisplayImageOptions.Builder()
-					.imageScaleType(ImageScaleType.EXACTLY)
-					// change these images to error messages
 					.showStubImage(R.drawable.loading)
-					.showImageOnFail(R.drawable.sandblogo)
-					.resetViewBeforeLoading().cacheOnDisc()
+					.resetViewBeforeLoading()
+					.cacheOnDisc()
 					.imageScaleType(ImageScaleType.EXACTLY)
 					.bitmapConfig(Bitmap.Config.RGB_565)
 					.displayer(new FadeInBitmapDisplayer(300)).build();
@@ -157,9 +148,6 @@ public class UniversalLoaderUtility {
 			spinner = new ProgressBar(context, null,
 					android.R.attr.progressBarStyleSmall);
 
-			ImageLoaderConfiguration configuration = ImageLoaderConfiguration
-					.createDefault(imgView.getContext().getApplicationContext());
-			imageLoader.init(configuration);
 			imageLoader.displayImage(hiResImgUrl, imgView, options, listener);
 			imgView.setVisibility(View.VISIBLE);
 			imgTable.close();

@@ -16,12 +16,10 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
-import edu.grinnell.grinnellsandb.R;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
-import edu.grinnell.sandb.data.ImageTable;
+import edu.grinnell.sandb.img.ImageTable;
 import edu.grinnell.sandb.img.UniversalLoaderUtility;
 
 public class ArticleDetailFragment extends SherlockFragment {
@@ -31,8 +29,6 @@ public class ArticleDetailFragment extends SherlockFragment {
 	protected UniversalLoaderUtility mLoader;
 
 	public static final String TAG = "ArticleDetailFragment";
-
-	protected ImageLoader imageLoader = ImageLoader.getInstance();
 
 	public ArticleDetailFragment() {
 		super();
@@ -44,7 +40,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
 		setHasOptionsMenu(true);
-
+		
 		Bundle b = (ofJoy == null) ? getArguments() : ofJoy;
 
 		if (b != null) {

@@ -1,4 +1,4 @@
-package edu.grinnell.sandb.data;
+package edu.grinnell.sandb.img;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,6 +11,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import edu.grinnell.sandb.data.Article;
 
 public class BodyImageGetter {
 
@@ -74,7 +75,7 @@ public class BodyImageGetter {
 			if ((Image) mImageTable.findByUrl(url) != null)
 				return;
 
-			image = getImage(url, tagStart);
+			//image = getImage(url, tagStart);
 			title = getSubstring("title=\"", body, tagStart);
 			
 			mImageTable.createImage(articleId, url, image, title);
