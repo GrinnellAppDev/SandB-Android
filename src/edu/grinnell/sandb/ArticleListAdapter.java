@@ -46,8 +46,6 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 					.findViewById(R.id.titleText);
 			holder.description = (TextView) convertView
 					.findViewById(R.id.descriptionText);
-			holder.pubdate = (TextView) convertView
-					.findViewById(R.id.pubdateText);
 			holder.image = (ImageView) convertView
 					.findViewById(R.id.articleThumb);
 			convertView.setTag(holder);
@@ -64,7 +62,6 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 			holder.title.setPadding(3, 3, 3, 3);
 			holder.description.setText(a.getDescription());
 			SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm", Locale.getDefault());
-			holder.pubdate.setText(sdf.format(a.getPubDate()));
 		}
 
 		return convertView;

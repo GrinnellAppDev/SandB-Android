@@ -96,7 +96,7 @@ public class XmlPullService extends IntentService {
 			lastChecked.setTimeInMillis(lastCheckedMs);
 			Long now = Calendar.getInstance().getTimeInMillis();
 			mPrefs.setLastUpdated(now);
-			if (lastChecked.before(lastUpdated)) {
+			if (lastChecked.before(lastUpdated) || lastUpdated == null) {
 				Log.i(TAG, "Feed out of date, updating..");
 				downloadFeed();
 			} else {

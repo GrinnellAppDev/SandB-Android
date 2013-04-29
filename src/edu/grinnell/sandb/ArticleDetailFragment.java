@@ -60,6 +60,11 @@ public class ArticleDetailFragment extends SherlockFragment {
 		View rootView = inflater.inflate(R.layout.fragment_article_detail,
 				container, false);
 
+		//add the date to the article
+		((TextView) rootView.findViewById(R.id.article_date)).setText(mArticle
+				.getPubDate().toString());
+		
+		//add the title to the articl
 		((TextView) rootView.findViewById(R.id.article_title)).setText(mArticle
 				.getTitle());
 		TextView body = (TextView) rootView.findViewById(R.id.article_body);

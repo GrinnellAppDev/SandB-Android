@@ -13,11 +13,11 @@
         style="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-condensed"
         android:paddingBottom="@dimen/pad3"
         android:paddingTop="@dimen/pad3"
         android:textColor="@color/gmdarkred"
-        android:textIsSelectable="true"
-        android:fontFamily="sans-serif-condensed" />
+        android:textIsSelectable="true" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -49,14 +49,26 @@
                 android:scaleType="centerCrop" />
 
             <TextView
+                android:id="@+id/article_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="15dp"
+                android:fontFamily="sans-serif-light"
+                android:paddingBottom="7dp"
+                android:paddingTop="3dp"
+                android:textColor="@android:color/black"
+                android:textIsSelectable="true" />
+
+            <TextView
                 android:id="@+id/article_body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="15dp"
+                android:fontFamily="sans-serif-light"
                 android:textColor="@android:color/black"
-                android:textIsSelectable="true"
-                android:fontFamily="sans-serif-light" />
+                android:textIsSelectable="true" />
         </LinearLayout>
     </ScrollView>
 
