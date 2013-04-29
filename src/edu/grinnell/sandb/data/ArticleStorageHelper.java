@@ -17,6 +17,8 @@ public class ArticleStorageHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_DESCRIPTION = "description";
 	public static final String COLUMN_BODY = "body";
 	public static final String COLUMN_COMMENTS = "comments";
+	public static final String COLUMN_AUTHOR = "author";
+
 
 	private static final String DATABASE_NAME = "articles.db";
 	private static final int DATABASE_VERSION = 7;
@@ -32,7 +34,8 @@ public class ArticleStorageHelper extends SQLiteOpenHelper {
 	    + COLUMN_PUBDATE + " integer, "
 	    + COLUMN_DESCRIPTION + " text, " 
 	    + COLUMN_BODY + " text not null, "
-	    + COLUMN_COMMENTS + " text"
+	    + COLUMN_COMMENTS + " text, "
+	    + COLUMN_AUTHOR + " text"
 	    + ");";
 
 	public ArticleStorageHelper(Context context) {
