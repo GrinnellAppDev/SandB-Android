@@ -45,12 +45,11 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-        	
         	Intent upIntent = new Intent(this, MainActivity.class);
         	upIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP 
         			| Intent.FLAG_ACTIVITY_SINGLE_TOP);
             NavUtils.navigateUpTo(this, upIntent);
-            
+    	    overridePendingTransition(R.anim.article_slide_in, R.anim.article_slide_out);
             return true;
         }
 
