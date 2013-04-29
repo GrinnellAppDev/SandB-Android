@@ -2,10 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gcream"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/pad5"
-    android:paddingRight="@dimen/pad5"
     tools:context=".ArticleDetailFragment" >
 
     <TextView
@@ -15,6 +12,8 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-condensed"
         android:paddingBottom="@dimen/pad3"
+        android:paddingLeft="@dimen/pad5"
+        android:paddingRight="@dimen/pad5"
         android:paddingTop="@dimen/pad3"
         android:textColor="@color/gmdarkred"
         android:textIsSelectable="true" />
@@ -39,12 +38,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginLeft="4dp"
-                android:layout_marginRight="8dp"
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/article_image"
-                android:paddingBottom="15dp"
+                android:paddingBottom="10dp"
                 android:paddingTop="15dp"
                 android:scaleType="centerCrop" />
 
@@ -52,7 +49,7 @@
                 android:id="@+id/article_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginRight="15dp"
                 android:fontFamily="sans-serif-light"
                 android:paddingBottom="7dp"
@@ -64,7 +61,7 @@
                 android:id="@+id/article_body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginRight="15dp"
                 android:fontFamily="sans-serif-light"
                 android:textColor="@android:color/black"
