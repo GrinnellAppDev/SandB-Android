@@ -14,6 +14,8 @@ public class Article {
 	protected String description;
 	protected String body;
 	protected String comments;
+	protected String author;
+
 	
 	protected Article (String articleTitle, String articleBody) {
 		title = articleTitle;
@@ -22,7 +24,7 @@ public class Article {
 	
 	protected Article (String guid, String articleTitle, String articleLink,
 			long publicationDate, String category, String description,
-			String articleBody, String commentsLink) {
+			String articleBody, String commentsLink, String author) {
 		this(articleTitle, articleBody);
 		this.guid = guid;
 		this.link = articleLink;
@@ -30,13 +32,14 @@ public class Article {
 		this.category = category;
 		this.description = description;
 		this.comments = commentsLink;
+		this.author = author;
 	}
 	
 	protected Article (int id, String guid, String articleTitle, String articleLink,
 			long publicationDate, String category, String description,
-			String articleBody, String commentsLink) {
+			String articleBody, String commentsLink, String author) {
 		this(guid, articleTitle, articleLink, publicationDate, 
-				category, description, articleBody, commentsLink);
+				category, description, articleBody, commentsLink, author);
 		this.id = id;
 	}
 
@@ -74,5 +77,9 @@ public class Article {
 	
 	public Date getPubDate() {
 		return pubDate;
+	}
+	
+	public String getAuthor() {
+		return author;
 	}
 }
