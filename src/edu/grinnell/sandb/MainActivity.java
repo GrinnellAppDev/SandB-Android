@@ -32,7 +32,7 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 	private static final String TAG = "MainActivity";
 	private static final String SELECTED_TAB = "selected_tab";
 	
-	private static final String[] CATEGORIES = {"All", "Arts", "Sports", "Community", "Opinion", "Features"};
+	private static final String[] CATEGORIES = {"All", "News", "Arts", "Sports", "Community", "Opinion", "Features"};
 	
 	private PendingIntent mSendFeedLoaded;
 	private ArticleListFragment mListFrag;
