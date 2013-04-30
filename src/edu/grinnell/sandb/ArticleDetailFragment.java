@@ -5,9 +5,12 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,6 +27,11 @@ import edu.grinnell.sandb.img.UniversalLoaderUtility;
 
 public class ArticleDetailFragment extends SherlockFragment {
 
+//	private static final int SWIPE_MIN_DISTANCE = 120;
+//	private static final int SWIPE_THRESHOLD_VELOCITY = 150;
+	static GestureDetector gestureDetector;
+	View.OnTouchListener gestureListener;
+
 	public static final String ARTICLE_ID_KEY = "article_id";
 	private Article mArticle;
 	protected UniversalLoaderUtility mLoader;
@@ -35,12 +43,36 @@ public class ArticleDetailFragment extends SherlockFragment {
 	}
 
 	@Override
-//	public void onCreate(Bundle ofJoy) {
-//		super.onCreate(ofJoy);
+	// public void onCreate(Bundle ofJoy) {
+	// super.onCreate(ofJoy);
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
 		setHasOptionsMenu(true);
+
+		final ViewConfiguration vc = ViewConfiguration.get(getSherlockActivity());
+		final int SWIPE_MIN_DISTANCE = vc.getScaledTouchSlop();
+		final int SWIPE_THRESHOLD_VELOCITY = vc.getScaledMinimumFlingVelocity();
 		
+		gestureListener = new View.OnTouchListener() {
+			public boolean onTouch(View v, MotionEvent event) {
+				return gestureDetector.onTouchEvent(event);
+			}
+		};
+
+		gestureDetector = new GestureDetector(getSherlockActivity(),
+				new GestureDetector.SimpleOnGestureListener() {
+					@Override
+					public boolean onFling(MotionEvent e1, MotionEvent e2,
+							float velocityX, float velocityY) {
+						if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
+								&& Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+							getSherlockActivity().onBackPressed();
+							return true;
+						} else
+							return false;
+					}
+				});
+
 		Bundle b = (ofJoy == null) ? getArguments() : ofJoy;
 
 		if (b != null) {
@@ -60,11 +92,15 @@ public class ArticleDetailFragment extends SherlockFragment {
 		View rootView = inflater.inflate(R.layout.fragment_article_detail,
 				container, false);
 
-		//add the date to the article
+		// add the author to the article
+		((TextView) rootView.findViewById(R.id.article_author)).setText("By: "
+				+ mArticle.getAuthor());
+
+		// add the date to the article
 		((TextView) rootView.findViewById(R.id.article_date)).setText(mArticle
 				.getPubDate().toString());
-		
-		//add the title to the articl
+
+		// add the title to the article
 		((TextView) rootView.findViewById(R.id.article_title)).setText(mArticle
 				.getTitle());
 		TextView body = (TextView) rootView.findViewById(R.id.article_body);
@@ -75,25 +111,24 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 		ImageView imgView = (ImageView) rootView
 				.findViewById(R.id.articleImage1);
-/*
-		ImageTable imgTable = new ImageTable(getSherlockActivity());
-		imgTable.open();
+		/*
+		 * ImageTable imgTable = new ImageTable(getSherlockActivity());
+		 * imgTable.open();
+		 * 
+		 * int id = mArticle.getId(); String[] URLS =
+		 * imgTable.findURLSbyArticleId(id);
+		 * 
+		 * if (URLS != null) { String imgUrl = URLS[0]; // Drawable lowResImg =
+		 * imgTable.findByUrl(imgUrl).toDrawable(getSherlockActivity()); //
+		 * imgView.setImageBitmap(scaleImage(lowResImg, imgView)); imgUrl =
+		 * getHiResImage(imgUrl); mLoader.loadImage(imgUrl, imgView,
+		 * getActivity().getBaseContext()); }
+		 * 
+		 * imgTable.close();
+		 */
+		mLoader.loadHiResArticleImage(mArticle, imgView, getActivity()
+				.getBaseContext());
 
-		int id = mArticle.getId();
-		String[] URLS = imgTable.findURLSbyArticleId(id);
-		
-		if (URLS != null) {
-			String imgUrl = URLS[0];
-		//	Drawable lowResImg = imgTable.findByUrl(imgUrl).toDrawable(getSherlockActivity());
-		//	imgView.setImageBitmap(scaleImage(lowResImg, imgView));
-			imgUrl = getHiResImage(imgUrl);
-			mLoader.loadImage(imgUrl, imgView, getActivity().getBaseContext());
-		}
-		
-		imgTable.close();
-*/
-		mLoader.loadHiResArticleImage(mArticle, imgView, getActivity().getBaseContext());
-		
 		// open image pager if image is clicked
 		OnClickListener imgClick = new OnClickListener() {
 			public void onClick(View v) {
@@ -120,8 +155,9 @@ public class ArticleDetailFragment extends SherlockFragment {
 			}
 		};
 
+		imgView.setOnTouchListener(gestureListener);
 		imgView.setOnClickListener(imgClick);
-		
+
 		String bodyHTML = mArticle.getBody();
 
 		// make text more readable
@@ -132,51 +168,46 @@ public class ArticleDetailFragment extends SherlockFragment {
 		bodyHTML = bodyHTML.replaceAll("<div.+?</div>", "");
 		body.setText(Html.fromHtml(bodyHTML));
 
+		body.setOnTouchListener(gestureListener);
+
 		Log.d(TAG, mArticle.getTitle());
 
 		return rootView;
 	}
-/*
-	// remove the ends of each image URL to download full sized images
-	private String getHiResImage(String lowResImg) {
-		// add "contains" for error testing
 
-		if (lowResImg == null) {
-			return null;
-		}
-
-		int readTo = lowResImg.lastIndexOf("-");
-
-		if (readTo != -1) {
-			String hiResImg = lowResImg.substring(0, readTo);
-			hiResImg = hiResImg.concat(".jpg");
-			return hiResImg;
-		} else
-			return lowResImg;
-	}
-*/
-/*	
-	// Scale the image to fill the screen width
-	private Bitmap scaleImage(Drawable img, View rootView) {
-
-		// convert drawable to bitmap
-		Bitmap bm = ((BitmapDrawable) img).getBitmap();
-		// Get display width from device
-		DisplayMetrics metrics = new DisplayMetrics();
-		getActivity().getWindowManager().getDefaultDisplay()
-				.getMetrics(metrics);
-
-		int displayWidth = metrics.widthPixels;
-
-		// Calculate scaling factor
-		float scalingFactor = ((float) displayWidth / (float) bm.getWidth());
-
-		int scaleHeight = (int) (bm.getHeight() * scalingFactor);
-		int scaleWidth = (int) (bm.getWidth() * scalingFactor);
-
-		return Bitmap.createScaledBitmap(bm, scaleWidth, scaleHeight, true);
-	}
-*/	
+	/*
+	 * // remove the ends of each image URL to download full sized images
+	 * private String getHiResImage(String lowResImg) { // add "contains" for
+	 * error testing
+	 * 
+	 * if (lowResImg == null) { return null; }
+	 * 
+	 * int readTo = lowResImg.lastIndexOf("-");
+	 * 
+	 * if (readTo != -1) { String hiResImg = lowResImg.substring(0, readTo);
+	 * hiResImg = hiResImg.concat(".jpg"); return hiResImg; } else return
+	 * lowResImg; }
+	 */
+	/*
+	 * // Scale the image to fill the screen width private Bitmap
+	 * scaleImage(Drawable img, View rootView) {
+	 * 
+	 * // convert drawable to bitmap Bitmap bm = ((BitmapDrawable)
+	 * img).getBitmap(); // Get display width from device DisplayMetrics metrics
+	 * = new DisplayMetrics();
+	 * getActivity().getWindowManager().getDefaultDisplay()
+	 * .getMetrics(metrics);
+	 * 
+	 * int displayWidth = metrics.widthPixels;
+	 * 
+	 * // Calculate scaling factor float scalingFactor = ((float) displayWidth /
+	 * (float) bm.getWidth());
+	 * 
+	 * int scaleHeight = (int) (bm.getHeight() * scalingFactor); int scaleWidth
+	 * = (int) (bm.getWidth() * scalingFactor);
+	 * 
+	 * return Bitmap.createScaledBitmap(bm, scaleWidth, scaleHeight, true); }
+	 */
 
 	@Override
 	public void onResume() {
