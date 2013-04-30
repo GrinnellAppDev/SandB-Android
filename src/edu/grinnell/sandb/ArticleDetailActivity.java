@@ -5,60 +5,74 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.view.MotionEvent;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
-import edu.grinnell.sandb.R;
-
 public class ArticleDetailActivity extends SherlockFragmentActivity {
-	
+
 	public static final String DETAIL_ARGS = "detail_args";
 	public static final String TAG = "ArticleDetailActivity";
 	
 	@Override
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
-		
-		//should set the title as the article date or something
+
+		// should set the title as the article date or something
 		setTitle("");
 		setContentView(R.layout.activity_article_detail);
 		
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        Intent i = getIntent();
-        
-        Fragment fragment = new ArticleDetailFragment();;
-        if (i != null) {
-        	Bundle arguments = new Bundle();
-        	arguments.putInt(ArticleDetailFragment.ARTICLE_ID_KEY,
-        		i.getIntExtra(ArticleDetailFragment.ARTICLE_ID_KEY, 0));
-        	fragment.setArguments(arguments);
-        } else {
-        	Log.e(TAG, "no bundle for fragment..");
-        }
-                
-        getSupportFragmentManager().beginTransaction()
-        .replace(R.id.article_detail_container, fragment)
-        .commit();
-	}   
-	
-	@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-        	Intent upIntent = new Intent(this, MainActivity.class);
-        	upIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP 
-        			| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            NavUtils.navigateUpTo(this, upIntent);
-    	    overridePendingTransition(R.anim.article_slide_in, R.anim.article_slide_out);
-            return true;
-        }
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		Intent i = getIntent();
 
-        return super.onOptionsItemSelected(item);
-    }
-	
+		Fragment fragment = new ArticleDetailFragment();
+		;
+		if (i != null) {
+			Bundle arguments = new Bundle();
+			arguments.putInt(ArticleDetailFragment.ARTICLE_ID_KEY,
+					i.getIntExtra(ArticleDetailFragment.ARTICLE_ID_KEY, 0));
+			fragment.setArguments(arguments);
+		} else {
+			Log.e(TAG, "no bundle for fragment..");
+		}
+
+		getSupportFragmentManager().beginTransaction()
+				.replace(R.id.article_detail_container, fragment).commit();
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == android.R.id.home) {
+			Intent upIntent = new Intent(this, MainActivity.class);
+			upIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+					| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+			NavUtils.navigateUpTo(this, upIntent);
+			overridePendingTransition(R.anim.article_slide_in,
+					R.anim.article_slide_out);
+			return true;
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
+
 	@Override
 	public void onBackPressed() {
-	    super.onBackPressed();
-	    overridePendingTransition(R.anim.article_slide_in, R.anim.article_slide_out);
+		super.onBackPressed();
+		overridePendingTransition(R.anim.article_slide_in,
+				R.anim.article_slide_out);
+	}
+	
+	//Still respond to swipe back gesture even if it also triggers scroll
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		// TouchEvent dispatcher.
+		if (ArticleDetailFragment.gestureDetector != null) {
+			if (ArticleDetailFragment.gestureDetector.onTouchEvent(ev))
+				// If the gestureDetector handles the event, a swipe has been
+				// executed and no more needs to be done.
+				return true;
+		}
+		return super.dispatchTouchEvent(ev);
 	}
 }
