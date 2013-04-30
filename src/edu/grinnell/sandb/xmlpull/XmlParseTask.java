@@ -191,7 +191,7 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 			XmlPullParserException {
 		parser.require(XmlPullParser.START_TAG, ns, "dc:creator");
 		String author = readText(parser);
-		parser.require(XmlPullParser.END_TAG, ns, "dc:creator");
+		parser.require(XmlPullParser.END_TAG, ns, "dc:creator");		
 		return author;
 	}
 

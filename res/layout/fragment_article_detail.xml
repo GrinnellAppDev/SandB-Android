@@ -34,6 +34,18 @@
             android:orientation="vertical" >
 
             <TextView
+                android:id="@+id/article_author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="15dp"
+                android:fontFamily="sans-serif-light"
+                android:paddingBottom="5dp"
+                android:paddingTop="10dp"
+                android:textColor="@android:color/black"
+                android:textIsSelectable="true" />
+
+            <TextView
                 android:id="@+id/article_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -41,10 +53,10 @@
                 android:layout_marginRight="15dp"
                 android:fontFamily="sans-serif-light"
                 android:paddingBottom="7dp"
-                android:paddingTop="15dp"
+                android:paddingTop="2dp"
                 android:textColor="@android:color/black"
                 android:textIsSelectable="true" />
-            
+
             <ImageView
                 android:id="@+id/articleImage1"
                 android:layout_width="wrap_content"
@@ -56,8 +68,6 @@
                 android:paddingBottom="12dp"
                 android:paddingTop="10dp"
                 android:scaleType="centerCrop" />
-
-            
 
             <TextView
                 android:id="@+id/article_body"
