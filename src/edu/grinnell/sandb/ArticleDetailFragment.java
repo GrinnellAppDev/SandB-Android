@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,8 +26,8 @@ import edu.grinnell.sandb.img.UniversalLoaderUtility;
 
 public class ArticleDetailFragment extends SherlockFragment {
 
-//	private static final int SWIPE_MIN_DISTANCE = 120;
-//	private static final int SWIPE_THRESHOLD_VELOCITY = 150;
+	private static final int SWIPE_MIN_DISTANCE = 200;
+	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 	static GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
 
@@ -48,10 +47,6 @@ public class ArticleDetailFragment extends SherlockFragment {
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
 		setHasOptionsMenu(true);
-
-		final ViewConfiguration vc = ViewConfiguration.get(getSherlockActivity());
-		final int SWIPE_MIN_DISTANCE = vc.getScaledTouchSlop();
-		final int SWIPE_THRESHOLD_VELOCITY = vc.getScaledMinimumFlingVelocity();
 		
 		gestureListener = new View.OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
