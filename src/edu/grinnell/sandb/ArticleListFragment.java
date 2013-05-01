@@ -1,7 +1,7 @@
 package edu.grinnell.sandb;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,23 +17,27 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 
-import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
 
 public class ArticleListFragment extends SherlockListFragment {
 
 	public static String ARTICLE_CATEGORY_KEY = "category";
-	public static final Map<String, String> titleToKey = new HashMap<String, String>();
+	// LinkedHashMap retains insertion ordering
+	public static final Map<String, String> titleToKey = new LinkedHashMap<String, String>();
 
+	public static final String[] CATEGORIES;
+	
 	static {
 		titleToKey.put("News", "News");
-		titleToKey.put("News", "News");
 		titleToKey.put("Arts", "Arts");
-		titleToKey.put("Sports", "Sports");
 		titleToKey.put("Community", "Community");
-		titleToKey.put("Opinion", "Opinion");
 		titleToKey.put("Features", "Features");
+		titleToKey.put("Opinion", "Opinion");
+		titleToKey.put("Sports", "Sports");
+		titleToKey.put("Top Stories", "Top Story");
+		
+		CATEGORIES = titleToKey.keySet().toArray(new String[0]);
 	}
 
 	public String mCategory;

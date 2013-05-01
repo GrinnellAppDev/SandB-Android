@@ -34,8 +34,6 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 	private static final String TAG = "MainActivity";
 	private static final String SELECTED_TAB = "selected_tab";
 	
-	private static final String[] CATEGORIES = {"All", "News", "Arts", "Sports", "Community", "Opinion", "Features"};
-	
 	private PendingIntent mSendFeedLoaded;
 	private ArticleListFragment mListFrag;
 	private View mLoading;
@@ -182,7 +180,7 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 	}
 	
 	private void addTabs(ActionBar actionBar, TabsAdapter ta) {    
-        for (String category : CATEGORIES) {
+        for (String category : ArticleListFragment.CATEGORIES) {
         	Bundle args = new Bundle();
             args.putString(ArticleListFragment.ARTICLE_CATEGORY_KEY, category);
             Tab tab = actionBar.newTab()
