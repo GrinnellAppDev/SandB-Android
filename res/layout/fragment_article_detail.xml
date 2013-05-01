@@ -57,6 +57,18 @@
                 android:textColor="@android:color/black"
                 android:textIsSelectable="true" />
 
+            <TextView
+                android:id="@+id/article_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="15dp"
+                android:fontFamily="sans-serif-light"
+                android:paddingBottom="7dp"
+                android:paddingTop="2dp"
+                android:textColor="@android:color/black"
+                android:textIsSelectable="true" />
+
             <LinearLayout 
                 android:id="@+id/article_body_group"
                 android:orientation="vertical"

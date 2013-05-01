@@ -105,7 +105,6 @@ public class ArticleDetailFragment extends SherlockFragment {
 		// show first article image
 		// TODO add animated placeholder for during download
 		mLoader = new UniversalLoaderUtility();
-
 		
 		String bodyHTML = mArticle.getBody();
 		
@@ -135,7 +134,6 @@ public class ArticleDetailFragment extends SherlockFragment {
 		body.setOnTouchListener(gestureListener);
 
 		Log.d(TAG, mArticle.getTitle());
-
 		return rootView;
 	}
 
@@ -182,7 +180,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 			v.addView(tv);
 		}
 	}
-
+	
 	@Override
 	public void onResume() {
 		super.onResume();
