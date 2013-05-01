@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -98,70 +99,38 @@ public class ArticleDetailFragment extends SherlockFragment {
 		// add the title to the article
 		((TextView) rootView.findViewById(R.id.article_title)).setText(mArticle
 				.getTitle());
-		TextView body = (TextView) rootView.findViewById(R.id.article_body);
+		
+		LinearLayout body = (LinearLayout) rootView.findViewById(R.id.article_body_group);
 
 		// show first article image
 		// TODO add animated placeholder for during download
 		mLoader = new UniversalLoaderUtility();
 
-		ImageView imgView = (ImageView) rootView
-				.findViewById(R.id.articleImage1);
-		/*
-		 * ImageTable imgTable = new ImageTable(getSherlockActivity());
-		 * imgTable.open();
-		 * 
-		 * int id = mArticle.getId(); String[] URLS =
-		 * imgTable.findURLSbyArticleId(id);
-		 * 
-		 * if (URLS != null) { String imgUrl = URLS[0]; // Drawable lowResImg =
-		 * imgTable.findByUrl(imgUrl).toDrawable(getSherlockActivity()); //
-		 * imgView.setImageBitmap(scaleImage(lowResImg, imgView)); imgUrl =
-		 * getHiResImage(imgUrl); mLoader.loadImage(imgUrl, imgView,
-		 * getActivity().getBaseContext()); }
-		 * 
-		 * imgTable.close();
-		 */
-		mLoader.loadHiResArticleImage(mArticle, imgView, getActivity()
-				.getBaseContext());
-
-		// open image pager if image is clicked
-		OnClickListener imgClick = new OnClickListener() {
-			public void onClick(View v) {
-
-				ImageTable imgTable = new ImageTable(getSherlockActivity());
-				imgTable.open();
-
-				int id = mArticle.getId();
-				String[] URLS = imgTable.findURLSbyArticleId(id);
-
-				for (int i = 0; i < URLS.length; i++) {
-					URLS[i] = mLoader.getHiResImage(URLS[i]);
-					System.out.println(URLS[i]);
-				}
-
-				Intent intent = new Intent(getSherlockActivity(),
-						ImagePagerActivity.class);
-				intent.putExtra("ArticleImages", URLS);
-				intent.putExtra("ImageTitles",
-						imgTable.findTitlesbyArticleId(id));
-
-				imgTable.close();
-				startActivity(intent);
-			}
-		};
-
-		imgView.setOnTouchListener(gestureListener);
-		imgView.setOnClickListener(imgClick);
-
+		
 		String bodyHTML = mArticle.getBody();
-
+		
 		// make text more readable
 		bodyHTML = bodyHTML.replaceAll("<br />", "<br><br>");
 
 		// remove images
-		bodyHTML = bodyHTML.replaceAll("<a.+?</a>", "");
-		bodyHTML = bodyHTML.replaceAll("<div.+?</div>", "");
-		body.setText(Html.fromHtml(bodyHTML));
+		// bodyHTML = bodyHTML.replaceAll("<a.+?</a>", "");
+		// bodyHTML = bodyHTML.replaceAll("<div.+?</div>", "");
+		String imgtags="<img.+?>";
+		//Pattern p = Pattern.compile(patternStr);
+		//Matcher m = p.matcher(s);
+		String[] sections = bodyHTML.split(imgtags);
+		
+		ImageTable imgTable = new ImageTable(getActivity());
+		imgTable.open();
+		String[] urls = imgTable.findUrlsByArticleId(mArticle.getId());
+		final int maxUrls = (urls == null) ? 0 : urls.length;
+		LayoutInflater i = getActivity().getLayoutInflater();
+		int cnt = 0;
+		for (String section : sections) {
+			String url = (cnt < maxUrls) ? urls[cnt++] : null;
+			addSectionViews(body, i, section, url);
+
+		}
 
 		body.setOnTouchListener(gestureListener);
 
@@ -170,39 +139,49 @@ public class ArticleDetailFragment extends SherlockFragment {
 		return rootView;
 	}
 
-	/*
-	 * // remove the ends of each image URL to download full sized images
-	 * private String getHiResImage(String lowResImg) { // add "contains" for
-	 * error testing
-	 * 
-	 * if (lowResImg == null) { return null; }
-	 * 
-	 * int readTo = lowResImg.lastIndexOf("-");
-	 * 
-	 * if (readTo != -1) { String hiResImg = lowResImg.substring(0, readTo);
-	 * hiResImg = hiResImg.concat(".jpg"); return hiResImg; } else return
-	 * lowResImg; }
-	 */
-	/*
-	 * // Scale the image to fill the screen width private Bitmap
-	 * scaleImage(Drawable img, View rootView) {
-	 * 
-	 * // convert drawable to bitmap Bitmap bm = ((BitmapDrawable)
-	 * img).getBitmap(); // Get display width from device DisplayMetrics metrics
-	 * = new DisplayMetrics();
-	 * getActivity().getWindowManager().getDefaultDisplay()
-	 * .getMetrics(metrics);
-	 * 
-	 * int displayWidth = metrics.widthPixels;
-	 * 
-	 * // Calculate scaling factor float scalingFactor = ((float) displayWidth /
-	 * (float) bm.getWidth());
-	 * 
-	 * int scaleHeight = (int) (bm.getHeight() * scalingFactor); int scaleWidth
-	 * = (int) (bm.getWidth() * scalingFactor);
-	 * 
-	 * return Bitmap.createScaledBitmap(bm, scaleWidth, scaleHeight, true); }
-	 */
+	private void addSectionViews(ViewGroup v, LayoutInflater li, String text, String img) {
+		
+		if (img != null) {
+			ImageView imgView = (ImageView) li.inflate(R.layout.img_section, v, false);
+			// open image pager if image is clicked
+			OnClickListener imgClick = new OnClickListener() {
+				public void onClick(View v) {
+
+					ImageTable imgTable = new ImageTable(getSherlockActivity());
+					imgTable.open();
+
+					int id = mArticle.getId();
+					String[] URLS = imgTable.findUrlsByArticleId(id);
+
+					for (int i = 0; i < URLS.length; i++) {
+						URLS[i] = mLoader.getHiResImage(URLS[i]);
+						// System.out.println(URLS[i]);
+					}
+
+					Intent intent = new Intent(getSherlockActivity(),
+							ImagePagerActivity.class);
+					intent.putExtra("ArticleImages", URLS);
+					intent.putExtra("ImageTitles",
+							imgTable.findTitlesbyArticleId(id));
+
+					imgTable.close();
+					startActivity(intent);
+				}
+			};
+
+			imgView.setOnTouchListener(gestureListener);
+			imgView.setOnClickListener(imgClick);
+
+			mLoader.loadHiResArticleImage(img, imgView, getActivity());
+			v.addView(imgView);
+		}
+		
+		if (text != null) {
+			TextView tv = (TextView) li.inflate(R.layout.text_section, v, false);
+			tv.setText(Html.fromHtml(text));
+			v.addView(tv);
+		}
+	}
 
 	@Override
 	public void onResume() {
