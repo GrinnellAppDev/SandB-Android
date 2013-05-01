@@ -27,6 +27,8 @@ public class ArticleListFragment extends SherlockListFragment {
 	public static final Map<String, String> titleToKey = new HashMap<String, String>();
 
 	static {
+		titleToKey.put("News", "News");
+		titleToKey.put("News", "News");
 		titleToKey.put("Arts", "Arts");
 		titleToKey.put("Sports", "Sports");
 		titleToKey.put("Community", "Community");

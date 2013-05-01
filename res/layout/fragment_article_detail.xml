@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gcream"
     android:orientation="vertical"
     tools:context=".ArticleDetailFragment" >
 
@@ -49,7 +50,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
                         android:gravity="right"
-                        android:paddingLeft="40dip"
+                        android:paddingLeft="25dip"
                         android:textColor="@android:color/black"
                         android:textIsSelectable="true" />
 
@@ -59,7 +60,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
                         android:gravity="right"
-                        android:paddingRight="50dip"
+                        android:paddingRight="35dip"
                         android:textColor="@android:color/black"
                         android:textIsSelectable="true" />
                 </TableRow>
@@ -67,9 +68,9 @@
 
             <View
                 android:layout_width="fill_parent"
-                android:layout_height="2dip"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="40dp"
+                android:layout_height="1dip"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
                 android:background="#C0C0C0" />
 
             <ImageView

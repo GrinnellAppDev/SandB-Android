@@ -233,9 +233,7 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 		int year = c.get(Calendar.YEAR);		
 		int dateCut = date.lastIndexOf(Integer.toString(year)) + 4;
 		date = date.substring(0, dateCut);
-		
-		Log.i("parsed date", date);
-		
+				
 		return date;
 	}
 

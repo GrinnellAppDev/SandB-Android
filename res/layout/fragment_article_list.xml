@@ -1,20 +1,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gcream"
+    android:orientation="vertical" >
+
+    <ListView
+        android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-      
-      <ListView android:id="@android:id/list"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:paddingLeft="0dp"
-          android:paddingRight="0dp"
-          android:listSelector="@drawable/glistselector"/>
-      
-      <TextView android:id="@android:id/empty"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:padding="@dimen/pad5"
-          android:textAppearance="?android:attr/textAppearanceMedium"
-          android:text="@string/no_articles"/>
+        android:listSelector="@drawable/glistselector"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp" />
+
+    <TextView
+        android:id="@android:id/empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/pad5"
+        android:text="@string/no_articles"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </LinearLayout>
