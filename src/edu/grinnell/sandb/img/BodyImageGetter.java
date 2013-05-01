@@ -83,8 +83,6 @@ public class BodyImageGetter {
 
 	}
 
-	// TODO on post execute close table decrement variable
-
 	private static byte[] getImage(String imgSource, int start) {
 		// download image as byte array
 

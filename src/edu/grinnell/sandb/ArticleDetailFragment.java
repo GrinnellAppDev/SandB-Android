@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -102,9 +101,6 @@ public class ArticleDetailFragment extends SherlockFragment {
 				.getTitle());
 		
 		LinearLayout body = (LinearLayout) rootView.findViewById(R.id.article_body_group);
-
-		// show first article image
-		// TODO add animated placeholder for during download
 		mLoader = new UniversalLoaderUtility();
 
 		String bodyHTML = mArticle.getBody();
@@ -116,8 +112,6 @@ public class ArticleDetailFragment extends SherlockFragment {
 		// bodyHTML = bodyHTML.replaceAll("<a.+?</a>", "");
 		// bodyHTML = bodyHTML.replaceAll("<div.+?</div>", "");
 		String imgtags="<img.+?>";
-		//Pattern p = Pattern.compile(patternStr);
-		//Matcher m = p.matcher(s);
 		String[] sections = bodyHTML.split(imgtags);
 		
 		ImageTable imgTable = new ImageTable(getActivity());
@@ -129,7 +123,6 @@ public class ArticleDetailFragment extends SherlockFragment {
 		for (String section : sections) {
 			String url = (cnt < maxUrls) ? urls[cnt++] : null;
 			addSectionViews(body, i, section, url);
-
 		}
 
 		body.setOnTouchListener(gestureListener);
@@ -197,8 +190,6 @@ public class ArticleDetailFragment extends SherlockFragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		// TODO adds item for each rotation BAD
-		// if (menu.removeItem(id))
 		inflater.inflate(R.menu.article_detail_menu, menu);
 	}
 

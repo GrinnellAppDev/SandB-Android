@@ -1,8 +1,6 @@
 package edu.grinnell.sandb;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +27,6 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 	private class ViewHolder {
 		TextView title;
 		TextView description;
-		TextView pubdate;
 		ImageView image;
 	}
 
@@ -61,7 +58,6 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 			holder.title.setText(a.getTitle());
 			holder.title.setPadding(3, 3, 3, 3);
 			holder.description.setText(a.getDescription());
-			SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm", Locale.getDefault());
 		}
 
 		return convertView;
