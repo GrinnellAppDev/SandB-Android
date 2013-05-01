@@ -43,8 +43,6 @@ public class ArticleDetailFragment extends SherlockFragment {
 	}
 
 	@Override
-	// public void onCreate(Bundle ofJoy) {
-	// super.onCreate(ofJoy);
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
 		setHasOptionsMenu(true);
