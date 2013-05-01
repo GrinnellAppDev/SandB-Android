@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -47,7 +48,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
 		setHasOptionsMenu(true);
-		
+
 		gestureListener = new View.OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
 				return gestureDetector.onTouchEvent(event);
@@ -91,7 +92,6 @@ public class ArticleDetailFragment extends SherlockFragment {
 		((TextView) rootView.findViewById(R.id.article_author)).setText("By: "
 				+ mArticle.getAuthor());
 
-				
 		// add the date to the article
 		((TextView) rootView.findViewById(R.id.article_date)).setText(mArticle
 				.getPubDate().toString());
@@ -107,6 +107,14 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 		ImageView imgView = (ImageView) rootView
 				.findViewById(R.id.articleImage1);
+
+		// set max height so that image does not go off screen
+		DisplayMetrics metrics = new DisplayMetrics();
+		getSherlockActivity().getWindowManager().getDefaultDisplay()
+				.getMetrics(metrics);
+
+		int scrnHeight = metrics.heightPixels - 100;
+		imgView.setMaxHeight(scrnHeight);
 		/*
 		 * ImageTable imgTable = new ImageTable(getSherlockActivity());
 		 * imgTable.open();
