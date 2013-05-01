@@ -14,8 +14,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.Spinner;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
@@ -23,7 +26,6 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.xmlpull.XmlPullReceiver;
 import edu.grinnell.sandb.xmlpull.XmlPullService;
 
@@ -244,10 +246,49 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 		}
 
 		@Override
-		public void onPageSelected(int position) {
-			mActionBar.setSelectedNavigationItem(position);
-		}
+        public void onPageSelected(int position)
+        {
+           mActionBar.getTabAt(position).select();
+           ViewParent root = findViewById(android.R.id.content).getParent();
+           findAndUpdateSpinner(root, position);
+        }
 
+        /**
+         * Searches the view hierarchy excluding the content view 
+         * for a possible Spinner in the ActionBar. 
+         * 
+         * @param root The parent of the content view
+         * @param position The position that should be selected
+         * @return if the spinner was found and adjusted
+         */
+        private boolean findAndUpdateSpinner(Object root, int position)
+        {
+           if (root instanceof android.widget.Spinner)
+           {
+              // Found the Spinner
+              Spinner spinner = (Spinner) root;
+              spinner.setSelection(position);
+              return true;
+           }
+           else if (root instanceof ViewGroup)
+           {
+              ViewGroup group = (ViewGroup) root;
+              if (group.getId() != android.R.id.content)
+              {
+                 // Found a container that isn't the container holding our screen layout
+                 for (int i = 0; i < group.getChildCount(); i++)
+                 {
+                    if (findAndUpdateSpinner(group.getChildAt(i), position))
+                    {
+                       // Found and done searching the View tree
+                       return true;
+                    }
+                 }
+              }
+           }
+           // Nothing found
+           return false;
+        }
 		@Override
 		public void onPageScrollStateChanged(int state) {
 		}
