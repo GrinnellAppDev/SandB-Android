@@ -88,7 +88,7 @@ public class UniversalLoaderUtility {
 		imgTable.open();
 
 		int id = a.getId();
-		String[] URLS = imgTable.findURLSbyArticleId(id);
+		String[] URLS = imgTable.findUrlsByArticleId(id);
 		imgTable.close();
 
 		// try {
@@ -127,7 +127,7 @@ public class UniversalLoaderUtility {
 		imgTable.open();
 
 		int id = a.getId();
-		String[] URLS = imgTable.findURLSbyArticleId(id);
+		String[] URLS = imgTable.findUrlsByArticleId(id);
 
 		try {
 			// throw exception if no image
@@ -161,6 +161,45 @@ public class UniversalLoaderUtility {
 		}
 	}
 
+	// load first image from an article, in low res
+	public void loadHiResArticleImage(String url, ImageView imgView,
+			Context context) {
+
+		ImageTable imgTable = new ImageTable(imgView.getContext());
+		imgTable.open();
+
+		try {
+			// throw exception if no image
+			String hiResImgUrl = getHiResImage(url);
+
+			DisplayImageOptions options;
+
+			options = new DisplayImageOptions.Builder()
+					.showStubImage(R.drawable.loading)
+					.resetViewBeforeLoading()
+					.cacheOnDisc()
+					.imageScaleType(ImageScaleType.EXACTLY)
+					.bitmapConfig(Bitmap.Config.RGB_565)
+					.displayer(new FadeInBitmapDisplayer(300)).build();
+
+			imgView.startAnimation(AnimationUtils.loadAnimation(context,
+					R.anim.loading));
+
+			spinner = new ProgressBar(context, null,
+					android.R.attr.progressBarStyleSmall);
+
+			imageLoader.displayImage(hiResImgUrl, imgView, options, listener);
+			imgView.setVisibility(View.VISIBLE);
+			imgTable.close();
+
+		} catch (NullPointerException e) {
+			imgTable.close();
+			// imageLoader.displayImage(null, imgView, null, listener);
+			imgView.setVisibility(View.GONE);
+		}
+	}
+
+	
 	// remove the ends of each image URL to download full sized images
 	public String getHiResImage(String lowResImg) {
 		// add "contains" for error testing

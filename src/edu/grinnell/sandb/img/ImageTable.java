@@ -91,7 +91,7 @@ public class ImageTable {
 		return img;
 	}
 	
-	public String[] findURLSbyArticleId(int articleId) {
+	public String[] findUrlsByArticleId(int articleId) {
 		Cursor cursor = database.query(ImageStorageHelper.TABLE_IMAGES,
 				allColumns, ImageStorageHelper.COLUMN_ARTICLEID + " = " + articleId, null, null, null, null);
 		
