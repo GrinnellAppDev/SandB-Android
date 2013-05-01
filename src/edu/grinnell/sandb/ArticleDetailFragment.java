@@ -91,6 +91,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 		((TextView) rootView.findViewById(R.id.article_author)).setText("By: "
 				+ mArticle.getAuthor());
 
+				
 		// add the date to the article
 		((TextView) rootView.findViewById(R.id.article_date)).setText(mArticle
 				.getPubDate().toString());

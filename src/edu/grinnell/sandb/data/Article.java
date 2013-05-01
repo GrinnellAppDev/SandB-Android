@@ -1,6 +1,5 @@
 package edu.grinnell.sandb.data;
 
-import java.util.Date;
 
 public class Article {
 
@@ -9,44 +8,44 @@ public class Article {
 	protected String guid;
 	protected String title;
 	protected String link;
-	protected Date pubDate;
+	protected String pubDate;
 	protected String category;
 	protected String description;
 	protected String body;
 	protected String comments;
 	protected String author;
 
-	
-	protected Article (String articleTitle, String articleBody) {
+	protected Article(String articleTitle, String articleBody) {
 		title = articleTitle;
 		body = articleBody;
 	}
-	
-	protected Article (String guid, String articleTitle, String articleLink,
-			long publicationDate, String category, String description,
+
+	protected Article(String guid, String articleTitle, String articleLink,
+			String publicationDate, String category, String description,
 			String articleBody, String commentsLink, String author) {
 		this(articleTitle, articleBody);
 		this.guid = guid;
 		this.link = articleLink;
-		this.pubDate = new Date(publicationDate);
+		this.pubDate = publicationDate;
 		this.category = category;
 		this.description = description;
 		this.comments = commentsLink;
 		this.author = author;
 	}
-	
-	protected Article (int id, String guid, String articleTitle, String articleLink,
-			long publicationDate, String category, String description,
-			String articleBody, String commentsLink, String author) {
-		this(guid, articleTitle, articleLink, publicationDate, 
-				category, description, articleBody, commentsLink, author);
+
+	protected Article(int id, String guid, String articleTitle,
+			String articleLink, String publicationDate, String category,
+			String description, String articleBody, String commentsLink,
+			String author) {
+		this(guid, articleTitle, articleLink, publicationDate, category,
+				description, articleBody, commentsLink, author);
 		this.id = id;
 	}
 
 	public int getId() {
 		return id;
 	}
-	
+
 	public String getTitle() {
 		return title;
 	}
@@ -74,11 +73,11 @@ public class Article {
 	public String getBody() {
 		return body;
 	}
-	
-	public Date getPubDate() {
+
+	public String getPubDate() {
 		return pubDate;
 	}
-	
+
 	public String getAuthor() {
 		return author;
 	}

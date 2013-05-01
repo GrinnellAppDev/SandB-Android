@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -151,7 +152,7 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 				link = readLink(parser);
 			} else if (name.equals("comments")) {
 				comments = readComments(parser);
-			} else if (name.equals("date")) {
+			} else if (name.equals("pubDate")) {
 				date = readDate(parser);
 			} else if (name.equals("category")) {
 				category = readCategory(parser);
@@ -222,12 +223,19 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 		return commentsLink;
 	}
 
-	// Processes link tags in the feed.
+	// Processes date tags in the feed.
 	private static String readDate(XmlPullParser parser) throws IOException,
 			XmlPullParserException {
-		parser.require(XmlPullParser.START_TAG, ns, "comments");
+		parser.require(XmlPullParser.START_TAG, ns, "pubDate");
 		String date = readText(parser);
-		parser.require(XmlPullParser.END_TAG, ns, "comments");
+		parser.require(XmlPullParser.END_TAG, ns, "pubDate");
+		Calendar c = Calendar.getInstance(); 
+		int year = c.get(Calendar.YEAR);		
+		int dateCut = date.lastIndexOf(Integer.toString(year)) + 4;
+		date = date.substring(0, dateCut);
+		
+		Log.i("parsed date", date);
+		
 		return date;
 	}
 

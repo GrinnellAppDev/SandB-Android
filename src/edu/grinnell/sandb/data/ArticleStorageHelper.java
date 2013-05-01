@@ -31,7 +31,7 @@ public class ArticleStorageHelper extends SQLiteOpenHelper {
 	    + COLUMN_GUID + " text, "
 	    + COLUMN_TITLE + " text not null, "
 	    + COLUMN_LINK + " text, "
-	    + COLUMN_PUBDATE + " integer, "
+	    + COLUMN_PUBDATE + " text, "
 	    + COLUMN_DESCRIPTION + " text, " 
 	    + COLUMN_BODY + " text not null, "
 	    + COLUMN_COMMENTS + " text, "

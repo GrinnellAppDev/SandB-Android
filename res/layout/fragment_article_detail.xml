@@ -33,29 +33,44 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/article_author"
-                android:layout_width="match_parent"
+            <TableLayout
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="15dp"
-                android:fontFamily="sans-serif-light"
-                android:paddingBottom="5dp"
-                android:paddingTop="10dp"
-                android:textColor="@android:color/black"
-                android:textIsSelectable="true" />
+                android:stretchColumns="1" >
 
-            <TextView
-                android:id="@+id/article_date"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="15dp"
-                android:fontFamily="sans-serif-light"
-                android:paddingBottom="7dp"
-                android:paddingTop="2dp"
-                android:textColor="@android:color/black"
-                android:textIsSelectable="true" />
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dip" >
+
+                    <TextView
+                        android:id="@+id/article_author"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-light"
+                        android:gravity="right"
+                        android:paddingLeft="40dip"
+                        android:textColor="@android:color/black"
+                        android:textIsSelectable="true" />
+
+                    <TextView
+                        android:id="@+id/article_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-light"
+                        android:gravity="right"
+                        android:paddingRight="50dip"
+                        android:textColor="@android:color/black"
+                        android:textIsSelectable="true" />
+                </TableRow>
+            </TableLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="2dip"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:background="#C0C0C0" />
 
             <ImageView
                 android:id="@+id/articleImage1"

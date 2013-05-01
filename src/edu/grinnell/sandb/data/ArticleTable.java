@@ -1,11 +1,7 @@
 package edu.grinnell.sandb.data;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import junit.framework.Assert;
 import android.content.ContentValues;
@@ -111,23 +107,23 @@ public class ArticleTable {
 			String description, String articleBody, String commentsLink,
 			String author) {
 
-		Date pubDate = null;
-		try {
-			if (publicationDate != null) {
-				pubDate = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss ZZZZ",
-						Locale.ENGLISH).parse(publicationDate);
-			} else {
-				pubDate = new Date();
-			}
-		} catch (ParseException pe) {
-			Log.d(TAG, "new Article", pe);
-		}
+//		Date pubDate = null;
+//		try {
+//			if (publicationDate != null) {
+//				pubDate = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss ZZZZ",
+//						Locale.ENGLISH).parse(publicationDate);
+//			} else {
+//				pubDate = new Date();
+//			}
+//		} catch (ParseException pe) {
+//			Log.d(TAG, "new Article", pe);
+//		}
 
 		ContentValues values = new ContentValues();
 		values.put(ArticleStorageHelper.COLUMN_GUID, guid);
 		values.put(ArticleStorageHelper.COLUMN_TITLE, articleTitle);
 		values.put(ArticleStorageHelper.COLUMN_LINK, articleLink);
-		values.put(ArticleStorageHelper.COLUMN_PUBDATE, pubDate.getTime());
+		values.put(ArticleStorageHelper.COLUMN_PUBDATE, publicationDate);
 		values.put(ArticleStorageHelper.COLUMN_CATEGORY, category);
 		values.put(ArticleStorageHelper.COLUMN_DESCRIPTION, description);
 		values.put(ArticleStorageHelper.COLUMN_BODY, articleBody);
@@ -152,7 +148,7 @@ public class ArticleTable {
 		try {
 			a = new Article(cursor.getInt(0), cursor.getString(1),
 					cursor.getString(2), cursor.getString(3),
-					cursor.getInt(4), cursor.getString(5),
+					cursor.getString(4), cursor.getString(5),
 					cursor.getString(6), cursor.getString(7),
 					cursor.getString(8), cursor.getString(9));
 
