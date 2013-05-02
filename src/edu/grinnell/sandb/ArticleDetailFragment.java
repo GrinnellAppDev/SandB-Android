@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -27,6 +28,8 @@ import edu.grinnell.sandb.img.UniversalLoaderUtility;
 
 public class ArticleDetailFragment extends SherlockFragment {
 
+	private static int scrnHeight = 20000;
+
 	private static final int SWIPE_MIN_DISTANCE = 200;
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 	static GestureDetector gestureDetector;
@@ -46,6 +49,12 @@ public class ArticleDetailFragment extends SherlockFragment {
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
 		setHasOptionsMenu(true);
+		
+		DisplayMetrics metrics = new DisplayMetrics();
+		getSherlockActivity().getWindowManager().getDefaultDisplay()
+				.getMetrics(metrics);
+
+		scrnHeight = metrics.heightPixels - 100;
 
 		gestureListener = new View.OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
@@ -97,21 +106,22 @@ public class ArticleDetailFragment extends SherlockFragment {
 		// add the title to the article
 		((TextView) rootView.findViewById(R.id.article_title)).setText(mArticle
 				.getTitle());
-		
-		LinearLayout body = (LinearLayout) rootView.findViewById(R.id.article_body_group);
+
+		LinearLayout body = (LinearLayout) rootView
+				.findViewById(R.id.article_body_group);
 		mLoader = new UniversalLoaderUtility();
 
 		String bodyHTML = mArticle.getBody();
-		
+
 		// make text more readable
 		bodyHTML = bodyHTML.replaceAll("<br />", "<br><br>");
 
 		// remove images
 		// bodyHTML = bodyHTML.replaceAll("<a.+?</a>", "");
 		// bodyHTML = bodyHTML.replaceAll("<div.+?</div>", "");
-		String imgtags="<img.+?>";
+		String imgtags = "<img.+?>";
 		String[] sections = bodyHTML.split(imgtags);
-		
+
 		ImageTable imgTable = new ImageTable(getActivity());
 		imgTable.open();
 		String[] urls = imgTable.findUrlsByArticleId(mArticle.getId());
@@ -129,10 +139,12 @@ public class ArticleDetailFragment extends SherlockFragment {
 		return rootView;
 	}
 
-	private void addSectionViews(ViewGroup v, LayoutInflater li, String text, String img) {
-		
+	private void addSectionViews(ViewGroup v, LayoutInflater li, String text,
+			String img) {
+
 		if (img != null) {
-			ImageView imgView = (ImageView) li.inflate(R.layout.img_section, v, false);
+			ImageView imgView = (ImageView) li.inflate(R.layout.img_section, v,
+					false);
 			// open image pager if image is clicked
 			OnClickListener imgClick = new OnClickListener() {
 				public void onClick(View v) {
@@ -161,18 +173,26 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 			imgView.setOnTouchListener(gestureListener);
 			imgView.setOnClickListener(imgClick);
+			// set max height so that image does not go off screen
+			DisplayMetrics metrics = new DisplayMetrics();
+			getSherlockActivity().getWindowManager().getDefaultDisplay()
+					.getMetrics(metrics);
+
+			int scrnHeight = metrics.heightPixels - 100;
+			imgView.setMaxHeight(scrnHeight);
 
 			mLoader.loadHiResArticleImage(img, imgView, getActivity());
 			v.addView(imgView);
 		}
-		
+
 		if (text != null) {
-			TextView tv = (TextView) li.inflate(R.layout.text_section, v, false);
+			TextView tv = (TextView) li
+					.inflate(R.layout.text_section, v, false);
 			tv.setText(Html.fromHtml(text));
 			v.addView(tv);
 		}
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
