@@ -30,7 +30,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 	private static int scrnHeight = 20000;
 
-	private static final int SWIPE_MIN_DISTANCE = 200;
+	private static final int SWIPE_MIN_DISTANCE = 300;
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 	static GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
