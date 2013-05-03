@@ -91,7 +91,7 @@ public class ArticleListFragment extends SherlockListFragment {
 		if (b != null)
 			mCategory = titleToKey.get(b.getString(ARTICLE_CATEGORY_KEY, null));
 
-		Log.d(TAG, "Loading data for the '" + mCategory + "' category..");
+		Log.i(TAG, "Loading data for the '" + mCategory + "' category..");
 		mData = loadDataFromCache(mCategory);
 
 		if (mData == null)

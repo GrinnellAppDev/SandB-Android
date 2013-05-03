@@ -1,7 +1,5 @@
 package edu.grinnell.sandb;
 
-import java.util.regex.Pattern;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -84,7 +82,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 			int id = b.getInt(ARTICLE_ID_KEY);
 			ArticleTable table = new ArticleTable(getSherlockActivity());
 			table.open();
-			Log.d(TAG, "Looking for article with id = " + id);
+			Log.i(TAG, "Looking for article with id = " + id);
 			mArticle = table.findById(id);
 		}
 
@@ -137,7 +135,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 		body.setOnTouchListener(gestureListener);
 
-		Log.d(TAG, mArticle.getTitle());
+		Log.i(TAG, mArticle.getTitle());
 		return rootView;
 	}
 

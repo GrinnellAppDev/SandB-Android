@@ -40,7 +40,7 @@ public class ArticleTable {
 		Assert.assertNotNull(dbHelper);
 		try {
 			database = dbHelper.getWritableDatabase();
-			Log.d(TAG, "Article DB opened: '" + database.toString() + "'");
+			Log.i(TAG, "Article DB opened: '" + database.toString() + "'");
 		} catch (Exception e) {
 			Log.e(TAG, "method: open", e);
 		}
@@ -52,14 +52,14 @@ public class ArticleTable {
 
 	public void deleteArticle(Article article) {
 		long id = article.getId();
-		Log.d(TAG, "Article deleted with id: " + id);
+		Log.i(TAG, "Article deleted with id: " + id);
 		database.delete(ArticleStorageHelper.TABLE_ARTICLES,
 				ArticleStorageHelper.COLUMN_ID + " = " + id, null);
 	}
 
 	public Article findById(int id) {
 		String where = ArticleStorageHelper.COLUMN_ID + " = " + id;
-		Log.d(TAG, "Looking for article where " + where);
+		Log.i(TAG, "Looking for article where " + where);
 		Cursor cursor = database.query(ArticleStorageHelper.TABLE_ARTICLES,
 				allColumns, where, null, null, null, null);
 

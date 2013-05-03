@@ -51,7 +51,7 @@ public class XmlPullService extends IntentService {
 			lastCheckedMs = mPrefs.lastUpdated;
 			checkAndDownload(lastCheckedMs);
 		} else {
-			Log.d(TAG, "Unknown Intent.  Action = " + action);
+			Log.e(TAG, "Unknown Intent.  Action = " + action);
 		}
 	}
 	

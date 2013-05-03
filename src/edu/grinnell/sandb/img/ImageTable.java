@@ -39,7 +39,7 @@ public class ImageTable {
 
 	public void deleteImage(Image image) {
 		long id = image.getId();
-		Log.d(TAG, "Image deleted with id: " + id);
+		Log.i(TAG, "Image deleted with id: " + id);
 		database.delete(ImageStorageHelper.TABLE_IMAGES,
 				ImageStorageHelper.COLUMN_ID + " = " + id, null);
 	}

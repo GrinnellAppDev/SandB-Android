@@ -85,7 +85,7 @@ public class Utility {
         try {
        	 return Bitmap.createScaledBitmap(bm, (int) sw, (int) sh, true);
         } catch (IllegalArgumentException iae) {
-       	 Log.d("generate thumb", "width: " + w + ", height: " + h + ", scale: " + s + ", sh" + sh);
+       	 Log.i("generate thumb", "width: " + w + ", height: " + h + ", scale: " + s + ", sh" + sh);
        	 return null;
         }
 	}
