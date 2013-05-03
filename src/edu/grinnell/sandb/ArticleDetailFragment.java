@@ -215,9 +215,9 @@ public class ArticleDetailFragment extends SherlockFragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch (item.getItemId()) {
-		case R.id.menu_settings:
-			// startActivityForResult(new Intent(this, PrefActiv.class), PREFS);
-			break;
+//		case R.id.menu_settings:
+//			// startActivityForResult(new Intent(this, PrefActiv.class), PREFS);
+//			break;
 		case R.id.menu_share:
 			share();
 			break;
