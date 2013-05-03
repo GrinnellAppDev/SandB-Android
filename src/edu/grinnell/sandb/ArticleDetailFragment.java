@@ -1,5 +1,7 @@
 package edu.grinnell.sandb;
 
+import java.util.regex.Pattern;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -49,7 +51,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
 		setHasOptionsMenu(true);
-		
+
 		DisplayMetrics metrics = new DisplayMetrics();
 		getSherlockActivity().getWindowManager().getDefaultDisplay()
 				.getMetrics(metrics);
@@ -116,17 +118,19 @@ public class ArticleDetailFragment extends SherlockFragment {
 		// make text more readable
 		bodyHTML = bodyHTML.replaceAll("<br />", "<br><br>");
 
-		// remove images
-		// bodyHTML = bodyHTML.replaceAll("<a.+?</a>", "");
-		// bodyHTML = bodyHTML.replaceAll("<div.+?</div>", "");
-		String imgtags = "<img.+?>";
+		// String imgtags = "<img.+?>";
+		String imgtags = "<div.+?</div>";
+
 		String[] sections = bodyHTML.split(imgtags);
+		Log.i("articletext", sections[0]);
+		Log.i("articletext", sections[1]);
 
 		ImageTable imgTable = new ImageTable(getActivity());
 		imgTable.open();
 		String[] urls = imgTable.findUrlsByArticleId(mArticle.getId());
 		final int maxUrls = (urls == null) ? 0 : urls.length;
 		LayoutInflater i = getActivity().getLayoutInflater();
+
 		int cnt = 0;
 		for (String section : sections) {
 			String url = (cnt < maxUrls) ? urls[cnt++] : null;
@@ -188,6 +192,10 @@ public class ArticleDetailFragment extends SherlockFragment {
 		if (text != null) {
 			TextView tv = (TextView) li
 					.inflate(R.layout.text_section, v, false);
+
+			// remove images
+			text = text.replaceAll("<div.?div>", "");
+			
 			tv.setText(Html.fromHtml(text));
 			v.addView(tv);
 		}
