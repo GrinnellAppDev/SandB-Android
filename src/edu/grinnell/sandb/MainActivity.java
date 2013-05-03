@@ -153,9 +153,9 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 				this.startXmlPullService(true);
 			}	
 			break;
-		case R.id.menu_settings:
-			// startActivityForResult(new Intent(this, PrefActiv.class), PREFS);
-			break;
+//		case R.id.menu_settings:
+//			// startActivityForResult(new Intent(this, PrefActiv.class), PREFS);
+//			break;
 		default:
 			
 			break;
