@@ -118,12 +118,10 @@ public class ArticleDetailFragment extends SherlockFragment {
 		// make text more readable
 		bodyHTML = bodyHTML.replaceAll("<br />", "<br><br>");
 
-		// String imgtags = "<img.+?>";
-		String imgtags = "<div.+?</div>";
+		String imgtags = "<img.+?>";
+		//String imgtags = "<div.+?</div>";
 
 		String[] sections = bodyHTML.split(imgtags);
-		Log.i("articletext", sections[0]);
-		Log.i("articletext", sections[1]);
 
 		ImageTable imgTable = new ImageTable(getActivity());
 		imgTable.open();
@@ -145,7 +143,18 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 	private void addSectionViews(ViewGroup v, LayoutInflater li, String text,
 			String img) {
+		
+		if (text != null) {
+			TextView tv = (TextView) li
+					.inflate(R.layout.text_section, v, false);
 
+			// remove images
+			//text = text.replaceAll("<div.?div>", "");
+			
+			tv.setText(Html.fromHtml(text));
+			v.addView(tv);
+		}
+		
 		if (img != null) {
 			ImageView imgView = (ImageView) li.inflate(R.layout.img_section, v,
 					false);
@@ -189,16 +198,16 @@ public class ArticleDetailFragment extends SherlockFragment {
 			v.addView(imgView);
 		}
 
-		if (text != null) {
-			TextView tv = (TextView) li
-					.inflate(R.layout.text_section, v, false);
-
-			// remove images
-			text = text.replaceAll("<div.?div>", "");
-			
-			tv.setText(Html.fromHtml(text));
-			v.addView(tv);
-		}
+//		if (text != null) {
+//			TextView tv = (TextView) li
+//					.inflate(R.layout.text_section, v, false);
+//
+//			// remove images
+//			//text = text.replaceAll("<div.?div>", "");
+//			
+//			tv.setText(Html.fromHtml(text));
+//			v.addView(tv);
+//		}
 	}
 
 	@Override

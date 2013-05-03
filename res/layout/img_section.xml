@@ -5,6 +5,5 @@
     android:layout_gravity="center"
     android:adjustViewBounds="true"
     android:contentDescription="@string/article_image"
-    android:paddingBottom="12dp"
-    android:paddingTop="10dp"
+    android:paddingBottom="8dp"
     android:scaleType="centerCrop" />
