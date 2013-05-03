@@ -130,9 +130,14 @@ public class BodyImageGetter {
 
 		// start at beginning of link
 		subStart = body.indexOf(key, start) + key.length();
-		subEnd = body.indexOf("\"", subStart);
 
-		substring = body.substring(subStart, subEnd);
+		if (subStart >= 0) {
+			subEnd = body.indexOf("\"", subStart);
+		}
+		
+		if (subEnd >= subStart) {
+			substring = body.substring(subStart, subEnd);
+		}
 
 		return substring;
 	}
