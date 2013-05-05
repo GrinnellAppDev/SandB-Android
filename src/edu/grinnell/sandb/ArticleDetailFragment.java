@@ -85,7 +85,6 @@ public class ArticleDetailFragment extends SherlockFragment {
 			Log.i(TAG, "Looking for article with id = " + id);
 			mArticle = table.findById(id);
 		}
-
 	}
 
 	@Override
@@ -95,6 +94,13 @@ public class ArticleDetailFragment extends SherlockFragment {
 		View rootView = inflater.inflate(R.layout.fragment_article_detail,
 				container, false);
 
+		// Navigate up if there is no article information..
+		if (mArticle == null) { 
+			Intent up = new Intent(getActivity(), MainActivity.class);
+			up.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			NavUtils.navigateUpTo(getActivity(), up);
+		}
+		
 		// add the author to the article
 		((TextView) rootView.findViewById(R.id.article_author)).setText("By: "
 				+ mArticle.getAuthor());
