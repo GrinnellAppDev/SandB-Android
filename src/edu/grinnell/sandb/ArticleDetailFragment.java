@@ -96,9 +96,9 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 		// Navigate up if there is no article information..
 		if (mArticle == null) { 
-			Intent up = new Intent(getActivity(), MainActivity.class);
+			Intent up = new Intent(getSherlockActivity(), MainActivity.class);
 			up.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			NavUtils.navigateUpTo(getActivity(), up);
+			NavUtils.navigateUpTo(getSherlockActivity(), up);
 		}
 		
 		// add the author to the article
@@ -198,7 +198,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 			int scrnHeight = metrics.heightPixels - 100;
 			imgView.setMaxHeight(scrnHeight);
 
-			mLoader.loadHiResArticleImage(img, imgView, getActivity());
+			mLoader.loadHiResArticleImage(img, imgView, getSherlockActivity());
 			v.addView(imgView);
 		}
 
