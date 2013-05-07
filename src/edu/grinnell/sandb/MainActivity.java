@@ -25,7 +25,6 @@ import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.crittercism.app.Crittercism;
 
 import edu.grinnell.sandb.xmlpull.XmlPullReceiver;
 import edu.grinnell.sandb.xmlpull.XmlPullService;
@@ -53,10 +52,6 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
-		// Initialize Crittercism with the application key..
-		Crittercism.init(getApplicationContext(), "5183e0d7c463c23fa4000019");
-		
 		mPrefs = new MainPrefs(this);
 		
 		mLoading = (View) findViewById(R.id.loading);
