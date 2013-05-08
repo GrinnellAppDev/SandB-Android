@@ -11,7 +11,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class ScarletAndBlackApplication extends Application {
 	
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	@TargetApi(11)
 	@Override
     public void onCreate() {
         super.onCreate();
@@ -25,9 +25,10 @@ public class ScarletAndBlackApplication extends Application {
 	        .discCacheFileCount(100)
 	        .enableLogging();
         
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-        	configb.taskExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
-        		.taskExecutorForCachedImages(AsyncTask.THREAD_POOL_EXECUTOR);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        	configb = configb.taskExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+        					 .taskExecutorForCachedImages(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
         
         ImageLoader.getInstance().init(configb.build());
     }

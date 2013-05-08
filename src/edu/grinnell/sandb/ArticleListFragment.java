@@ -7,6 +7,7 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -88,8 +89,9 @@ public class ArticleListFragment extends SherlockListFragment {
 		// TODO restore from instance state
 		Bundle b = getArguments();
 		mCategory = null;
-		if (b != null)
-			mCategory = titleToKey.get(b.getString(ARTICLE_CATEGORY_KEY, null));
+		if (b != null) {
+			mCategory = titleToKey.get(b.getString(ARTICLE_CATEGORY_KEY));
+		}
 
 		Log.i(TAG, "Loading data for the '" + mCategory + "' category..");
 		mData = loadDataFromCache(mCategory);
@@ -140,7 +142,15 @@ public class ArticleListFragment extends SherlockListFragment {
 	public void update() {
 		mData = loadDataFromCache(mCategory);
 		mAdapter.clear();
-		mAdapter.addAll(mData);
+		
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			mAdapter.addAll(mData);
+		} else {
+			for (Article a : mData) {
+				mAdapter.add(a);
+			}
+		}
+		
 		mAdapter.notifyDataSetChanged();
 	}
 
