@@ -130,6 +130,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 		ImageTable imgTable = new ImageTable(getActivity());
 		imgTable.open();
 		String[] urls = imgTable.findUrlsByArticleId(mArticle.getId());
+		imgTable.close();
 		final int maxUrls = (urls == null) ? 0 : urls.length;
 		LayoutInflater i = getActivity().getLayoutInflater();
 

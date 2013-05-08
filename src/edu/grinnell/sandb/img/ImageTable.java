@@ -63,7 +63,7 @@ public class ImageTable {
 	}
 	
 	public Image findByUrl(String url) {
-		Log.d("ImageTable.findByUrl", "url: " + url);
+		Log.i("ImageTable.findByUrl", "url: " + url);
 		Cursor cursor = database.query(ImageStorageHelper.TABLE_IMAGES,
 				allColumns, ImageStorageHelper.COLUMN_URL + " = '" + url + "'", null, null, null, null);
 		
