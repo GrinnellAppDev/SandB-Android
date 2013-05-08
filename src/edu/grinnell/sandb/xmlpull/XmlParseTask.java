@@ -155,7 +155,10 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 			} else if (name.equals("pubDate")) {
 				date = readDate(parser);
 			} else if (name.equals("category")) {
-				category = readCategory(parser);
+				String tempCat = readCategory(parser);
+				if (!tempCat.contentEquals("Top Story")
+						&& !tempCat.contentEquals("Article"))
+					category = tempCat;
 			} else if (name.equals("description")) {
 				description = readDescription(parser);
 			} else if (name.equals("content:encoded")) {
@@ -192,7 +195,7 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 			XmlPullParserException {
 		parser.require(XmlPullParser.START_TAG, ns, "dc:creator");
 		String author = readText(parser);
-		parser.require(XmlPullParser.END_TAG, ns, "dc:creator");		
+		parser.require(XmlPullParser.END_TAG, ns, "dc:creator");
 		return author;
 	}
 
@@ -229,11 +232,11 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 		parser.require(XmlPullParser.START_TAG, ns, "pubDate");
 		String date = readText(parser);
 		parser.require(XmlPullParser.END_TAG, ns, "pubDate");
-		Calendar c = Calendar.getInstance(); 
-		int year = c.get(Calendar.YEAR);		
+		Calendar c = Calendar.getInstance();
+		int year = c.get(Calendar.YEAR);
 		int dateCut = date.lastIndexOf(Integer.toString(year)) + 4;
 		date = date.substring(0, dateCut);
-				
+
 		return date;
 	}
 

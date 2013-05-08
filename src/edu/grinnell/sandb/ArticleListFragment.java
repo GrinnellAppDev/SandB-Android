@@ -30,13 +30,14 @@ public class ArticleListFragment extends SherlockListFragment {
 	public static final String[] CATEGORIES;
 	
 	static {
+		titleToKey.put("All", null);
 		titleToKey.put("News", "News");
 		titleToKey.put("Arts", "Arts");
 		titleToKey.put("Community", "Community");
 		titleToKey.put("Features", "Features");
 		titleToKey.put("Opinion", "Opinion");
 		titleToKey.put("Sports", "Sports");
-		titleToKey.put("Top Stories", "Top Story");
+
 		
 		CATEGORIES = titleToKey.keySet().toArray(new String[0]);
 	}

@@ -52,7 +52,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
                         android:gravity="right"
-                        android:paddingLeft="5dip"
+                        android:paddingLeft="10dip"
                         android:textColor="@android:color/black"
                         android:textIsSelectable="true" />
 
@@ -62,7 +62,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
                         android:gravity="right"
-                        android:paddingRight="19dip"
+                        android:paddingRight="25dip"
                         android:textColor="@android:color/black"
                         android:textIsSelectable="true" />
                 </TableRow>

@@ -95,12 +95,12 @@ public class ArticleDetailFragment extends SherlockFragment {
 				container, false);
 
 		// Navigate up if there is no article information..
-		if (mArticle == null) { 
+		if (mArticle == null) {
 			Intent up = new Intent(getSherlockActivity(), MainActivity.class);
 			up.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			NavUtils.navigateUpTo(getSherlockActivity(), up);
 		}
-		
+
 		// add the author to the article
 		((TextView) rootView.findViewById(R.id.article_author)).setText("By: "
 				+ mArticle.getAuthor());
@@ -122,8 +122,11 @@ public class ArticleDetailFragment extends SherlockFragment {
 		// make text more readable
 		bodyHTML = bodyHTML.replaceAll("<br />", "<br><br>");
 
+		// remove image descriptions
+		bodyHTML = bodyHTML.replaceAll("<p class=\"wp-caption-text\">.+?</p>","");
+
 		String imgtags = "<img.+?>";
-		//String imgtags = "<div.+?</div>";
+		// String imgtags = "<div.+?</div>";
 
 		String[] sections = bodyHTML.split(imgtags);
 
@@ -148,18 +151,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 	private void addSectionViews(ViewGroup v, LayoutInflater li, String text,
 			String img) {
-		
-		if (text != null) {
-			TextView tv = (TextView) li
-					.inflate(R.layout.text_section, v, false);
 
-			// remove images
-			//text = text.replaceAll("<div.?div>", "");
-			
-			tv.setText(Html.fromHtml(text));
-			v.addView(tv);
-		}
-		
 		if (img != null) {
 			ImageView imgView = (ImageView) li.inflate(R.layout.img_section, v,
 					false);
@@ -203,16 +195,13 @@ public class ArticleDetailFragment extends SherlockFragment {
 			v.addView(imgView);
 		}
 
-//		if (text != null) {
-//			TextView tv = (TextView) li
-//					.inflate(R.layout.text_section, v, false);
-//
-//			// remove images
-//			//text = text.replaceAll("<div.?div>", "");
-//			
-//			tv.setText(Html.fromHtml(text));
-//			v.addView(tv);
-//		}
+		 if (text != null) {
+		 TextView tv = (TextView) li
+		 .inflate(R.layout.text_section, v, false);
+
+		 tv.setText(Html.fromHtml(text));
+		 v.addView(tv);
+		 }
 	}
 
 	@Override
@@ -237,9 +226,9 @@ public class ArticleDetailFragment extends SherlockFragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch (item.getItemId()) {
-//		case R.id.menu_settings:
-//			// startActivityForResult(new Intent(this, PrefActiv.class), PREFS);
-//			break;
+		// case R.id.menu_settings:
+		// // startActivityForResult(new Intent(this, PrefActiv.class), PREFS);
+		// break;
 		case R.id.menu_share:
 			share();
 			break;
