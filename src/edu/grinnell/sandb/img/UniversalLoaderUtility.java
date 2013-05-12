@@ -33,7 +33,6 @@ public class UniversalLoaderUtility {
 
 	protected SimpleImageLoadingListener listener = new SimpleImageLoadingListener() {
 
-		@SuppressLint("NewApi")
 		@Override
 		public void onLoadingFailed(String imageUri, View view,
 				FailReason failReason) {
@@ -59,7 +58,8 @@ public class UniversalLoaderUtility {
 			}
 			Animation a = ((ImageView) view).getAnimation();
 			if (a != null)
-				a.cancel();
+				view.clearAnimation();
+				//a.cancel();
 			view.setVisibility(View.GONE);
 		}
 	};
