@@ -48,6 +48,10 @@
         </activity>
         <activity android:name="edu.grinnell.sandb.ImagePagerActivity" >
         </activity>
+        <activity
+            android:name="edu.grinnell.sandb.CommentsActivity"
+            android:label="@string/title_activity_comments" >
+        </activity>
     </application>
 
 </manifest>
