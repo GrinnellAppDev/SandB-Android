@@ -12,16 +12,15 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.content.Context;
-import android.database.SQLException;
-import android.os.AsyncTask;
-import android.util.Log;
 import android.util.Xml;
+import edu.grinnell.sandb.CommentsActivity;
 import edu.grinnell.sandb.Utility;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
 import edu.grinnell.sandb.img.BodyImageGetter;
 
-public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
+//public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
+public class XmlParseTask {
 
 	private Context mAppContext;
 	private ParseDataListener mParseDataListener;
@@ -31,50 +30,50 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 
 	public static final String XMP = "XMLParseTask";
 
-	public XmlParseTask(Context appContext, ParseDataListener pdl) {
-		super();
-		mAppContext = appContext;
-		mParseDataListener = pdl;
-	}
-
-	/* Setup the loading dialog. */
-	@Override
-	protected void onPreExecute() {
-		// Do nothing..
-	}
-
-	@Override
-	protected List<Article> doInBackground(InputStream... arg0) {
-
-		mTable = new ArticleTable(mAppContext);
-
-		try {
-			mTable.open();
-			mTable.clearTable();
-			return parseArticlesFromStream(arg0[0], mAppContext, mTable);
-		} catch (IOException ioe) {
-			Log.e(XMP, "parseArticlesFromStream", ioe);
-		} catch (XmlPullParserException xppe) {
-			Log.e(XMP, "parseArticlesFromStream", xppe);
-		} catch (SQLException sqle) {
-			Log.e(XMP, "SQLExeption", sqle);
-		} catch (Exception e) {
-			Log.e(XMP, "parseArticlesFromStream", e);
-		} finally {
-			mTable.close();
-		}
-		return new ArrayList<Article>();
-	}
-
-	/*
-	 * Stop the dialog and notify the main thread that the new menu is loaded.
-	 */
-	@Override
-	protected void onPostExecute(List<Article> articles) {
-		super.onPostExecute(articles);
-		Log.i(XMP, "xml parsed!");
-		mParseDataListener.onDataParsed(articles);
-	}
+//	public XmlParseTask(Context appContext, ParseDataListener pdl) {
+//		super();
+//		mAppContext = appContext;
+//		mParseDataListener = pdl;
+//	}
+//
+//	/* Setup the loading dialog. */
+//	@Override
+//	protected void onPreExecute() {
+//		// Do nothing..
+//	}
+//
+//	@Override
+//	protected List<Article> doInBackground(InputStream... arg0) {
+//
+//		mTable = new ArticleTable(mAppContext);
+//
+//		try {
+//			mTable.open();
+//			mTable.clearTable();
+//			return parseArticlesFromStream(arg0[0], mAppContext, mTable);
+//		} catch (IOException ioe) {
+//			Log.e(XMP, "parseArticlesFromStream", ioe);
+//		} catch (XmlPullParserException xppe) {
+//			Log.e(XMP, "parseArticlesFromStream", xppe);
+//		} catch (SQLException sqle) {
+//			Log.e(XMP, "SQLExeption", sqle);
+//		} catch (Exception e) {
+//			Log.e(XMP, "parseArticlesFromStream", e);
+//		} finally {
+//			mTable.close();
+//		}
+//		return new ArrayList<Article>();
+//	}
+//
+//	/*
+//	 * Stop the dialog and notify the main thread that the new menu is loaded.
+//	 */
+//	@Override
+//	protected void onPostExecute(List<Article> articles) {
+//		super.onPostExecute(articles);
+//		Log.i(XMP, "xml parsed!");
+//		mParseDataListener.onDataParsed(articles);
+//	}
 
 	protected static List<Article> parseArticlesFromStream(
 			InputStream xmlstream, Context c, ArticleTable t)
@@ -150,7 +149,7 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 				guid = readGuid(parser);
 			} else if (name.equals("link")) {
 				link = readLink(parser);
-			} else if (name.equals("comments")) {
+			} else if (name.equals("wfw:commentRss")) {
 				comments = readComments(parser);
 			} else if (name.equals("pubDate")) {
 				date = readDate(parser);
@@ -167,7 +166,7 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 				skip(parser);
 			}
 		}
-
+		
 		return table.createArticle(guid, title, link, date, category,
 				description, body, comments, author);
 	}
@@ -220,10 +219,11 @@ public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 	// Processes link tags in the feed.
 	private static String readComments(XmlPullParser parser)
 			throws IOException, XmlPullParserException {
-		parser.require(XmlPullParser.START_TAG, ns, "comments");
+		parser.require(XmlPullParser.START_TAG, ns, "wfw:commentRss");
 		String commentsLink = readText(parser);
-		parser.require(XmlPullParser.END_TAG, ns, "comments");
-		return commentsLink;
+		parser.require(XmlPullParser.END_TAG, ns, "wfw:commentRss");
+		
+   		return commentsLink;
 	}
 
 	// Processes date tags in the feed.

@@ -32,12 +32,6 @@ public class CommentParseTask extends AsyncTask<String, Void, List<Comment>> {
 
 	public static final String XMP = "CommentParseTask";
 
-	public CommentParseTask(Context appContext, ParseDataListener pdl) {
-		super();
-		mAppContext = appContext;
-		mParseDataListener = pdl;
-	}
-
 	/* Setup the loading dialog. */
 	@Override
 	protected void onPreExecute() {
@@ -48,6 +42,8 @@ public class CommentParseTask extends AsyncTask<String, Void, List<Comment>> {
 	protected List<Comment> doInBackground(String... arg0) {
 
 		mTable = new CommentTable(mAppContext);
+		
+		//need to assign mAppContext
 		
 		InputStream stream = downloadDataFromServer(arg0[0]);
 		
@@ -152,6 +148,8 @@ public class CommentParseTask extends AsyncTask<String, Void, List<Comment>> {
 		}
 		
 		article_url = url.substring(0, url.indexOf("comment-page-"));
+		
+		Log.i(XMP, url);
 		
 		return table.createComment(url, date, body, author, article_url);
 	}

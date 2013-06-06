@@ -1,5 +1,6 @@
 package edu.grinnell.sandb;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -28,6 +29,10 @@ import edu.grinnell.sandb.img.UniversalLoaderUtility;
 
 public class ArticleDetailFragment extends SherlockFragment {
 
+    public final static String FEED_LINK = null;
+    public final static String ARTICLE_LINK = null;
+
+	
 	private static int scrnHeight = 20000;
 
 	private static final int SWIPE_MIN_DISTANCE = 300;
@@ -40,6 +45,8 @@ public class ArticleDetailFragment extends SherlockFragment {
 	protected UniversalLoaderUtility mLoader;
 
 	public static final String TAG = "ArticleDetailFragment";
+
+	private PendingIntent mSendFeedLoaded;
 
 	public ArticleDetailFragment() {
 		super();
@@ -123,7 +130,8 @@ public class ArticleDetailFragment extends SherlockFragment {
 		bodyHTML = bodyHTML.replaceAll("<br />", "<br><br>");
 
 		// remove image descriptions
-		bodyHTML = bodyHTML.replaceAll("<p class=\"wp-caption-text\">.+?</p>","");
+		bodyHTML = bodyHTML.replaceAll("<p class=\"wp-caption-text\">.+?</p>",
+				"");
 
 		String imgtags = "<img.+?>";
 		// String imgtags = "<div.+?</div>";
@@ -195,13 +203,13 @@ public class ArticleDetailFragment extends SherlockFragment {
 			v.addView(imgView);
 		}
 
-		 if (text != null) {
-		 TextView tv = (TextView) li
-		 .inflate(R.layout.text_section, v, false);
+		if (text != null) {
+			TextView tv = (TextView) li
+					.inflate(R.layout.text_section, v, false);
 
-		 tv.setText(Html.fromHtml(text));
-		 v.addView(tv);
-		 }
+			tv.setText(Html.fromHtml(text));
+			v.addView(tv);
+		}
 	}
 
 	@Override
@@ -235,12 +243,23 @@ public class ArticleDetailFragment extends SherlockFragment {
 		case R.id.menu_share2:
 			share();
 			break;
+		case R.id.menu_comments:
+			comments();
+			break;
 		default:
 			break;
 		}
 		return false;
 	}
 
+	public void comments(){
+		Intent comments = new Intent(getSherlockActivity(), CommentsActivity.class);
+    	comments.putExtra(FEED_LINK, mArticle.getComments());
+    //	comments.putExtra(ARTICLE_LINK, mArticle.getLink());
+
+    	startActivity(comments);
+	}
+	
 	public void share() {
 
 		Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
