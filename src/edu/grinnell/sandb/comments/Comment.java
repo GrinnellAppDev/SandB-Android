@@ -9,14 +9,19 @@ public class Comment {
 	protected String author;
 	protected String articleLink;
 
-	protected Comment(int id, String link, String postDate, String body,
+	public Comment(String link, String postDate, String body,
 			String author, String article) {
-		this.id = id;
 		this.link = link;
 		this.postDate = postDate;
 		this.body = body;
 		this.author = author;
 		this.articleLink = article;
+	}
+	
+	public Comment(int id, String link, String postDate, String body,
+			String author, String article) {
+		this(link, postDate, body, author, article);
+		this.id = id;
 	}
 
 	public int getId() {

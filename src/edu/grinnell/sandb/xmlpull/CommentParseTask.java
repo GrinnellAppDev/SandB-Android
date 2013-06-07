@@ -4,76 +4,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.http.ParseException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.content.Context;
-import android.database.SQLException;
-import android.os.AsyncTask;
-import android.util.Log;
 import android.util.Xml;
 import edu.grinnell.sandb.comments.Comment;
 import edu.grinnell.sandb.comments.CommentTable;
 
-public class CommentParseTask extends AsyncTask<String, Void, List<Comment>> {
-
-	private Context mAppContext;
-	private ParseDataListener mParseDataListener;
-	private CommentTable mTable;
+public class CommentParseTask {
 
 	private static final String ns = null;
 
 	public static final String XMP = "CommentParseTask";
-
-	/* Setup the loading dialog. */
-	@Override
-	protected void onPreExecute() {
-		// Do nothing..
-	}
-
-	@Override
-	protected List<Comment> doInBackground(String... arg0) {
-
-		mTable = new CommentTable(mAppContext);
-		
-		//need to assign mAppContext
-		
-		InputStream stream = downloadDataFromServer(arg0[0]);
-		
-		try {
-			mTable.open();
-			mTable.clearTable();
-			return parseCommentsFromStream(stream, mAppContext, mTable);
-		} catch (IOException ioe) {
-			Log.e(XMP, "parseCommentsFromStream", ioe);
-		} catch (XmlPullParserException xppe) {
-			Log.e(XMP, "parseCommentsFromStream", xppe);
-		} catch (SQLException sqle) {
-			Log.e(XMP, "SQLExeption", sqle);
-		} catch (Exception e) {
-			Log.e(XMP, "parseCommentsFromStream", e);
-		} finally {
-			mTable.close();
-		}
-		return new ArrayList<Comment>();
-	}
-
-	/*
-	 * Stop the dialog and notify the main thread that the new menu is loaded.
-	 */
-	@Override
-	protected void onPostExecute(List<Comment> comments) {
-		super.onPostExecute(comments);
-		Log.i(XMP, "xml parsed!");
-		mParseDataListener.onDataParsed(comments);
-	}
 
 	public static List<Comment> parseCommentsFromStream(
 			InputStream xmlstream, Context c, CommentTable t)
@@ -147,11 +94,10 @@ public class CommentParseTask extends AsyncTask<String, Void, List<Comment>> {
 			}
 		}
 		
-		article_url = url.substring(0, url.indexOf("comment-page-"));
+		article_url = url.substring(0, url.indexOf("comment-page-"));		
 		
-		Log.i(XMP, url);
-		
-		return table.createComment(url, date, body, author, article_url);
+		return new Comment(url, date, body, author, article_url);
+		//return table.createComment(url, date, body, author, article_url);
 	}
 
 	/*
@@ -236,26 +182,5 @@ public class CommentParseTask extends AsyncTask<String, Void, List<Comment>> {
 				break;
 			}
 		}
-	}
-	
-	protected static InputStream downloadDataFromServer(String urlstr) {
-		InputStream stream = null;
-		try {
-			URL url = new URL(urlstr);
-	        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-	        conn.setReadTimeout(10000 /* milliseconds */);
-	        conn.setConnectTimeout(15000 /* milliseconds */);
-	        conn.setRequestMethod("GET");
-	        conn.setDoInput(true);
-	        // Starts the query
-	        conn.connect();
-	        stream = conn.getInputStream();
-		} catch (IOException e) {
-			Log.e(XMP, "exception: " + e.toString());
-			Log.e(XMP, "message: " + e.getMessage());
-		} catch (ParseException p) {
-			Log.e(XMP, "ParseException: " + p.toString());} 
-		
-		return stream;
 	}
 }

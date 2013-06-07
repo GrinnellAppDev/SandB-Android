@@ -137,7 +137,6 @@ public class ArticleListFragment extends SherlockListFragment {
 				&& savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
 			// setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
 		}
-
 	}
 
 	public void update() {

@@ -15,17 +15,18 @@ import android.content.Intent;
 import android.database.SQLException;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.app.SherlockListActivity;
 
 import edu.grinnell.sandb.comments.Comment;
 import edu.grinnell.sandb.comments.CommentTable;
 import edu.grinnell.sandb.xmlpull.CommentParseTask;
 
-public class CommentsActivity extends SherlockFragmentActivity {
+public class CommentsActivity extends SherlockListActivity {
 	public static final String TAG = "CommentsActivity";
+	private ArrayList<Comment> mData;
+	private CommentListAdapter mAdapter;
 
 	@Override
 	protected void onCreate(Bundle ofJoy) {
@@ -35,11 +36,8 @@ public class CommentsActivity extends SherlockFragmentActivity {
 
 		Intent intent = getIntent();
 		String feed = intent.getStringExtra(ArticleDetailFragment.FEED_LINK);
-		
-		//check for existing db entry first
+
 		new ParseComments().execute(feed);
-		
-		//use adapter to fill listview
 	}
 
 	private class ParseComments extends AsyncTask<String, Void, List<Comment>> {
@@ -50,21 +48,25 @@ public class CommentsActivity extends SherlockFragmentActivity {
 		/* Setup the loading dialog. */
 		@Override
 		protected void onPreExecute() {
+			// begin loading animation
 		}
 
+		//not using database, for now...
 		@Override
 		protected List<Comment> doInBackground(String... arg0) {
 
 			mAppContext = getApplicationContext();
-			mTable = new CommentTable(mAppContext);
+			//mTable = new CommentTable(mAppContext);
 
 			InputStream stream = downloadDataFromServer(arg0[0]);
 
 			try {
+				/*
 				mTable.open();
 				mTable.clearTable();
-				return CommentParseTask.parseCommentsFromStream(stream,
-						mAppContext, mTable);
+				return CommentParseTask.parseCommentsFromStream(stream, mAppContext, mTable);
+				*/
+				return CommentParseTask.parseCommentsFromStream(stream, mAppContext, null);
 			} catch (IOException ioe) {
 				Log.e(TAG, "parseCommentsFromStream", ioe);
 			} catch (XmlPullParserException xppe) {
@@ -74,7 +76,7 @@ public class CommentsActivity extends SherlockFragmentActivity {
 			} catch (Exception e) {
 				Log.e(TAG, "parseCommentsFromStream", e);
 			} finally {
-				mTable.close();
+				//mTable.close();
 			}
 			return new ArrayList<Comment>();
 		}
@@ -86,9 +88,24 @@ public class CommentsActivity extends SherlockFragmentActivity {
 		@Override
 		protected void onPostExecute(List<Comment> comments) {
 			super.onPostExecute(comments);
-			Log.i(TAG, "xml parsed!");
-			//create list of comments
+			Log.i(TAG, "comments parsed!");
+			// end loading animation
+			mData = (ArrayList<Comment>) comments;
+			fillList(mData);
 		}
+	}
+	
+	protected void fillList (List<Comment> comments) {
+		
+		if (mData == null)
+			mData = new ArrayList<Comment>();
+
+		mAdapter = new CommentListAdapter(
+				(CommentsActivity) this,
+				R.layout.comments_row, mData);
+		
+		//be sure to show message if no comments
+        setListAdapter(mAdapter);
 	}
 
 	protected static InputStream downloadDataFromServer(String urlstr) {
@@ -112,4 +129,6 @@ public class CommentsActivity extends SherlockFragmentActivity {
 
 		return stream;
 	}
+	
+	
 }
