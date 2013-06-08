@@ -26,6 +26,7 @@
     <string name="comments">Comments</string>
     <string name="menu_comments">Comments</string>
     <string name="loading_comments">Loading comments..</string>
-    
+    <string name="menu_articleView">Article</string>
+    <string name="articleView">Article</string>
 
 </resources>

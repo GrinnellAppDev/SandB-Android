@@ -1,6 +1,19 @@
 package edu.grinnell.sandb;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.ParseException;
+import org.xmlpull.v1.XmlPullParserException;
+
+import android.content.Context;
 import android.content.Intent;
+import android.database.SQLException;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
@@ -10,11 +23,23 @@ import android.view.MotionEvent;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
+import edu.grinnell.sandb.comments.Comment;
+import edu.grinnell.sandb.comments.CommentTable;
+import edu.grinnell.sandb.xmlpull.CommentParseTask;
+
 public class ArticleDetailActivity extends SherlockFragmentActivity {
 
 	public static final String DETAIL_ARGS = "detail_args";
+	public static final String COMMENTS_FEED = "Comments Feed";
 	public static final String TAG = "ArticleDetailActivity";
-	
+
+	private int mIDKey = 0;
+	private String comments_feed = null;
+	private ArrayList<Comment> mComments = null;
+
+	private boolean mArticleSide = true;
+	private boolean mCommentsParsed = false;
+
 	@Override
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
@@ -22,23 +47,33 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 		// should set the title as the article date or something
 		setTitle("");
 		setContentView(R.layout.activity_article_detail);
-		
+
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		Intent i = getIntent();
 
 		Fragment fragment = new ArticleDetailFragment();
 		;
-		if (i != null) {
-			Bundle arguments = new Bundle();
-			arguments.putInt(ArticleDetailFragment.ARTICLE_ID_KEY,
-					i.getIntExtra(ArticleDetailFragment.ARTICLE_ID_KEY, 0));
-			fragment.setArguments(arguments);
-		} else {
-			Log.e(TAG, "no bundle for fragment..");
-		}
+
+		mIDKey = i.getIntExtra(ArticleDetailFragment.ARTICLE_ID_KEY, 0);
+		comments_feed = i.getStringExtra(COMMENTS_FEED);
+		
+		new ParseComments().execute(comments_feed);
 
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.article_detail_container, fragment).commit();
+
+	}
+
+	public int getIDKey() {
+		return mIDKey;
+	}
+
+	public String getCommentsFeed() {
+		return comments_feed;
+	}
+
+	public List<Comment> getComments() {
+		return mComments;
 	}
 
 	@Override
@@ -56,14 +91,43 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	public void flip() {
+		if (mArticleSide) {
+
+			if (mComments == null)
+				return;
+
+			mArticleSide = false;
+
+			getSupportFragmentManager().beginTransaction()
+
+			// .setCustomAnimations(
+			// R.animator.card_flip_right_in, R.animator.card_flip_right_out,
+			// R.animator.card_flip_left_in, R.animator.card_flip_left_out)
+
+					.replace(R.id.article_detail_container,
+							new CommentListFragment())
+
+					.addToBackStack(null)
+
+					.commit();
+		}
+
+		else {
+			mArticleSide = true;
+			getSupportFragmentManager().popBackStack();
+			return;
+		}
+	}
+
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
 		overridePendingTransition(R.anim.article_slide_in,
 				R.anim.article_slide_out);
 	}
-	
-	//Still respond to swipe back gesture even if it also triggers scroll
+
+	// Still respond to swipe back gesture even if it also triggers scroll
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
 		// TouchEvent dispatcher.
@@ -74,5 +138,83 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 				return true;
 		}
 		return super.dispatchTouchEvent(ev);
+	}
+
+	private class ParseComments extends AsyncTask<String, Void, List<Comment>> {
+
+//		private CommentTable mTable;
+		private Context mAppContext;
+
+		/* Setup the loading dialog. */
+		@Override
+		protected void onPreExecute() {
+			// begin loading animation
+		}
+
+		// not using database, for now...
+		@Override
+		protected List<Comment> doInBackground(String... arg0) {
+
+			mAppContext = getApplicationContext();
+			// mTable = new CommentTable(mAppContext);
+
+			InputStream stream = downloadDataFromServer(arg0[0]);
+
+			try {
+				/*
+				 * mTable.open(); mTable.clearTable(); return
+				 * CommentParseTask.parseCommentsFromStream(stream, mAppContext,
+				 * mTable);
+				 */
+				return CommentParseTask.parseCommentsFromStream(stream,
+						mAppContext, null);
+			} catch (IOException ioe) {
+				Log.e(TAG, "parseCommentsFromStream", ioe);
+			} catch (XmlPullParserException xppe) {
+				Log.e(TAG, "parseCommentsFromStream", xppe);
+			} catch (SQLException sqle) {
+				Log.e(TAG, "SQLExeption", sqle);
+			} catch (Exception e) {
+				Log.e(TAG, "parseCommentsFromStream", e);
+			} finally {
+				// mTable.close();
+			}
+			return new ArrayList<Comment>();
+		}
+
+		/*
+		 * Stop the dialog and notify the main thread that the new menu is
+		 * loaded.
+		 */
+		@Override
+		protected void onPostExecute(List<Comment> comments) {
+			super.onPostExecute(comments);
+			Log.i(TAG, "comments parsed!");
+			// end loading animation
+			mComments = (ArrayList<Comment>) comments;
+			mCommentsParsed = true;
+		}
+	}
+
+	protected static InputStream downloadDataFromServer(String urlstr) {
+		InputStream stream = null;
+		try {
+			URL url = new URL(urlstr);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setReadTimeout(10000 /* milliseconds */);
+			conn.setConnectTimeout(15000 /* milliseconds */);
+			conn.setRequestMethod("GET");
+			conn.setDoInput(true);
+			// Starts the query
+			conn.connect();
+			stream = conn.getInputStream();
+		} catch (IOException e) {
+			Log.e(TAG, "exception: " + e.toString());
+			Log.e(TAG, "message: " + e.getMessage());
+		} catch (ParseException p) {
+			Log.e(TAG, "ParseException: " + p.toString());
+		}
+
+		return stream;
 	}
 }

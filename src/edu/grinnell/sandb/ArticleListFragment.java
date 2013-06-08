@@ -174,6 +174,8 @@ public class ArticleListFragment extends SherlockListFragment {
 				ArticleDetailActivity.class);
 		detailIntent.putExtra(ArticleDetailFragment.ARTICLE_ID_KEY,
 				mData.get(position).getId());
+		detailIntent.putExtra(ArticleDetailActivity.COMMENTS_FEED,
+				mData.get(position).getComments());
 		startActivity(detailIntent);
 		getSherlockActivity().overridePendingTransition(R.anim.slide_in,
 				R.anim.slide_out);

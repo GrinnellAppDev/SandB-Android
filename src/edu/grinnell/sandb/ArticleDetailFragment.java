@@ -47,6 +47,8 @@ public class ArticleDetailFragment extends SherlockFragment {
 	public static final String TAG = "ArticleDetailFragment";
 
 	private PendingIntent mSendFeedLoaded;
+	ArticleDetailActivity activity = (ArticleDetailActivity) getSherlockActivity();
+
 
 	public ArticleDetailFragment() {
 		super();
@@ -83,15 +85,12 @@ public class ArticleDetailFragment extends SherlockFragment {
 					}
 				});
 
-		Bundle b = (ofJoy == null) ? getArguments() : ofJoy;
-
-		if (b != null) {
-			int id = b.getInt(ARTICLE_ID_KEY);
+			activity = (ArticleDetailActivity) getSherlockActivity();
+			int id = activity.getIDKey();
 			ArticleTable table = new ArticleTable(getSherlockActivity());
 			table.open();
 			Log.i(TAG, "Looking for article with id = " + id);
 			mArticle = table.findById(id);
-		}
 	}
 
 	@Override
@@ -244,20 +243,12 @@ public class ArticleDetailFragment extends SherlockFragment {
 			share();
 			break;
 		case R.id.menu_comments:
-			comments();
+			activity.flip();
 			break;
 		default:
 			break;
 		}
 		return false;
-	}
-
-	public void comments(){
-		Intent comments = new Intent(getSherlockActivity(), CommentsActivity.class);
-    	comments.putExtra(FEED_LINK, mArticle.getComments());
-    //	comments.putExtra(ARTICLE_LINK, mArticle.getLink());
-
-    	startActivity(comments);
 	}
 	
 	public void share() {
