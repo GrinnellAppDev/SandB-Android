@@ -46,7 +46,7 @@ public class CommentListFragment extends SherlockListFragment {
 
 	protected void fillList() {
 
-		if (mComments == null)
+		if (mComments.isEmpty())
 			// TODO print no comments message
 			mActivity.flip();
 

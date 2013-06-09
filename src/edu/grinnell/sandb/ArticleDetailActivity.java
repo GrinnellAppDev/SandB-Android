@@ -19,6 +19,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
@@ -93,18 +94,24 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 	public void flip() {
 		if (mArticleSide) {
 
-			if (mComments == null)
+			if (mComments == null) {
+				Toast.makeText(this, "Comments downloading...",
+						Toast.LENGTH_LONG).show();
 				return;
+			} else if (mComments.isEmpty()) {
+				Toast.makeText(this, "No Comments For this Article",
+						Toast.LENGTH_LONG).show();
+				return;
+			}
 
 			mArticleSide = false;
 
-			getSupportFragmentManager()
-					.beginTransaction()
+			getSupportFragmentManager().beginTransaction()
 
-					//.setCustomAnimations(R.anim.card_flip_right_in,
-					//		R.anim.card_flip_right_out,
-					//		R.anim.card_flip_left_in,
-					//		R.anim.card_flip_left_out)
+			// .setCustomAnimations(R.anim.card_flip_right_in,
+			// R.anim.card_flip_right_out,
+			// R.anim.card_flip_left_in,
+			// R.anim.card_flip_left_out)
 
 					.replace(R.id.article_detail_container,
 							new CommentListFragment())
