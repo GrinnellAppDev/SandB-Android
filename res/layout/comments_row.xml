@@ -35,7 +35,7 @@
     <View
         android:layout_width="fill_parent"
         android:layout_height="@dimen/pad1"
-        android:background="@android:color/gray" />
+        android:background="@android:color/darker_gray" />
 
     <TextView
         android:id="@+id/descriptionText"

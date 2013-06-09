@@ -47,7 +47,6 @@ public class CommentListFragment extends SherlockListFragment {
 	protected void fillList() {
 
 		if (mComments.isEmpty())
-			// TODO print no comments message
 			mActivity.flip();
 
 			mAdapter = new CommentListAdapter(mActivity, R.layout.comments_row,

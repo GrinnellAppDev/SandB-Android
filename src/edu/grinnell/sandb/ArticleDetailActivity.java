@@ -15,7 +15,6 @@ import android.content.Intent;
 import android.database.SQLException;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -51,7 +50,7 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		Intent i = getIntent();
 
-		Fragment fragment = new ArticleDetailFragment();
+		ArticleDetailFragment fragment = new ArticleDetailFragment();
 		;
 
 		mIDKey = i.getIntExtra(ArticleDetailFragment.ARTICLE_ID_KEY, 0);
@@ -108,10 +107,10 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 
 			getSupportFragmentManager().beginTransaction()
 
-			// .setCustomAnimations(R.anim.card_flip_right_in,
-			// R.anim.card_flip_right_out,
-			// R.anim.card_flip_left_in,
-			// R.anim.card_flip_left_out)
+			 .setCustomAnimations(R.anim.card_flip_right_in,
+			 R.anim.card_flip_right_out,
+			 R.anim.card_flip_left_in,
+			 R.anim.card_flip_left_out)
 
 					.replace(R.id.article_detail_container,
 							new CommentListFragment())
