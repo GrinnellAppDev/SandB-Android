@@ -17,15 +17,17 @@ import edu.grinnell.sandb.comments.Comment;
 public class CommentListFragment extends SherlockListFragment {
 	public static final String TAG = "CommentsActivity";
 	private CommentListAdapter mAdapter;
+	public String COMMENTS = "article comments";
 
 	ArticleDetailActivity mActivity = (ArticleDetailActivity) getSherlockActivity();
 
-	List<Comment> mComments = null;
+	List<Comment> mComments;
 
 	@Override
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
 		setHasOptionsMenu(true);
+		setRetainInstance(true);
 	}
 
 	@Override
@@ -40,17 +42,19 @@ public class CommentListFragment extends SherlockListFragment {
 		mComments = mActivity.getComments();
 
 		fillList();
-		
+
 		return rootView;
 	}
 
 	protected void fillList() {
 
-		if (mComments.isEmpty())
+		if (mComments == null)
+			mActivity.flip();
+		else if (mComments.isEmpty())
 			mActivity.flip();
 
-			mAdapter = new CommentListAdapter(mActivity, R.layout.comments_row,
-					mComments);
+		mAdapter = new CommentListAdapter(mActivity, R.layout.comments_row,
+				mComments);
 
 		// be sure to show message if no comments
 		setListAdapter(mAdapter);

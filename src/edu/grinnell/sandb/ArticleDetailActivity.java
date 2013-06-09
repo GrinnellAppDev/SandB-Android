@@ -105,12 +105,12 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 
 			mArticleSide = false;
 
-			getSupportFragmentManager().beginTransaction()
+			getSupportFragmentManager()
+					.beginTransaction()
 
-			 .setCustomAnimations(R.anim.card_flip_right_in,
-			 R.anim.card_flip_right_out,
-			 R.anim.card_flip_left_in,
-			 R.anim.card_flip_left_out)
+					.setCustomAnimations(R.anim.card_flip_right_in,
+							R.anim.card_flip_right_out,
+							R.anim.card_flip_left_in, R.anim.card_flip_left_out)
 
 					.replace(R.id.article_detail_container,
 							new CommentListFragment())
@@ -224,4 +224,6 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 
 		return stream;
 	}
+	
+	
 }

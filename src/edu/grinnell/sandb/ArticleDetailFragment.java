@@ -73,6 +73,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
 		setHasOptionsMenu(true);
+		setRetainInstance(true);
 
 		DisplayMetrics metrics = new DisplayMetrics();
 		getSherlockActivity().getWindowManager().getDefaultDisplay()
@@ -99,7 +100,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 							return false;
 					}
 				});
-
+		
 		activity = (ArticleDetailActivity) getSherlockActivity();
 		int id = activity.getIDKey();
 		ArticleTable table = new ArticleTable(getSherlockActivity());
@@ -354,3 +355,4 @@ public class ArticleDetailFragment extends SherlockFragment {
 		super.onSaveInstanceState(outState);
 	}
 }
+
