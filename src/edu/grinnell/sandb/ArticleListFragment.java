@@ -105,7 +105,6 @@ public class ArticleListFragment extends SherlockListFragment {
 	}
 
 	private List<Article> loadDataFromCache(String category) {
-		// TODO load data async style
 		ArticleTable table = new ArticleTable(getActivity());
 		table.open();
 		List<Article> data;

@@ -5,7 +5,7 @@
     android:versionName="1.0.3" >
 
     <uses-sdk
-        android:minSdkVersion="7"
+        android:minSdkVersion="11"
         android:targetSdkVersion="17" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -47,10 +47,6 @@
             android:theme="@style/FullscreenTheme" >
         </activity>
         <activity android:name="edu.grinnell.sandb.ImagePagerActivity" >
-        </activity>
-        <activity
-            android:name="edu.grinnell.sandb.CommentsActivity"
-            android:label="@string/title_activity_comments" >
         </activity>
     </application>
 

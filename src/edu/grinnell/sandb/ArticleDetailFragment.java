@@ -1,8 +1,18 @@
 package edu.grinnell.sandb;
 
+import java.io.File;
+
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.DownloadManager;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
 import android.util.DisplayMetrics;
@@ -12,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -29,10 +40,9 @@ import edu.grinnell.sandb.img.UniversalLoaderUtility;
 
 public class ArticleDetailFragment extends SherlockFragment {
 
-    public final static String FEED_LINK = null;
-    public final static String ARTICLE_LINK = null;
+	public final static String FEED_LINK = null;
+	public final static String ARTICLE_LINK = null;
 
-	
 	private static int scrnHeight = 20000;
 
 	private static final int SWIPE_MIN_DISTANCE = 300;
@@ -49,6 +59,11 @@ public class ArticleDetailFragment extends SherlockFragment {
 	private PendingIntent mSendFeedLoaded;
 	ArticleDetailActivity activity = (ArticleDetailActivity) getSherlockActivity();
 
+	File path = Environment
+			.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+	String fileName = "SBimage";
+	File file = new File(path, fileName);
+	DownloadManager mManager;
 
 	public ArticleDetailFragment() {
 		super();
@@ -85,12 +100,12 @@ public class ArticleDetailFragment extends SherlockFragment {
 					}
 				});
 
-			activity = (ArticleDetailActivity) getSherlockActivity();
-			int id = activity.getIDKey();
-			ArticleTable table = new ArticleTable(getSherlockActivity());
-			table.open();
-			Log.i(TAG, "Looking for article with id = " + id);
-			mArticle = table.findById(id);
+		activity = (ArticleDetailActivity) getSherlockActivity();
+		int id = activity.getIDKey();
+		ArticleTable table = new ArticleTable(getSherlockActivity());
+		table.open();
+		Log.i(TAG, "Looking for article with id = " + id);
+		mArticle = table.findById(id);
 	}
 
 	@Override
@@ -157,7 +172,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 	}
 
 	private void addSectionViews(ViewGroup v, LayoutInflater li, String text,
-			String img) {
+			final String img) {
 
 		if (img != null) {
 			ImageView imgView = (ImageView) li.inflate(R.layout.img_section, v,
@@ -188,8 +203,50 @@ public class ArticleDetailFragment extends SherlockFragment {
 				}
 			};
 
+			OnLongClickListener imgHold = new OnLongClickListener() {
+				@Override
+				public boolean onLongClick(View v) {
+
+					AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+							getSherlockActivity());
+
+					// set title
+					alertDialogBuilder.setTitle("Download Image?");
+
+					// set dialog message
+					alertDialogBuilder
+							.setCancelable(true)
+							.setPositiveButton("Cancel",
+									new DialogInterface.OnClickListener() {
+										public void onClick(
+												DialogInterface dialog, int id) {
+											dialog.cancel();
+										}
+									})
+							.setNegativeButton("Download",
+									new DialogInterface.OnClickListener() {
+										public void onClick(
+												DialogInterface dialog, int id) {
+											new DownloadFile().execute(mLoader
+													.getHiResImage(img));
+											dialog.cancel();
+										}
+									});
+
+					// create alert dialog
+					AlertDialog alertDialog = alertDialogBuilder.create();
+
+					// show it
+					alertDialog.show();
+
+					return false;
+				}
+			};
+
 			imgView.setOnTouchListener(gestureListener);
 			imgView.setOnClickListener(imgClick);
+			imgView.setOnLongClickListener(imgHold);
+
 			// set max height so that image does not go off screen
 			DisplayMetrics metrics = new DisplayMetrics();
 			getSherlockActivity().getWindowManager().getDefaultDisplay()
@@ -208,6 +265,32 @@ public class ArticleDetailFragment extends SherlockFragment {
 
 			tv.setText(Html.fromHtml(text));
 			v.addView(tv);
+		}
+	}
+
+	public class DownloadFile extends AsyncTask<String, Integer, Drawable> {
+
+		@SuppressLint("NewApi")
+		protected Drawable doInBackground(String... sUrl) {
+			Uri img = Uri.parse(sUrl[0]);
+			Uri dest = Uri.fromFile(file);
+
+			mManager = (DownloadManager) getSherlockActivity()
+					.getSystemService(getSherlockActivity().DOWNLOAD_SERVICE);
+
+			mManager.enqueue(new DownloadManager.Request(img)
+					.setAllowedNetworkTypes(
+							DownloadManager.Request.NETWORK_WIFI
+									| DownloadManager.Request.NETWORK_MOBILE)
+					.setAllowedOverRoaming(false)
+					.setTitle("S&B Image")
+					.setNotificationVisibility(
+							DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+					.setDestinationUri(dest));
+			return Drawable
+					.createFromPath(Environment
+							.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+							+ "/" + fileName);
 		}
 	}
 
@@ -250,7 +333,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 		}
 		return false;
 	}
-	
+
 	public void share() {
 
 		Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);

@@ -24,7 +24,6 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
 import edu.grinnell.sandb.comments.Comment;
-import edu.grinnell.sandb.comments.CommentTable;
 import edu.grinnell.sandb.xmlpull.CommentParseTask;
 
 public class ArticleDetailActivity extends SherlockFragmentActivity {
@@ -56,7 +55,7 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 
 		mIDKey = i.getIntExtra(ArticleDetailFragment.ARTICLE_ID_KEY, 0);
 		comments_feed = i.getStringExtra(COMMENTS_FEED);
-		
+
 		new ParseComments().execute(comments_feed);
 
 		getSupportFragmentManager().beginTransaction()
@@ -99,11 +98,13 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 
 			mArticleSide = false;
 
-			getSupportFragmentManager().beginTransaction()
+			getSupportFragmentManager()
+					.beginTransaction()
 
-			// .setCustomAnimations(
-			// R.animator.card_flip_right_in, R.animator.card_flip_right_out,
-			// R.animator.card_flip_left_in, R.animator.card_flip_left_out)
+					//.setCustomAnimations(R.anim.card_flip_right_in,
+					//		R.anim.card_flip_right_out,
+					//		R.anim.card_flip_left_in,
+					//		R.anim.card_flip_left_out)
 
 					.replace(R.id.article_detail_container,
 							new CommentListFragment())
@@ -142,7 +143,7 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 
 	private class ParseComments extends AsyncTask<String, Void, List<Comment>> {
 
-//		private CommentTable mTable;
+		// private CommentTable mTable;
 		private Context mAppContext;
 
 		/* Setup the loading dialog. */
