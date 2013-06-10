@@ -15,6 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="15dip"
+            android:layout_marginRight="130dip"
             android:fontFamily="sans-serif"
             android:gravity="center_vertical"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -26,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_gravity="right"
-            android:layout_marginRight="25dip"
+            android:layout_marginRight="15dip"
             android:fontFamily="sans-serif-light" />
     </RelativeLayout>
 
