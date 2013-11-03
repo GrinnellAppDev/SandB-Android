@@ -1,8 +1,8 @@
 S&amp;B
 =========
 
-Authors:  * Colin Tremblay
-          * Lea Marolt Sonnenschein
+Authors:  * David Cowden
+          * Patrick Triest
 
 Date:    Saturday, 2nd November, 2013
 
