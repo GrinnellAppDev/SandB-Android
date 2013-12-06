@@ -108,9 +108,11 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 			getSupportFragmentManager()
 					.beginTransaction()
 
-					.setCustomAnimations(R.anim.card_flip_right_in,
-							R.anim.card_flip_right_out,
-							R.anim.card_flip_left_in, R.anim.card_flip_left_out)
+					// must use custom library NineOldAndroids for these 3d animations 
+					// to be compatable with actionbarsherlock
+					//.setCustomAnimations(R.anim.card_flip_right_in,
+					//		R.anim.card_flip_right_out,
+					//		R.anim.card_flip_left_in, R.anim.card_flip_left_out)
 
 					.replace(R.id.article_detail_container,
 							new CommentListFragment())

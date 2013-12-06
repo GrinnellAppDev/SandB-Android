@@ -29,50 +29,50 @@ public class XmlParseTask {
 
 	public static final String XMP = "XMLParseTask";
 
-//	public XmlParseTask(Context appContext, ParseDataListener pdl) {
-//		super();
-//		mAppContext = appContext;
-//		mParseDataListener = pdl;
-//	}
-//
-//	/* Setup the loading dialog. */
-//	@Override
-//	protected void onPreExecute() {
-//		// Do nothing..
-//	}
-//
-//	@Override
-//	protected List<Article> doInBackground(InputStream... arg0) {
-//
-//		mTable = new ArticleTable(mAppContext);
-//
-//		try {
-//			mTable.open();
-//			mTable.clearTable();
-//			return parseArticlesFromStream(arg0[0], mAppContext, mTable);
-//		} catch (IOException ioe) {
-//			Log.e(XMP, "parseArticlesFromStream", ioe);
-//		} catch (XmlPullParserException xppe) {
-//			Log.e(XMP, "parseArticlesFromStream", xppe);
-//		} catch (SQLException sqle) {
-//			Log.e(XMP, "SQLExeption", sqle);
-//		} catch (Exception e) {
-//			Log.e(XMP, "parseArticlesFromStream", e);
-//		} finally {
-//			mTable.close();
-//		}
-//		return new ArrayList<Article>();
-//	}
-//
-//	/*
-//	 * Stop the dialog and notify the main thread that the new menu is loaded.
-//	 */
-//	@Override
-//	protected void onPostExecute(List<Article> articles) {
-//		super.onPostExecute(articles);
-//		Log.i(XMP, "xml parsed!");
-//		mParseDataListener.onDataParsed(articles);
-//	}
+	// public XmlParseTask(Context appContext, ParseDataListener pdl) {
+	// super();
+	// mAppContext = appContext;
+	// mParseDataListener = pdl;
+	// }
+	//
+	// /* Setup the loading dialog. */
+	// @Override
+	// protected void onPreExecute() {
+	// // Do nothing..
+	// }
+	//
+	// @Override
+	// protected List<Article> doInBackground(InputStream... arg0) {
+	//
+	// mTable = new ArticleTable(mAppContext);
+	//
+	// try {
+	// mTable.open();
+	// mTable.clearTable();
+	// return parseArticlesFromStream(arg0[0], mAppContext, mTable);
+	// } catch (IOException ioe) {
+	// Log.e(XMP, "parseArticlesFromStream", ioe);
+	// } catch (XmlPullParserException xppe) {
+	// Log.e(XMP, "parseArticlesFromStream", xppe);
+	// } catch (SQLException sqle) {
+	// Log.e(XMP, "SQLExeption", sqle);
+	// } catch (Exception e) {
+	// Log.e(XMP, "parseArticlesFromStream", e);
+	// } finally {
+	// mTable.close();
+	// }
+	// return new ArrayList<Article>();
+	// }
+	//
+	// /*
+	// * Stop the dialog and notify the main thread that the new menu is loaded.
+	// */
+	// @Override
+	// protected void onPostExecute(List<Article> articles) {
+	// super.onPostExecute(articles);
+	// Log.i(XMP, "xml parsed!");
+	// mParseDataListener.onDataParsed(articles);
+	// }
 
 	protected static List<Article> parseArticlesFromStream(
 			InputStream xmlstream, Context c, ArticleTable t)
@@ -165,7 +165,7 @@ public class XmlParseTask {
 				skip(parser);
 			}
 		}
-		
+
 		return table.createArticle(guid, title, link, date, category,
 				description, body, comments, author);
 	}
@@ -221,8 +221,8 @@ public class XmlParseTask {
 		parser.require(XmlPullParser.START_TAG, ns, "wfw:commentRss");
 		String commentsLink = readText(parser);
 		parser.require(XmlPullParser.END_TAG, ns, "wfw:commentRss");
-		
-   		return commentsLink;
+
+		return commentsLink;
 	}
 
 	// Processes date tags in the feed.
@@ -247,6 +247,7 @@ public class XmlParseTask {
 		parser.require(XmlPullParser.END_TAG, ns, "description");
 		description = description.replaceAll("&#160;", "");
 		description = description.replaceAll("&#38;", "&");
+		description = description.replaceAll("\\[&#8230;\\]", "...");
 		return description;
 	}
 

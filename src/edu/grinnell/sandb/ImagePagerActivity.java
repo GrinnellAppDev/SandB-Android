@@ -131,8 +131,8 @@ public class ImagePagerActivity extends SherlockActivity {
 				}
 			});
 			
-			TextView titleView = (TextView) imageLayout.findViewById(R.id.title);
-			titleView.setText(titles[position]);
+			//TextView titleView = (TextView) imageLayout.findViewById(R.id.title);
+			//titleView.setText(titles[position]);
 			
 			((ViewPager) view).addView(imageLayout, 0);
 			return imageLayout;

@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal" 
         android:padding="@dimen/pad3"
-        android:background="@android:color/holo_orange_light"
+        android:background="@color/gred"
         >
         
          <ImageView android:id="@+id/spinner"
