@@ -22,8 +22,8 @@ public class ScarletAndBlackApplication extends Application {
 	        .memoryCache(new LruMemoryCache(2 * 1024 * 1024))
 	        .memoryCacheSize(6 * 1024 * 1024)
 	        .discCacheSize(100 * 1024 * 1024)
-	        .discCacheFileCount(100)
-	        .enableLogging();
+	        .discCacheFileCount(100);
+	       // .enableLogging();
         
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
         	configb = configb.taskExecutor(AsyncTask.THREAD_POOL_EXECUTOR)

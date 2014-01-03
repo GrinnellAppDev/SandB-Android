@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingRight="@dimen/pad5"
-    android:paddingLeft="@dimen/pad5" >
+    android:paddingLeft="@dimen/pad5"
+    android:paddingRight="@dimen/pad5" >
 
     <TextView
         android:id="@+id/titleText"
@@ -19,8 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingBottom="@dimen/pad3"
- >
+        android:paddingBottom="@dimen/pad3" >
 
         <ImageView
             android:id="@+id/articleThumb"

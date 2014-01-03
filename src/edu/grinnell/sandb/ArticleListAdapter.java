@@ -59,7 +59,7 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 			holder.title.setPadding(3, 3, 3, 3);
 			holder.description.setText(a.getDescription());
 		}
-
+		
 		return convertView;
 	}
 }

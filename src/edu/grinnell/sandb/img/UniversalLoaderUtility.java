@@ -1,5 +1,6 @@
 package edu.grinnell.sandb.img;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
@@ -32,8 +33,6 @@ public class UniversalLoaderUtility {
 
 	protected SimpleImageLoadingListener listener = new SimpleImageLoadingListener() {
 
-		
-		
 		@Override
 		public void onLoadingFailed(String imageUri, View view,
 				FailReason failReason) {
@@ -58,7 +57,9 @@ public class UniversalLoaderUtility {
 				break;
 			}
 			Animation a = ((ImageView) view).getAnimation();
-			if (a != null) a.cancel();
+			if (a != null)
+				view.clearAnimation();
+				//a.cancel();
 			view.setVisibility(View.GONE);
 		}
 	};
@@ -70,8 +71,7 @@ public class UniversalLoaderUtility {
 
 		options = new DisplayImageOptions.Builder()
 				.imageScaleType(ImageScaleType.EXACTLY)
-				.resetViewBeforeLoading()
-				.cacheOnDisc()
+				.resetViewBeforeLoading().cacheOnDisc()
 				.imageScaleType(ImageScaleType.EXACTLY)
 				.bitmapConfig(Bitmap.Config.RGB_565)
 				.displayer(new FadeInBitmapDisplayer(300)).build();
@@ -137,10 +137,8 @@ public class UniversalLoaderUtility {
 			DisplayImageOptions options;
 
 			options = new DisplayImageOptions.Builder()
-					.showStubImage(R.drawable.loading)
-					.resetViewBeforeLoading()
-					.cacheOnDisc()
-					.imageScaleType(ImageScaleType.EXACTLY)
+					.showStubImage(R.drawable.loading).resetViewBeforeLoading()
+					.cacheOnDisc().imageScaleType(ImageScaleType.EXACTLY)
 					.bitmapConfig(Bitmap.Config.RGB_565)
 					.displayer(new FadeInBitmapDisplayer(300)).build();
 
@@ -175,10 +173,8 @@ public class UniversalLoaderUtility {
 			DisplayImageOptions options;
 
 			options = new DisplayImageOptions.Builder()
-					.showStubImage(R.drawable.loading)
-					.resetViewBeforeLoading()
-					.cacheOnDisc()
-					.imageScaleType(ImageScaleType.EXACTLY)
+					.showStubImage(R.drawable.loading).resetViewBeforeLoading()
+					.cacheOnDisc().imageScaleType(ImageScaleType.EXACTLY)
 					.bitmapConfig(Bitmap.Config.RGB_565)
 					.displayer(new FadeInBitmapDisplayer(300)).build();
 
@@ -199,14 +195,14 @@ public class UniversalLoaderUtility {
 		}
 	}
 
-	
 	// remove the ends of each image URL to download full sized images
 	public String getHiResImage(String lowResImg) {
-		// add "contains" for error testing
-
-		if (lowResImg == null) {
+		if (lowResImg == null)
 			return null;
-		}
+		
+		// do nothing if there is no resolution tag
+		if (!lowResImg.contains("-")  || !lowResImg.contains("x"))
+			return lowResImg;
 
 		int readTo = lowResImg.lastIndexOf("-");
 
