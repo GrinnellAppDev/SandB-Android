@@ -11,11 +11,11 @@ import android.widget.TextView;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.img.UniversalLoaderUtility;
 
+/* List Adapter to populate the article list */
 public class ArticleListAdapter extends ArrayAdapter<Article> {
 	private MainActivity mActivity;
 	private List<Article> mData;
 	protected UniversalLoaderUtility mLoader;
-
 
 	public ArticleListAdapter(MainActivity a, int layoutId, List<Article> data) {
 		super(a, layoutId, data);
@@ -39,10 +39,13 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 			LayoutInflater li = mActivity.getLayoutInflater();
 			convertView = li.inflate(R.layout.articles_row, parent, false);
 			holder = new ViewHolder();
+			//set the article title
 			holder.title = (TextView) convertView
 					.findViewById(R.id.titleText);
+			//set the article description
 			holder.description = (TextView) convertView
 					.findViewById(R.id.descriptionText);
+			//set the article thumbnail image
 			holder.image = (ImageView) convertView
 					.findViewById(R.id.articleThumb);
 			convertView.setTag(holder);

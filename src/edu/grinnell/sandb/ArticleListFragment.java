@@ -28,7 +28,8 @@ public class ArticleListFragment extends SherlockListFragment {
 	public static final Map<String, String> titleToKey = new LinkedHashMap<String, String>();
 
 	public static final String[] CATEGORIES;
-	
+
+	// Fill in the a map to correspond to section tabs for the article list
 	static {
 		titleToKey.put("All", null);
 		titleToKey.put("News", "News");
@@ -38,7 +39,6 @@ public class ArticleListFragment extends SherlockListFragment {
 		titleToKey.put("Opinion", "Opinion");
 		titleToKey.put("Sports", "Sports");
 
-		
 		CATEGORIES = titleToKey.keySet().toArray(new String[0]);
 	}
 
@@ -55,34 +55,6 @@ public class ArticleListFragment extends SherlockListFragment {
 
 	private static final String TAG = "ArticleListFragment";
 
-	public interface Callbacks {
-
-		public void onItemSelected(int position);
-
-		public void setListActivateState();
-	}
-
-	private static Callbacks sDummyCallbacks = new Callbacks() {
-		@Override
-		public void onItemSelected(int position) {
-		}
-
-		@Override
-		public void setListActivateState() {
-
-		}
-	};
-
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		if (!(activity instanceof Callbacks)) {
-			throw new IllegalStateException(
-					"Activity must implement fragment's callbacks.");
-		}
-		mCallbacks = (Callbacks) activity;
-	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -90,12 +62,12 @@ public class ArticleListFragment extends SherlockListFragment {
 		// TODO restore from instance state
 		Bundle b = getArguments();
 		mCategory = null;
-		if (b != null) {
+		if (b != null)
 			mCategory = titleToKey.get(b.getString(ARTICLE_CATEGORY_KEY));
-		}
 
-		Log.i(TAG, "Loading data for the '" + mCategory + "' category..");
+		// Retrieve the articles for the selected catagory
 		mData = loadDataFromCache(mCategory);
+		Log.i(TAG, "Loading data for the '" + mCategory + "' category..");
 
 		if (mData == null)
 			mData = new ArrayList<Article>();
@@ -104,6 +76,7 @@ public class ArticleListFragment extends SherlockListFragment {
 				R.layout.articles_row, mData);
 	}
 
+	/* Retrieve the articles for a given catagory from the sqlite database */
 	private List<Article> loadDataFromCache(String category) {
 		ArticleTable table = new ArticleTable(getActivity());
 		table.open();
@@ -138,10 +111,11 @@ public class ArticleListFragment extends SherlockListFragment {
 		}
 	}
 
+	/* Update the article list */
 	public void update() {
 		mData = loadDataFromCache(mCategory);
 		mAdapter.clear();
-		
+
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			mAdapter.addAll(mData);
 		} else {
@@ -149,10 +123,11 @@ public class ArticleListFragment extends SherlockListFragment {
 				mAdapter.add(a);
 			}
 		}
-		
+
 		mAdapter.notifyDataSetChanged();
 	}
 
+	/* If no articles are available, notify the user */
 	public void setEmptyText(String text) {
 		TextView empty = (TextView) getListView().getEmptyView();
 		empty.setText(text);
@@ -164,6 +139,7 @@ public class ArticleListFragment extends SherlockListFragment {
 		mCallbacks = sDummyCallbacks;
 	}
 
+	/* Open the ArticleDetailActivity when a list item is selected */
 	@Override
 	public void onListItemClick(ListView listView, View view, int position,
 			long id) {
@@ -176,6 +152,7 @@ public class ArticleListFragment extends SherlockListFragment {
 		detailIntent.putExtra(ArticleDetailActivity.COMMENTS_FEED,
 				mData.get(position).getComments());
 		startActivity(detailIntent);
+		// Add a smooth animation
 		getSherlockActivity().overridePendingTransition(R.anim.slide_in,
 				R.anim.slide_out);
 	}
@@ -202,6 +179,32 @@ public class ArticleListFragment extends SherlockListFragment {
 		}
 
 		mActivatedPosition = position;
+	}
+
+	public interface Callbacks {
+		public void onItemSelected(int position);
+
+		public void setListActivateState();
+	}
+
+	private static Callbacks sDummyCallbacks = new Callbacks() {
+		@Override
+		public void onItemSelected(int position) {
+		}
+
+		@Override
+		public void setListActivateState() {
+		}
+	};
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		if (!(activity instanceof Callbacks)) {
+			throw new IllegalStateException(
+					"Activity must implement fragment's callbacks.");
+		}
+		mCallbacks = (Callbacks) activity;
 	}
 
 }

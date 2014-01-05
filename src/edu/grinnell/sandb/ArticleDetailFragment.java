@@ -43,8 +43,8 @@ public class ArticleDetailFragment extends SherlockFragment {
 	public final static String FEED_LINK = null;
 	public final static String ARTICLE_LINK = null;
 
-	private static int scrnHeight = 20000;
-
+	//These variables will govern the touch gesture to return user to the article list
+	private static int scrnHeight;
 	private static final int SWIPE_MIN_DISTANCE = 300;
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 	static GestureDetector gestureDetector;
@@ -59,6 +59,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 	private PendingIntent mSendFeedLoaded;
 	ArticleDetailActivity activity = (ArticleDetailActivity) getSherlockActivity();
 
+	//These variables will govern where a picture is saved if the user chooses to download it
 	File path = Environment
 			.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 	String fileName = "SBimage";
@@ -75,6 +76,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 		setHasOptionsMenu(true);
 		setRetainInstance(true);
 
+		// Scale the touch gesture listener sensitivty for the screen size
 		DisplayMetrics metrics = new DisplayMetrics();
 		getSherlockActivity().getWindowManager().getDefaultDisplay()
 				.getMetrics(metrics);
@@ -87,6 +89,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 			}
 		};
 
+		// Apply a gesture detector to return to the article list on a horizonal screen swipe
 		gestureDetector = new GestureDetector(getSherlockActivity(),
 				new GestureDetector.SimpleOnGestureListener() {
 					@Override
@@ -101,6 +104,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 					}
 				});
 		
+		//Find the article in the sqlite database using the ID key
 		activity = (ArticleDetailActivity) getSherlockActivity();
 		int id = activity.getIDKey();
 		ArticleTable table = new ArticleTable(getSherlockActivity());
@@ -151,8 +155,10 @@ public class ArticleDetailFragment extends SherlockFragment {
 		String imgtags = "<img.+?>";
 		// String imgtags = "<div.+?</div>";
 
+		//Split the article text around the images
 		String[] sections = bodyHTML.split(imgtags);
 
+		//Load the images for the article
 		ImageTable imgTable = new ImageTable(getActivity());
 		imgTable.open();
 		String[] urls = imgTable.findUrlsByArticleId(mArticle.getId());
@@ -178,7 +184,8 @@ public class ArticleDetailFragment extends SherlockFragment {
 		if (img != null) {
 			ImageView imgView = (ImageView) li.inflate(R.layout.img_section, v,
 					false);
-			// open image pager if image is clicked
+			
+			// Open a full screen image pager if image is clicked
 			OnClickListener imgClick = new OnClickListener() {
 				public void onClick(View v) {
 
@@ -204,6 +211,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 				}
 			};
 
+			//Display an option to download the image if it is held
 			OnLongClickListener imgHold = new OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
@@ -256,6 +264,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 			int scrnHeight = metrics.heightPixels - 100;
 			imgView.setMaxHeight(scrnHeight);
 
+			//Load the full resolution images using universal image loader
 			mLoader.loadHiResArticleImage(img, imgView, getSherlockActivity());
 			v.addView(imgView);
 		}
@@ -263,12 +272,12 @@ public class ArticleDetailFragment extends SherlockFragment {
 		if (text != null) {
 			TextView tv = (TextView) li
 					.inflate(R.layout.text_section, v, false);
-
 			tv.setText(Html.fromHtml(text));
 			v.addView(tv);
 		}
 	}
 
+	/* Download the selected image to "downloads" on user request */
 	public class DownloadFile extends AsyncTask<String, Integer, Drawable> {
 
 		@SuppressLint("NewApi")
@@ -276,6 +285,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 			Uri img = Uri.parse(sUrl[0]);
 			Uri dest = Uri.fromFile(file);
 
+			//Use the built in Android download manager
 			mManager = (DownloadManager) getSherlockActivity()
 					.getSystemService(getSherlockActivity().DOWNLOAD_SERVICE);
 
@@ -335,6 +345,7 @@ public class ArticleDetailFragment extends SherlockFragment {
 		return false;
 	}
 
+	/* Allow the user to share the article url using the app of their choice */
 	public void share() {
 
 		Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);

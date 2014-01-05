@@ -38,9 +38,7 @@ public class CommentListFragment extends SherlockListFragment {
 				container, false);
 
 		mActivity = (ArticleDetailActivity) getSherlockActivity();
-
 		mComments = mActivity.getComments();
-
 		fillList();
 
 		return rootView;

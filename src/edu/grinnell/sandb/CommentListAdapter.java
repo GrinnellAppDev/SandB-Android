@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import edu.grinnell.sandb.comments.Comment;
 
+/* List adapter to display the comments for a article */
 public class CommentListAdapter extends ArrayAdapter<Comment> {
 	private ArticleDetailActivity mActivity;
 	private List<Comment> mData;
@@ -52,8 +53,6 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
 			holder.body.setText(Html.fromHtml(a.getBody()));
 			holder.date.setText(a.getPostDate());
 		}
-
-	//	Log.i("comm ad", a.getAuthor());
 		
 		return convertView;
 	}

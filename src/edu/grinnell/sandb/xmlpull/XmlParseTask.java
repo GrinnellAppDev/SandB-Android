@@ -18,7 +18,6 @@ import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
 import edu.grinnell.sandb.img.BodyImageGetter;
 
-//public class XmlParseTask extends AsyncTask<InputStream, Void, List<Article>> {
 public class XmlParseTask {
 
 	private Context mAppContext;
@@ -28,51 +27,6 @@ public class XmlParseTask {
 	private static final String ns = null;
 
 	public static final String XMP = "XMLParseTask";
-
-	// public XmlParseTask(Context appContext, ParseDataListener pdl) {
-	// super();
-	// mAppContext = appContext;
-	// mParseDataListener = pdl;
-	// }
-	//
-	// /* Setup the loading dialog. */
-	// @Override
-	// protected void onPreExecute() {
-	// // Do nothing..
-	// }
-	//
-	// @Override
-	// protected List<Article> doInBackground(InputStream... arg0) {
-	//
-	// mTable = new ArticleTable(mAppContext);
-	//
-	// try {
-	// mTable.open();
-	// mTable.clearTable();
-	// return parseArticlesFromStream(arg0[0], mAppContext, mTable);
-	// } catch (IOException ioe) {
-	// Log.e(XMP, "parseArticlesFromStream", ioe);
-	// } catch (XmlPullParserException xppe) {
-	// Log.e(XMP, "parseArticlesFromStream", xppe);
-	// } catch (SQLException sqle) {
-	// Log.e(XMP, "SQLExeption", sqle);
-	// } catch (Exception e) {
-	// Log.e(XMP, "parseArticlesFromStream", e);
-	// } finally {
-	// mTable.close();
-	// }
-	// return new ArrayList<Article>();
-	// }
-	//
-	// /*
-	// * Stop the dialog and notify the main thread that the new menu is loaded.
-	// */
-	// @Override
-	// protected void onPostExecute(List<Article> articles) {
-	// super.onPostExecute(articles);
-	// Log.i(XMP, "xml parsed!");
-	// mParseDataListener.onDataParsed(articles);
-	// }
 
 	protected static List<Article> parseArticlesFromStream(
 			InputStream xmlstream, Context c, ArticleTable t)
@@ -178,7 +132,6 @@ public class XmlParseTask {
 		public void onDataParsed(List<Article> articles);
 	}
 
-	// TODO: This is repetitive..
 	// Processes title tags in the feed.
 	private static String readTitle(XmlPullParser parser) throws IOException,
 			XmlPullParserException {

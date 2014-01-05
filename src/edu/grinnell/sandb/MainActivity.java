@@ -30,6 +30,7 @@ import com.crittercism.app.Crittercism;
 import edu.grinnell.sandb.xmlpull.XmlPullReceiver;
 import edu.grinnell.sandb.xmlpull.XmlPullService;
 
+/* The main activity that the app will initialize to. This activity hosts the ArticleListFragment */
 public class MainActivity extends SherlockFragmentActivity implements ArticleListFragment.Callbacks {
 	
 	private static final String TAG = "MainActivity";
@@ -66,6 +67,7 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 	    ActionBar actionBar = getSupportActionBar();
 	    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
+	    //setup a pager to scroll between catagory tabs
 	    mPager = (ViewPager) findViewById(R.id.pager);
 	    mTabsAdapter = new TabsAdapter(getSupportFragmentManager(), mPager);
 	    addTabs(actionBar, mTabsAdapter);
@@ -74,11 +76,9 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 			actionBar.setSelectedNavigationItem(savedInstanceState.getInt(SELECTED_TAB));
 		}
 
-	    //TODO
+		//Notify the app when the feed data has been downloaded
 		mUpdateReceiver = new XmlPullReceiver();
 		registerReceiver(mUpdateReceiver, new IntentFilter(XmlPullReceiver.FEED_PROCESSED));
-
-		
 	}
 	
 	@Override
@@ -86,7 +86,9 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 		super.onResume();
 		mPrefs.refresh();
 		registerReceiver(mUpdateReceiver, new IntentFilter(XmlPullReceiver.FEED_PROCESSED));
+		//If this is the first time the app is run, download the feed
 		if (mPrefs.firstRun) {
+			//Show a spinner while the list is loading
 			if (!mUpdateInProgress) {
 				mLoading.setVisibility(View.VISIBLE);
 				mLoadingImage.startAnimation(AnimationUtils.loadAnimation(this,
@@ -99,6 +101,7 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 		}
 	}
 	
+	//Start a service to download the 
 	private void startXmlPullService(boolean forced) {
 		Intent loadFeed = new Intent(this, XmlPullService.class);
 		Intent feedLoaded = new Intent();
@@ -120,6 +123,7 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 		String action = i.getAction();
 		Log.i(TAG, "onNewIntent called | " + action);
 
+		//Clear the loading bar when the articles are loaded
 		if (ArticleListFragment.UPDATE.equals(action)) {
 			if (mUpdateInProgress) {
 				mUpdateInProgress = false;
@@ -151,6 +155,7 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 		switch (item.getItemId()) {
 		case R.id.menu_refresh:
 			if (!mUpdateInProgress) {
+				//Reload the feed when the refresh button is pressed
 				mLoading.setVisibility(View.VISIBLE);
 				mLoadingImage.startAnimation(AnimationUtils.loadAnimation(this,
 						R.anim.loading));
@@ -172,18 +177,17 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
 	@Override
 	public void onItemSelected(int position) {
 		if(mTwoPane) {
-			// add two pane layout
+			//TODO add two pane layout
 		} else {
 			if (mSendFeedLoaded != null) mSendFeedLoaded.cancel();
 		}		
 	}
 
 	@Override
-	public void setListActivateState() {
-		// TODO Auto-generated method stub
-		
+	public void setListActivateState() {		
 	}
 	
+	//Add the catagory tabs
 	private void addTabs(ActionBar actionBar, TabsAdapter ta) {    
         for (String category : ArticleListFragment.CATEGORIES) {
         	Bundle args = new Bundle();
@@ -194,6 +198,7 @@ public class MainActivity extends SherlockFragmentActivity implements ArticleLis
         }
 	}
 	
+	/* FragmentPagerAdapter to handle the catagory tabs */
 	public class TabsAdapter extends FragmentPagerAdapter implements
 			ActionBar.TabListener, ViewPager.OnPageChangeListener {
 

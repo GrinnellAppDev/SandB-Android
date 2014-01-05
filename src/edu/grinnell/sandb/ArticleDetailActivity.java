@@ -26,6 +26,7 @@ import com.actionbarsherlock.view.MenuItem;
 import edu.grinnell.sandb.comments.Comment;
 import edu.grinnell.sandb.xmlpull.CommentParseTask;
 
+/* This activity displays the text, images, and comments for a selected article */
 public class ArticleDetailActivity extends SherlockFragmentActivity {
 
 	public static final String DETAIL_ARGS = "detail_args";
@@ -43,7 +44,6 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 	public void onCreate(Bundle ofJoy) {
 		super.onCreate(ofJoy);
 
-		// should set the title as the article date or something
 		setTitle("");
 		setContentView(R.layout.activity_article_detail);
 
@@ -51,13 +51,16 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 		Intent i = getIntent();
 
 		ArticleDetailFragment fragment = new ArticleDetailFragment();
-		;
-
 		mIDKey = i.getIntExtra(ArticleDetailFragment.ARTICLE_ID_KEY, 0);
 		comments_feed = i.getStringExtra(COMMENTS_FEED);
 
+		/* Download the comments as soon as the article is opened */
 		new ParseComments().execute(comments_feed);
 
+		/*
+		 * Show the article detail fragment initially(as opposed to the comments
+		 * list fragment
+		 */
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.article_detail_container, fragment).commit();
 
@@ -82,6 +85,7 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 			upIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 					| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 			NavUtils.navigateUpTo(this, upIntent);
+			// Add a smooth transition animation
 			overridePendingTransition(R.anim.article_slide_in,
 					R.anim.article_slide_out);
 			return true;
@@ -90,13 +94,21 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	/*
+	 * This is called when the "Comments" button is pressed This method will
+	 * flip between the comments fragment and article fragment.
+	 */
 	public void flip() {
+		// If the user is viewing the article fragment
 		if (mArticleSide) {
-
+			// Display a toast and do not flip if the comments are still
+			// downloading
 			if (mComments == null) {
 				Toast.makeText(this, "Comments downloading...",
 						Toast.LENGTH_LONG).show();
 				return;
+				// Display a toast and do not flip if there are no comments for
+				// the article
 			} else if (mComments.isEmpty()) {
 				Toast.makeText(this, "No Comments For this Article",
 						Toast.LENGTH_LONG).show();
@@ -105,23 +117,21 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 
 			mArticleSide = false;
 
+			//Replace the article detail fragment with the comments fragment
 			getSupportFragmentManager()
 					.beginTransaction()
-
-					// must use custom library NineOldAndroids for these 3d animations 
+					// must use custom library NineOldAndroids for these 3d
+					// animations
 					// to be compatable with actionbarsherlock
-					//.setCustomAnimations(R.anim.card_flip_right_in,
-					//		R.anim.card_flip_right_out,
-					//		R.anim.card_flip_left_in, R.anim.card_flip_left_out)
-
+					// .setCustomAnimations(R.anim.card_flip_right_in,
+					// R.anim.card_flip_right_out,
+					// R.anim.card_flip_left_in, R.anim.card_flip_left_out)
 					.replace(R.id.article_detail_container,
-							new CommentListFragment())
-
-					.addToBackStack(null)
-
+							new CommentListFragment()).addToBackStack(null)
 					.commit();
 		}
 
+		//If the comments fragment is showing, pop back the stack to display the article fragment
 		else {
 			mArticleSide = true;
 			getSupportFragmentManager().popBackStack();
@@ -136,7 +146,7 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 				R.anim.article_slide_out);
 	}
 
-	// Still respond to swipe back gesture even if it also triggers scroll
+	// Return to the article list if a swipe motion is made
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
 		// TouchEvent dispatcher.
@@ -149,6 +159,10 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 		return super.dispatchTouchEvent(ev);
 	}
 
+	/* Async task to download the comments for an article.
+	 * Unfortunately most articles are not commented on.
+	 * In a future update an interface to submit comments must be added(github issue #2)
+	 */
 	private class ParseComments extends AsyncTask<String, Void, List<Comment>> {
 
 		// private CommentTable mTable;
@@ -160,11 +174,14 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 			// begin loading animation
 		}
 
-		// not using database, for now...
 		@Override
 		protected List<Comment> doInBackground(String... arg0) {
 
 			mAppContext = getApplicationContext();
+			
+			/* If we ever need to handle a larger quantity of comments,
+			 * store them in a table in the sqllite database
+			 */
 			// mTable = new CommentTable(mAppContext);
 
 			InputStream stream = downloadDataFromServer(arg0[0]);
@@ -205,6 +222,7 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 		}
 	}
 
+	/* This method will download the comments stream(in xml) from the S&B website */
 	protected static InputStream downloadDataFromServer(String urlstr) {
 		InputStream stream = null;
 		try {
@@ -226,6 +244,5 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 
 		return stream;
 	}
-	
-	
+
 }

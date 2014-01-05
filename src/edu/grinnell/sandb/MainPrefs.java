@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
+//store persistent info on when the list was last updated
 public class MainPrefs {
 
 	/* SharedPreferences */

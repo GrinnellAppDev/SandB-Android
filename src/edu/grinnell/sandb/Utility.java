@@ -9,6 +9,7 @@ import android.util.Log;
 
 public class Utility {
 	
+	/* Capitalize the first letter of each word in a string */
 	public static String captializeWords(String s) {
         String[] words = s.split(" ");
         StringBuilder sb = new StringBuilder();
@@ -22,31 +23,7 @@ public class Utility {
         return sb.toString();
 	}
 	
-	/*
-	public static void showToast(Context c, int message) {
-		Toast t;
-		switch(message) {
-		case Result.NO_ROUTE:
-			t = Toast.makeText(c, R.string.noRoute, Toast.LENGTH_SHORT);
-			t.setGravity(Gravity.TOP, 0, 70);
-			t.show();
-			return;
-		case Result.HTTP_ERROR:
-			t = Toast.makeText(c, R.string.httpError, Toast.LENGTH_SHORT);
-			t.setGravity(Gravity.TOP, 0, 70);
-			t.show();
-			return;
-		case Result.NO_MEAL_DATA:
-			t = Toast.makeText(c, R.string.noMealContent, Toast.LENGTH_LONG);
-			t.setGravity(Gravity.TOP, 0, 70);
-			t.show();
-			return;
-		default:
-			return;		
-		}
-	}
-	*/
-	
+	/* Form a nicely formatted date string */
 	public static String dateString(GregorianCalendar c) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault()));
@@ -59,6 +36,7 @@ public class Utility {
 		return sb.toString();
 	}
 	
+	/* Resize an image and return it's thumbnail version for displaying in the article list */
 	public static Bitmap resizeBitmap(Bitmap bm, int maxWidth, int maxHeight) {
 		
 		if (bm == null)
