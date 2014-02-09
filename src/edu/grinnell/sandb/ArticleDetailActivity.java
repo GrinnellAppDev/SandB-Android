@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.flurry.android.FlurryAgent;
 
 import edu.grinnell.sandb.comments.Comment;
 import edu.grinnell.sandb.xmlpull.CommentParseTask;
@@ -117,7 +118,7 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 
 			mArticleSide = false;
 
-			//Replace the article detail fragment with the comments fragment
+			// Replace the article detail fragment with the comments fragment
 			getSupportFragmentManager()
 					.beginTransaction()
 					// must use custom library NineOldAndroids for these 3d
@@ -131,7 +132,8 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 					.commit();
 		}
 
-		//If the comments fragment is showing, pop back the stack to display the article fragment
+		// If the comments fragment is showing, pop back the stack to display
+		// the article fragment
 		else {
 			mArticleSide = true;
 			getSupportFragmentManager().popBackStack();
@@ -159,9 +161,10 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 		return super.dispatchTouchEvent(ev);
 	}
 
-	/* Async task to download the comments for an article.
-	 * Unfortunately most articles are not commented on.
-	 * In a future update an interface to submit comments must be added(github issue #2)
+	/*
+	 * Async task to download the comments for an article. Unfortunately most
+	 * articles are not commented on. In a future update an interface to submit
+	 * comments must be added(github issue #2)
 	 */
 	private class ParseComments extends AsyncTask<String, Void, List<Comment>> {
 
@@ -178,9 +181,10 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 		protected List<Comment> doInBackground(String... arg0) {
 
 			mAppContext = getApplicationContext();
-			
-			/* If we ever need to handle a larger quantity of comments,
-			 * store them in a table in the sqllite database
+
+			/*
+			 * If we ever need to handle a larger quantity of comments, store
+			 * them in a table in the sqllite database
 			 */
 			// mTable = new CommentTable(mAppContext);
 
@@ -222,7 +226,10 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 		}
 	}
 
-	/* This method will download the comments stream(in xml) from the S&B website */
+	/*
+	 * This method will download the comments stream(in xml) from the S&B
+	 * website
+	 */
 	protected static InputStream downloadDataFromServer(String urlstr) {
 		InputStream stream = null;
 		try {
@@ -243,6 +250,18 @@ public class ArticleDetailActivity extends SherlockFragmentActivity {
 		}
 
 		return stream;
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		FlurryAgent.onStartSession(this, "B3PJX5MJNYMNSB9XQS3P");
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		FlurryAgent.onEndSession(this);
 	}
 
 }
