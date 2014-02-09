@@ -1,6 +1,5 @@
 package edu.grinnell.sandb.img;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
@@ -36,9 +35,7 @@ public class UniversalLoaderUtility {
 		@Override
 		public void onLoadingFailed(String imageUri, View view,
 				FailReason failReason) {
-			@SuppressWarnings("unused")
 			String message = null;
-			view.clearAnimation();
 			switch (failReason.getType()) {
 			case IO_ERROR:
 				message = "Input/Output error";
