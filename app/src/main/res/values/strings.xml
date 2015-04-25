@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Grinnell S&amp;B</string>
+    <string name="title_article_detail">Grinnell S&amp;B</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_refresh">Refresh</string>
+    <string name="loading_articles">Loading articles..</string>
+    <string name="no_articles">No Articles Available.</string>
+    <string name="share">Share Article</string>
+    <string name="menu_share">Share</string>
+    <string name="article_image">The image in an article</string>
+    <string name="all">All</string>
+    <string name="arts">Arts</string>
+    <string name="sports">Sports</string>
+    <string name="community">Community</string>
+    <string name="opinion">Opinion</string>
+    <string name="features">Features</string>
+    <string name="title_activity_image_viewer">ImageViewer</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="empty">empty</string>
+    <string name="title_activity_comments">CommentsActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="comments">Comments</string>
+    <string name="menu_comments">Comments</string>
+    <string name="loading_comments">Loading comments..</string>
+    <string name="menu_articleView">Article</string>
+    <string name="articleView">Article</string>
+
+</resources>

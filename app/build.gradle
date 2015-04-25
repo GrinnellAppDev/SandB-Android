@@ -1,0 +1,28 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    defaultConfig {
+        applicationId "edu.grinnell.sandb"
+        minSdkVersion 7
+        targetSdkVersion 18
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.android.support:appcompat-v7:21.0.+'
+    compile files('libs/FlurryAnalytics_3.3.3.jar')
+    compile files('libs/android-support-v13.jar')
+    compile files('libs/crashlytics.jar')
+    compile files('libs/universal-image-loader-1.9.1.jar')
+}
