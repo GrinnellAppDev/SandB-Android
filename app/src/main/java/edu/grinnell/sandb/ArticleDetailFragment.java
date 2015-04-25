@@ -1,7 +1,5 @@
 package edu.grinnell.sandb;
 
-import java.io.File;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -15,12 +13,16 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,17 +32,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
+import java.io.File;
 
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
 import edu.grinnell.sandb.img.ImageTable;
 import edu.grinnell.sandb.img.UniversalLoaderUtility;
 
-@SuppressLint("ClickableViewAccessibility") @TargetApi(Build.VERSION_CODES.FROYO) public class ArticleDetailFragment extends SherlockFragment {
+@SuppressLint("ClickableViewAccessibility") @TargetApi(Build.VERSION_CODES.FROYO)
+public class ArticleDetailFragment extends Fragment {
 
 	public final static String FEED_LINK = null;
 	public final static String ARTICLE_LINK = null;
@@ -59,7 +59,7 @@ import edu.grinnell.sandb.img.UniversalLoaderUtility;
 	public static final String TAG = "ArticleDetailFragment";
 
 	private PendingIntent mSendFeedLoaded;
-	ArticleDetailActivity activity = (ArticleDetailActivity) getSherlockActivity();
+	ArticleDetailActivity activity = (ArticleDetailActivity) getActivity();
 
 	//These variables will govern where a picture is saved if the user chooses to download it
 	@SuppressLint("NewApi") File path = Environment
@@ -80,7 +80,7 @@ import edu.grinnell.sandb.img.UniversalLoaderUtility;
 
 		// Scale the touch gesture listener sensitivty for the screen size
 		DisplayMetrics metrics = new DisplayMetrics();
-		getSherlockActivity().getWindowManager().getDefaultDisplay()
+		getActivity().getWindowManager().getDefaultDisplay()
 				.getMetrics(metrics);
 
 		scrnHeight = metrics.heightPixels - 100;
@@ -92,14 +92,14 @@ import edu.grinnell.sandb.img.UniversalLoaderUtility;
 		};
 
 		// Apply a gesture detector to return to the article list on a horizonal screen swipe
-		gestureDetector = new GestureDetector(getSherlockActivity(),
+		gestureDetector = new GestureDetector(getActivity(),
 				new GestureDetector.SimpleOnGestureListener() {
 					@Override
 					public boolean onFling(MotionEvent e1, MotionEvent e2,
 							float velocityX, float velocityY) {
 						if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
 								&& Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-							getSherlockActivity().onBackPressed();
+							getActivity().onBackPressed();
 							return true;
 						} else
 							return false;
@@ -107,9 +107,9 @@ import edu.grinnell.sandb.img.UniversalLoaderUtility;
 				});
 		
 		//Find the article in the sqlite database using the ID key
-		activity = (ArticleDetailActivity) getSherlockActivity();
+		activity = (ArticleDetailActivity) getActivity();
 		int id = activity.getIDKey();
-		ArticleTable table = new ArticleTable(getSherlockActivity());
+		ArticleTable table = new ArticleTable(getActivity());
 		table.open();
 		Log.i(TAG, "Looking for article with id = " + id);
 		mArticle = table.findById(id);
@@ -124,9 +124,9 @@ import edu.grinnell.sandb.img.UniversalLoaderUtility;
 
 		// Navigate up if there is no article information..
 		if (mArticle == null) {
-			Intent up = new Intent(getSherlockActivity(), MainActivity.class);
+			Intent up = new Intent(getActivity(), MainActivity.class);
 			up.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			NavUtils.navigateUpTo(getSherlockActivity(), up);
+			NavUtils.navigateUpTo(getActivity(), up);
 		}
 
 		// add the author to the article
@@ -191,7 +191,7 @@ import edu.grinnell.sandb.img.UniversalLoaderUtility;
 			OnClickListener imgClick = new OnClickListener() {
 				public void onClick(View v) {
 
-					ImageTable imgTable = new ImageTable(getSherlockActivity());
+					ImageTable imgTable = new ImageTable(getActivity());
 					imgTable.open();
 
 					int id = mArticle.getId();
@@ -202,7 +202,7 @@ import edu.grinnell.sandb.img.UniversalLoaderUtility;
 						// System.out.println(URLS[i]);
 					}
 
-					Intent intent = new Intent(getSherlockActivity(),
+					Intent intent = new Intent(getActivity(),
 							ImagePagerActivity.class);
 					intent.putExtra("ArticleImages", URLS);
 					intent.putExtra("ImageTitles",
@@ -219,7 +219,7 @@ import edu.grinnell.sandb.img.UniversalLoaderUtility;
 				public boolean onLongClick(View v) {
 
 					AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-							getSherlockActivity());
+							getActivity());
 
 					// set title
 					alertDialogBuilder.setTitle("Download Image?");
@@ -260,14 +260,14 @@ import edu.grinnell.sandb.img.UniversalLoaderUtility;
 
 			// set max height so that image does not go off screen
 			DisplayMetrics metrics = new DisplayMetrics();
-			getSherlockActivity().getWindowManager().getDefaultDisplay()
+			getActivity().getWindowManager().getDefaultDisplay()
 					.getMetrics(metrics);
 
 			int scrnHeight = metrics.heightPixels - 100;
 			imgView.setMaxHeight(scrnHeight);
 
 			//Load the full resolution images using universal image loader
-			mLoader.loadHiResArticleImage(img, imgView, getSherlockActivity());
+			mLoader.loadHiResArticleImage(img, imgView, getActivity());
 			v.addView(imgView);
 		}
 
@@ -288,8 +288,8 @@ import edu.grinnell.sandb.img.UniversalLoaderUtility;
 			Uri dest = Uri.fromFile(file);
 
 			//Use the built in Android download manager
-			mManager = (DownloadManager) getSherlockActivity()
-					.getSystemService(getSherlockActivity().DOWNLOAD_SERVICE);
+			mManager = (DownloadManager) getActivity()
+					.getSystemService(getActivity().DOWNLOAD_SERVICE);
 
 			mManager.enqueue(new DownloadManager.Request(img)
 					.setAllowedNetworkTypes(
@@ -312,9 +312,9 @@ import edu.grinnell.sandb.img.UniversalLoaderUtility;
 		super.onResume();
 		if (mArticle == null) {
 			// Navigate Up..
-			Intent upIntent = new Intent(getSherlockActivity(),
+			Intent upIntent = new Intent(getActivity(),
 					MainActivity.class);
-			NavUtils.navigateUpTo(getSherlockActivity(), upIntent);
+			NavUtils.navigateUpTo(getActivity(), upIntent);
 		}
 
 	}

@@ -1,7 +1,5 @@
 package edu.grinnell.sandb;
 
-import java.util.ArrayList;
-
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
@@ -12,7 +10,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -20,19 +22,16 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.Tab;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.crashlytics.android.Crashlytics;
 import com.flurry.android.FlurryAgent;
+
+import java.util.ArrayList;
 
 import edu.grinnell.sandb.xmlpull.XmlPullReceiver;
 import edu.grinnell.sandb.xmlpull.XmlPullService;
 
 /* The main activity that the app will initialize to. This activity hosts the ArticleListFragment */
-public class MainActivity extends SherlockFragmentActivity implements
+public class MainActivity extends ActionBarActivity implements
 		ArticleListFragment.Callbacks {
 
 	private static final String TAG = "MainActivity";
@@ -150,7 +149,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getSupportMenuInflater().inflate(R.menu.activity_main, menu);
+		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
 	}
 
@@ -197,7 +196,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 		for (String category : ArticleListFragment.CATEGORIES) {
 			Bundle args = new Bundle();
 			args.putString(ArticleListFragment.ARTICLE_CATEGORY_KEY, category);
-			Tab tab = actionBar.newTab().setText(category);
+			ActionBar.Tab tab = actionBar.newTab().setText(category);
 			ta.addTab(tab, ArticleListFragment.class, args);
 		}
 	}
@@ -300,7 +299,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 		}
 
 		@Override
-		public void onTabSelected(Tab tab, FragmentTransaction ft) {
+		public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
 			Object tag = tab.getTag();
 			for (int i = 0; i < mTabs.size(); i++) {
 				if (mTabs.get(i) == tag) {
@@ -310,11 +309,11 @@ public class MainActivity extends SherlockFragmentActivity implements
 		}
 
 		@Override
-		public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+		public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
 		}
 
 		@Override
-		public void onTabReselected(Tab tab, FragmentTransaction ft) {
+		public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
 		}
 
 		public void refresh() {

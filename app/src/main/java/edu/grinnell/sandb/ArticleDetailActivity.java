@@ -1,5 +1,22 @@
 package edu.grinnell.sandb;
 
+import android.content.Context;
+import android.content.Intent;
+import android.database.SQLException;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.widget.Toast;
+
+import com.flurry.android.FlurryAgent;
+
+import org.apache.http.ParseException;
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -7,28 +24,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.ParseException;
-import org.xmlpull.v1.XmlPullParserException;
-
-import android.content.Context;
-import android.content.Intent;
-import android.database.SQLException;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v4.app.NavUtils;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.widget.Toast;
-
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
-import com.flurry.android.FlurryAgent;
-
 import edu.grinnell.sandb.comments.Comment;
 import edu.grinnell.sandb.xmlpull.CommentParseTask;
 
 /* This activity displays the text, images, and comments for a selected article */
-public class ArticleDetailActivity extends SherlockFragmentActivity {
+public class ArticleDetailActivity extends ActionBarActivity {
 
 	public static final String DETAIL_ARGS = "detail_args";
 	public static final String COMMENTS_FEED = "Comments Feed";

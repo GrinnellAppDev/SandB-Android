@@ -1,15 +1,11 @@
 package edu.grinnell.sandb;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.Log;
@@ -19,12 +15,15 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockListFragment;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
 
-public class ArticleListFragment extends SherlockListFragment {
+public class ArticleListFragment extends ListFragment {
 
 	public static String ARTICLE_CATEGORY_KEY = "category";
 	// LinkedHashMap retains insertion ordering
@@ -76,7 +75,7 @@ public class ArticleListFragment extends SherlockListFragment {
 		if (mData == null)
 			mData = new ArrayList<Article>();
 
-		mAdapter = new ArticleListAdapter((MainActivity) getSherlockActivity(),
+		mAdapter = new ArticleListAdapter((MainActivity) getActivity(),
 				R.layout.articles_row, mData);
 	}
 
@@ -179,7 +178,7 @@ public class ArticleListFragment extends SherlockListFragment {
 			long id) {
 		super.onListItemClick(listView, view, position, id);
 		mCallbacks.onItemSelected(position);
-		Intent detailIntent = new Intent(getSherlockActivity(),
+		Intent detailIntent = new Intent(getActivity(),
 				ArticleDetailActivity.class);
 		detailIntent.putExtra(ArticleDetailFragment.ARTICLE_ID_KEY,
 				mData.get(position).getId());
@@ -187,7 +186,7 @@ public class ArticleListFragment extends SherlockListFragment {
 				mData.get(position).getComments());
 		startActivity(detailIntent);
 		// Add a smooth animation
-		getSherlockActivity().overridePendingTransition(R.anim.slide_in,
+		getActivity().overridePendingTransition(R.anim.slide_in,
 				R.anim.slide_out);
 	}
 

@@ -1,25 +1,24 @@
 package edu.grinnell.sandb;
 
-import java.util.List;
-
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.actionbarsherlock.app.SherlockListFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
+import java.util.List;
 
 import edu.grinnell.sandb.comments.Comment;
 
-public class CommentListFragment extends SherlockListFragment {
+public class CommentListFragment extends ListFragment {
 	public static final String TAG = "CommentsActivity";
 	private CommentListAdapter mAdapter;
 	public String COMMENTS = "article comments";
 
-	ArticleDetailActivity mActivity = (ArticleDetailActivity) getSherlockActivity();
+	ArticleDetailActivity mActivity = (ArticleDetailActivity) getActivity();
 
 	List<Comment> mComments;
 
@@ -37,7 +36,7 @@ public class CommentListFragment extends SherlockListFragment {
 		View rootView = inflater.inflate(R.layout.fragment_comment_list,
 				container, false);
 
-		mActivity = (ArticleDetailActivity) getSherlockActivity();
+		mActivity = (ArticleDetailActivity) getActivity();
 		mComments = mActivity.getComments();
 		fillList();
 
