@@ -40,11 +40,6 @@
             android:name="edu.grinnell.sandb.xmlpull.XmlPullService"
             android:exported="false" />
 
-        <activity
-            android:name="edu.grinnell.grinnellsandb.ImageViewer"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/FullscreenTheme" >
-        </activity>
         <activity android:name="edu.grinnell.sandb.ImagePagerActivity" >
         </activity>
         <meta-data android:name="com.crashlytics.ApiKey" android:value="45894d9e8a6bc3b8513651d6de36159e2c836e51"/>
