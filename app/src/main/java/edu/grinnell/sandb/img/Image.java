@@ -6,10 +6,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
-/* Class to store the article images and image titles in a db */
-public class Image {
+import com.orm.SugarRecord;
 
-	protected int id;
+/* Class to store the article images and image titles in a db */
+public class Image extends SugarRecord<Image> {
+
+	protected int imageId;
 	protected int articleId;
 	protected String url;
 	protected byte[] image;
@@ -23,10 +25,10 @@ public class Image {
 		imgTitle = articleImgTitle;
 	}
 
-	protected Image(int ID, int ArticleID, String articleURL,
+	protected Image(int id, int ArticleID, String articleURL,
 			byte[] articleImage, String articleImgTitle) {
 		this(ArticleID, articleURL, articleImage, articleImgTitle);
-		id = ID;
+        imageId = id;
 	}
 
 	public Drawable toDrawable(Context c) {
@@ -43,8 +45,8 @@ public class Image {
 				: null;
 	}
 	
-	public int getId() {
-		return id;
+	public int getImageId() {
+		return imageId;
 	}
 
 	public int getArticleId() {

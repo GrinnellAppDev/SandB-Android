@@ -1,8 +1,10 @@
 package edu.grinnell.sandb.comments;
 
-public class Comment {
+import com.orm.SugarRecord;
 
-	protected int id;
+public class Comment extends SugarRecord<Comment> {
+
+	protected int commentId;
 	protected String link;
 	protected String postDate;
 	protected String body;
@@ -21,11 +23,11 @@ public class Comment {
 	public Comment(int id, String link, String postDate, String body,
 			String author, String article) {
 		this(link, postDate, body, author, article);
-		this.id = id;
+		this.commentId = id;
 	}
 
-	public int getId() {
-		return id;
+	public int getCommentId() {
+		return commentId;
 	}
 
 	public String getLink() {

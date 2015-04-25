@@ -4,10 +4,6 @@
     android:versionCode="11"
     android:versionName="1.1.2" >
 
-    <uses-sdk
-        android:minSdkVersion="7"
-        android:targetSdkVersion="18" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
@@ -19,6 +15,12 @@
         android:icon="@drawable/sb"
         android:label="@string/app_name"
         android:theme="@style/Theme.Sandb" >
+
+        <meta-data android:name="DATABASE" android:value="grinnell_sandb.db" />
+        <meta-data android:name="VERSION" android:value="1" />
+        <meta-data android:name="QUERY_LOG" android:value="true" />
+        <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="edu.grinnell.sandb" />
+
         <activity
             android:name="edu.grinnell.sandb.MainActivity"
             android:label="@string/app_name" >

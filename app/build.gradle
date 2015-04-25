@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "edu.grinnell.sandb"
-        minSdkVersion 7
-        targetSdkVersion 18
+        minSdkVersion 9
+        targetSdkVersion 21
     }
 
     buildTypes {
@@ -25,4 +25,5 @@ dependencies {
     compile files('libs/android-support-v13.jar')
     compile files('libs/crashlytics.jar')
     compile files('libs/universal-image-loader-1.9.1.jar')
+    compile 'com.github.satyan:sugar:1.3'
 }

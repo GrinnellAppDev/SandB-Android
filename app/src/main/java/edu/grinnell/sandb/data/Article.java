@@ -1,9 +1,11 @@
 package edu.grinnell.sandb.data;
 
 
-public class Article {
+import com.orm.SugarRecord;
 
-	protected int id;
+public class Article extends SugarRecord<Article> {
+
+	protected int articleID;
 
 	protected String guid;
 	protected String title;
@@ -39,11 +41,11 @@ public class Article {
 			String author) {
 		this(guid, articleTitle, articleLink, publicationDate, category,
 				description, articleBody, commentsLink, author);
-		this.id = id;
+		this.articleID = id;
 	}
 
-	public int getId() {
-		return id;
+	public int getArticleID() {
+		return articleID;
 	}
 
 	public String getTitle() {
