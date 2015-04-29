@@ -1,5 +1,6 @@
 package edu.grinnell.sandb;
 
+import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -16,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewParent;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.flurry.android.FlurryAgent;
@@ -110,12 +112,11 @@ public class MainActivity extends ActionBarActivity {
         if (!mUpdateInProgress) {
             String url = "http://www.thesandb.com/api/get_recent_posts?count=50/";
             String[] params = {url};
-            mTabsAdapter.setRefreshing(true);
-            mUpdateInProgress = true;
             new ArticleFetchTask().execute(params);
         }
     }
 
+    /* Task to download, parse, and save JSON article data from WordPress S&B api */
     public class ArticleFetchTask extends AsyncTask<String, Void, Integer> {
 
         final int SUCCESS = 0;
@@ -126,12 +127,19 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected void onPreExecute() {
+            mTabsAdapter.setRefreshing(true);
+            mUpdateInProgress = true;
         }
 
         @Override
         protected Integer doInBackground(String... arg0) {
 
+            if (!networkEnabled()) {
+                return CONNECTIVITY_PROBLEMS;
+            }
+
             String url = arg0[0];
+            //See http://square.github.io/okhttp/
             OkHttpClient client = new OkHttpClient();
 
             Request request = new Request.Builder()
@@ -145,6 +153,7 @@ public class MainActivity extends ActionBarActivity {
                     Article.deleteAll(Article.class);
                     for (Article article : articleList) {
                         article.save();
+                        //Parse out and save images from article body
                         BodyImageGetter.readImages(article);
                     }
                     return SUCCESS;
@@ -167,12 +176,12 @@ public class MainActivity extends ActionBarActivity {
         protected void onPostExecute(Integer status) {
             super.onPostExecute(status);
             if (status != 0) {
-                //notify user of error
+                Toast.makeText(getApplicationContext(), "Error Downloading Articles", Toast.LENGTH_SHORT).show();
             }
             // Clear the loading bar when the articles are loaded
             if (mUpdateInProgress) {
                 mUpdateInProgress = false;
-                }
+            }
             mTabsAdapter.setRefreshing(false);
             mTabsAdapter.refresh();
             }
@@ -180,7 +189,8 @@ public class MainActivity extends ActionBarActivity {
 
         /* Return true if the device has a network adapter that is capable of
          * accessing the network. */
-        protected boolean networkEnabled(ConnectivityManager cm) {
+        protected boolean networkEnabled() {
+            ConnectivityManager cm = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo n = cm.getActiveNetworkInfo();
             return (n != null) && n.isConnectedOrConnecting();
         }
