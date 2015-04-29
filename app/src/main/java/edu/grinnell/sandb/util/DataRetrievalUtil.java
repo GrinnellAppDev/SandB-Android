@@ -22,8 +22,8 @@ public class DataRetrievalUtil {
     private static final String baseUrl = "http://www.thesandb.com/api/";
 
     public void getRecentArticles() {
-        String url = baseUrl + "get_recent_posts/";
-        String[] params = {baseUrl};
+        String url = baseUrl + "get_recent_posts?count=30/";
+        String[] params = {url};
         new ArticleFetchTask().execute(params);
     }
 

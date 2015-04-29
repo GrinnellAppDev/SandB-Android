@@ -97,7 +97,7 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
     public void updateArticles() {
-        String url = "http://www.thesandb.com/api/get_recent_posts/";
+        String url = "http://www.thesandb.com/api/get_recent_posts?count=30/";
         String[] params = {url};
         new ArticleFetchTask().execute(params);
     }

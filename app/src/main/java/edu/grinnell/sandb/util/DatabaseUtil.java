@@ -3,6 +3,7 @@ package edu.grinnell.sandb.util;
 import com.orm.query.Condition;
 import com.orm.query.Select;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.grinnell.sandb.model.Article;
@@ -26,6 +27,19 @@ public class DatabaseUtil {
             return false;
         }
         else return true;
+    }
+
+    public static List<Article> getArticlesByCategory(String category) {
+        if (category == null) {
+            return getArticleList();
+        }
+        else {
+            Select<Article> categoryQuery = Select.from(Article.class).where(Condition.prop("category").eq(category));
+            List<Article> articles = categoryQuery.list();
+            if (articles == null) {
+                return new ArrayList<>();
+            } else return articles;
+        }
     }
 
     public static List<Article> getArticleList() {

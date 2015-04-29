@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.grinnell.sandb.model.Article;
+import edu.grinnell.sandb.util.DatabaseUtil;
 
 public class ArticleListFragment extends ListFragment {
 
@@ -60,7 +61,6 @@ public class ArticleListFragment extends ListFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
-		// TODO restore from instance state
 		Bundle b = getArguments();
 
 		mCategory = null;
@@ -81,9 +81,7 @@ public class ArticleListFragment extends ListFragment {
 
 	// Retrieve the articles for a given category from the sqlite database 
 	private List<Article> loadDataFromCache(String category) {
-        List<Article> articles = Article.listAll(Article.class);
-
-        return articles;
+        return DatabaseUtil.getArticlesByCategory(category);
 	}
 
 	@Override
