@@ -20,6 +20,14 @@ public class DatabaseUtil {
         return imageQuery.first();
     }
 
+    public static boolean isImageCached(String url) {
+        Select<Image> imageQuery = Select.from(Image.class).where(Condition.prop("url").eq(url));
+        if (imageQuery.first() == null) {
+            return false;
+        }
+        else return true;
+    }
+
     public static List<Article> getArticleList() {
         return Article.listAll(Article.class);
     }

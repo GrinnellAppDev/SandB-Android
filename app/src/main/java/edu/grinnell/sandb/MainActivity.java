@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import edu.grinnell.sandb.model.Article;
+import edu.grinnell.sandb.model.Image;
+import edu.grinnell.sandb.util.BodyImageGetter;
 
 /* The main activity that the app will initialize to. This activity hosts the ArticleListFragment */
 public class MainActivity extends ActionBarActivity implements
@@ -105,7 +107,6 @@ public class MainActivity extends ActionBarActivity implements
         final int SUCCESS = 0;
         final int CONNECTIVITY_PROBLEMS = 1;
         final int PARSING_PROBLEMS = 2;
-        final int UNKNOWN = 3;
 
         public ArticleFetchTask() {}
 
@@ -127,21 +128,23 @@ public class MainActivity extends ActionBarActivity implements
                 JSONObject responseObject = new JSONObject(response.body().string());
 
                 Article.deleteAll(Article.class);
+                Image.deleteAll(Image.class);
                 JSONArray posts = responseObject.getJSONArray("posts");
 
                 Article newArticle;
                 for (int i = 0; i < posts.length(); ++i) {
                     newArticle = new Article();
                     JSONObject thisPost = posts.getJSONObject(i);
-                    newArticle.setArticleID(thisPost.getInt("id"));
+                    newArticle.setArticleID(Integer.parseInt(thisPost.getString("id")));
                     newArticle.setAuthor(thisPost.getJSONObject("author").getString("name"));
                     newArticle.setBody(thisPost.getString("content"));
-                    newArticle.setDescription(thisPost.getString("exerpt"));
+                    newArticle.setDescription(thisPost.getString("excerpt"));
                     newArticle.setTitle(thisPost.getString("title"));
-                    newArticle.setCategory(thisPost.getJSONArray("catagories").getJSONObject(0).getString("title"));
+                    newArticle.setCategory(thisPost.getJSONArray("categories").getJSONObject(0).getString("title"));
                     newArticle.setPubDate(thisPost.getString("date"));
                     newArticle.setLink(thisPost.getString("url"));
                     newArticle.save();
+                    BodyImageGetter.readImages(newArticle);
                 }
                 return SUCCESS;
             }
@@ -153,11 +156,7 @@ public class MainActivity extends ActionBarActivity implements
                 Log.e(TAG, e1.getMessage());
                 return PARSING_PROBLEMS;
             }
-            finally {
-                return UNKNOWN;
-            }
         }
-
 
         @Override
         protected void onPostExecute(Integer status) {

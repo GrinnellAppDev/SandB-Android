@@ -77,9 +77,7 @@ public class UniversalLoaderUtility {
 		DisplayImageOptions options;
 
 		options = new DisplayImageOptions.Builder()
-				.imageScaleType(ImageScaleType.EXACTLY)
-				.resetViewBeforeLoading().cacheOnDisc()
-				.imageScaleType(ImageScaleType.EXACTLY)
+				.imageScaleType(ImageScaleType.EXACTLY).cacheInMemory(true).cacheOnDisc(true)
 				.bitmapConfig(Bitmap.Config.RGB_565)
 				.displayer(new FadeInBitmapDisplayer(300)).build();
 
@@ -100,8 +98,7 @@ public class UniversalLoaderUtility {
 			DisplayImageOptions options;
 
 			options = new DisplayImageOptions.Builder()
-					.showStubImage(R.drawable.loading).resetViewBeforeLoading()
-					.cacheOnDisc().imageScaleType(ImageScaleType.EXACTLY)
+                    .cacheInMemory(true).cacheOnDisc(true).imageScaleType(ImageScaleType.EXACTLY)
 					.bitmapConfig(Bitmap.Config.RGB_565)
 					.displayer(new FadeInBitmapDisplayer(300)).build();
 

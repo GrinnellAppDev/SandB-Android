@@ -6,14 +6,14 @@ import edu.grinnell.sandb.model.Image;
 public class BodyImageGetter {
 
 	// Read an image from the body as a byte array
-	public void readImages(Article article) {
+	public static void readImages(Article article) {
 
         addImage(article , "<div");
 //		addImage(body, articleID, "<a");
         addImage(article, "<img");
 	}
 
-	private void addImage(Article article, String tag) {
+	private static void addImage(Article article, String tag) {
         Image newImage = new Image();
         String body = article.getBody();
 		int tagStart = 0;
@@ -26,7 +26,9 @@ public class BodyImageGetter {
 		}
 
         if (newImage.getURL() != null) {
-            newImage.save();
+            if (!DatabaseUtil.isImageCached(newImage.getURL())) {
+                newImage.save();
+            }
         }
 	}
 
