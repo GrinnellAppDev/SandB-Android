@@ -2,7 +2,6 @@ package edu.grinnell.sandb;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.SQLException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -15,7 +14,6 @@ import android.widget.Toast;
 import com.flurry.android.FlurryAgent;
 
 import org.apache.http.ParseException;
-import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,8 +22,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.grinnell.sandb.comments.Comment;
-import edu.grinnell.sandb.xmlpull.CommentParseTask;
+import edu.grinnell.sandb.data.Comment;
 
 /* This activity displays the text, images, and comments for a selected article */
 public class ArticleDetailActivity extends ActionBarActivity {
@@ -179,36 +176,25 @@ public class ArticleDetailActivity extends ActionBarActivity {
 
 		@Override
 		protected List<Comment> doInBackground(String... arg0) {
-
+/*
 			mAppContext = getApplicationContext();
 
-			/*
-			 * If we ever need to handle a larger quantity of comments, store
-			 * them in a table in the sqllite database
-			 */
 			// mTable = new CommentTable(mAppContext);
 
 			InputStream stream = downloadDataFromServer(arg0[0]);
 
 			try {
-				/*
-				 * mTable.open(); mTable.clearTable(); return
-				 * CommentParseTask.parseCommentsFromStream(stream, mAppContext,
-				 * mTable);
-				 */
-				return CommentParseTask.parseCommentsFromStream(stream,
-						mAppContext, null);
-			} catch (IOException ioe) {
-				Log.e(TAG, "parseCommentsFromStream", ioe);
-			} catch (XmlPullParserException xppe) {
-				Log.e(TAG, "parseCommentsFromStream", xppe);
-			} catch (SQLException sqle) {
+
+				return CommentParseTask.parseCommentsFromStream(stream,mAppContext, null);
+			}
+            catch (SQLException sqle) {
 				Log.e(TAG, "SQLExeption", sqle);
 			} catch (Exception e) {
 				Log.e(TAG, "parseCommentsFromStream", e);
 			} finally {
 				// mTable.close();
 			}
+  */
 			return new ArrayList<Comment>();
 		}
 

@@ -14,24 +14,22 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import edu.grinnell.sandb.Utility;
+import edu.grinnell.sandb.util.Utility;
 import edu.grinnell.sandb.data.Article;
-import edu.grinnell.sandb.data.ArticleTable;
-import edu.grinnell.sandb.img.BodyImageGetter;
-import edu.grinnell.sandb.img.Image;
+import edu.grinnell.sandb.util.BodyImageGetter;
+import edu.grinnell.sandb.data.Image;
 
 public class XmlParseTask {
 
 	private Context mAppContext;
 	private ParseDataListener mParseDataListener;
-	private ArticleTable mTable;
 
 	private static final String ns = null;
 
 	public static final String XMP = "XMLParseTask";
 
 	protected static List<Article> parseArticlesFromStream(
-			InputStream xmlstream, Context c, ArticleTable t)
+			InputStream xmlstream, Context c)
 			throws XmlPullParserException, IOException {
 
 		Reader in = new InputStreamReader(xmlstream);
@@ -41,21 +39,20 @@ public class XmlParseTask {
 			parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
 			parser.setInput(in);
 			parser.nextTag();
-			return readFeed(parser, c, t);
+			return readFeed(parser, c);
 		} finally {
 			in.close();
 		}
 	}
 
-	private static List<Article> readFeed(XmlPullParser parser, Context c,
-			ArticleTable t) throws XmlPullParserException, IOException {
+	private static List<Article> readFeed(XmlPullParser parser, Context c) throws XmlPullParserException, IOException {
 		List<Article> articles = new ArrayList<Article>();
 
         //Remove all previous articles in DB
         Article.deleteAll(Article.class);
         Image.deleteAll(Image.class);
 
-		BodyImageGetter big = new BodyImageGetter(c);
+		BodyImageGetter big = new BodyImageGetter();
 
 		parser.require(XmlPullParser.START_TAG, ns, "rss");
 		while (parser.next() != XmlPullParser.END_TAG) {
@@ -67,7 +64,7 @@ public class XmlParseTask {
 			if (name.equals("channel")) {
 				continue;
 			} else if (name.equals("item")) {
-				Article article = readArticle(parser, t);
+				Article article = readArticle(parser);
 				articles.add(article);
 				big.readImages(article);
                 article.save();
@@ -83,7 +80,7 @@ public class XmlParseTask {
 	// off
 	// to their respective "read" methods for processing. Otherwise, skips the
 	// tag.
-	private static Article readArticle(XmlPullParser parser, ArticleTable table)
+	private static Article readArticle(XmlPullParser parser)
 			throws XmlPullParserException, IOException {
 		parser.require(XmlPullParser.START_TAG, ns, "item");
 		String title = null;

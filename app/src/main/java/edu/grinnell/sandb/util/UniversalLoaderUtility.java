@@ -1,4 +1,4 @@
-package edu.grinnell.sandb.img;
+package edu.grinnell.sandb.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -19,6 +19,7 @@ import com.orm.query.Select;
 
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.data.Article;
+import edu.grinnell.sandb.data.Image;
 
 public class UniversalLoaderUtility {
 
@@ -89,56 +90,11 @@ public class UniversalLoaderUtility {
 	}
 
 	// load first image from an article, in low res
-	public void loadArticleImage(Article a, ImageView imgView, Context context) {
-
-		ImageTable imgTable = new ImageTable(imgView.getContext());
-		imgTable.open();
-
-		int id = a.getArticleID();
-		String[] URLS = imgTable.findUrlsByArticleId(id);
-		imgTable.close();
-
-		// try {
-		if (URLS != null) {
-			// throw exception if no image
-			String imgUrl = URLS[0];
-
-			DisplayImageOptions options;
-
-			options = new DisplayImageOptions.Builder()
-					.imageScaleType(ImageScaleType.EXACTLY)
-					// change these images to error messages
-					.showImageOnFail(R.drawable.sandblogo)
-					.resetViewBeforeLoading().cacheOnDisc()
-					.imageScaleType(ImageScaleType.EXACTLY)
-					.bitmapConfig(Bitmap.Config.RGB_565)
-					.displayer(new FadeInBitmapDisplayer(300)).build();
-
-			imageLoader.displayImage(imgUrl, imgView, options, listener);
-			imgView.setVisibility(View.VISIBLE);
-
-		}
-		// catch (NullPointerException e) {
-		else {
-			imgTable.close();
-			// imageLoader.displayImage(null, imgView, null, listener);
-			imgView.setVisibility(View.GONE);
-		}
-	}
-
-	// load first image from an article, in low res
-	public void loadHiResArticleImage(Article a, ImageView imgView,
+	public void loadHiResArticleImage(String imgUrl, ImageView imgView,
 			Context context) {
-
-		ImageTable imgTable = new ImageTable(imgView.getContext());
-		imgTable.open();
-
-		int id = a.getArticleID();
-		String[] URLS = imgTable.findUrlsByArticleId(id);
 
 		try {
 			// throw exception if no image
-			String imgUrl = URLS[0];
 			String hiResImgUrl = getHiResImage(imgUrl);
 
 			DisplayImageOptions options;
@@ -157,50 +113,13 @@ public class UniversalLoaderUtility {
 
 			imageLoader.displayImage(hiResImgUrl, imgView, options, listener);
 			imgView.setVisibility(View.VISIBLE);
-			imgTable.close();
 
 		} catch (NullPointerException e) {
-			imgTable.close();
 			// imageLoader.displayImage(null, imgView, null, listener);
 			imgView.setVisibility(View.GONE);
 		}
 	}
 
-	// load first image from an article, in low res
-	public void loadHiResArticleImage(String url, ImageView imgView,
-			Context context) {
-
-		ImageTable imgTable = new ImageTable(imgView.getContext());
-		imgTable.open();
-
-		try {
-			// throw exception if no image
-			String hiResImgUrl = getHiResImage(url);
-
-			DisplayImageOptions options;
-
-			options = new DisplayImageOptions.Builder()
-					.showStubImage(R.drawable.loading).resetViewBeforeLoading()
-					.cacheOnDisc().imageScaleType(ImageScaleType.EXACTLY)
-					.bitmapConfig(Bitmap.Config.RGB_565)
-					.displayer(new FadeInBitmapDisplayer(300)).build();
-
-			imgView.startAnimation(AnimationUtils.loadAnimation(context,
-					R.anim.loading));
-
-			spinner = new ProgressBar(context, null,
-					android.R.attr.progressBarStyleSmall);
-
-			imageLoader.displayImage(hiResImgUrl, imgView, options, listener);
-			imgView.setVisibility(View.VISIBLE);
-			imgTable.close();
-
-		} catch (NullPointerException e) {
-			imgTable.close();
-			// imageLoader.displayImage(null, imgView, null, listener);
-			imgView.setVisibility(View.GONE);
-		}
-	}
 
 	// remove the ends of each image URL to download full sized images
 	public String getHiResImage(String lowResImg) {

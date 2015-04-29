@@ -33,10 +33,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import edu.grinnell.sandb.data.Article;
-import edu.grinnell.sandb.img.ImageTable;
-import edu.grinnell.sandb.img.UniversalLoaderUtility;
+import edu.grinnell.sandb.data.Image;
+import edu.grinnell.sandb.util.DatabaseUtil;
+import edu.grinnell.sandb.util.UniversalLoaderUtility;
 
 @SuppressLint("ClickableViewAccessibility") @TargetApi(Build.VERSION_CODES.FROYO)
 public class ArticleDetailFragment extends Fragment {
@@ -66,6 +68,8 @@ public class ArticleDetailFragment extends Fragment {
 	String fileName = "SBimage";
 	File file = new File(path, fileName);
 	DownloadManager mManager;
+
+    ArrayList<Image> mImages;
 
 	public ArticleDetailFragment() {
 		super();
@@ -115,7 +119,7 @@ public class ArticleDetailFragment extends Fragment {
 		Log.i(TAG, "Looking for article with id = " + id);
 		mArticle = table.findById(id);
 		*/
-        mArticle = Article.findById(Article.class, id);
+        mArticle = DatabaseUtil.getArticle(id);
     }
 
 
@@ -164,17 +168,14 @@ public class ArticleDetailFragment extends Fragment {
 		//Split the article text around the images
 		String[] sections = bodyHTML.split(imgtags);
 
-		//Load the images for the article
-		ImageTable imgTable = new ImageTable(getActivity());
-		imgTable.open();
-		String[] urls = imgTable.findUrlsByArticleId(mArticle.getArticleID());
-		imgTable.close();
-		final int maxUrls = (urls == null) ? 0 : urls.length;
+        mImages = (ArrayList) DatabaseUtil.getArticleImages(mArticle);
+
+        final int maxUrls = (mImages == null) ? 0 : mImages.size();
 		LayoutInflater i = getActivity().getLayoutInflater();
 
 		int cnt = 0;
 		for (String section : sections) {
-			String url = (cnt < maxUrls) ? urls[cnt++] : null;
+			String url = (cnt < maxUrls) ? mImages.get(cnt++).getURL() : null;
 			addSectionViews(body, i, section, url);
 		}
 
@@ -195,24 +196,20 @@ public class ArticleDetailFragment extends Fragment {
 			OnClickListener imgClick = new OnClickListener() {
 				public void onClick(View v) {
 
-					ImageTable imgTable = new ImageTable(getActivity());
-					imgTable.open();
+                    String[] URLS = {};
+                    String[] titles = {};
+                    for (int i = 0; i < mImages.size(); i++) {
+						URLS[i] = mLoader.getHiResImage(mImages.get(i).getURL());
+                        titles[i] = mImages.get(i).getImgTitle();
+                    }
 
-					int id = mArticle.getArticleID();
-					String[] URLS = imgTable.findUrlsByArticleId(id);
 
-					for (int i = 0; i < URLS.length; i++) {
-						URLS[i] = mLoader.getHiResImage(URLS[i]);
-						// System.out.println(URLS[i]);
-					}
-
-					Intent intent = new Intent(getActivity(),
+                    Intent intent = new Intent(getActivity(),
 							ImagePagerActivity.class);
 					intent.putExtra("ArticleImages", URLS);
 					intent.putExtra("ImageTitles",
-							imgTable.findTitlesbyArticleId(id));
+							titles);
 
-					imgTable.close();
 					startActivity(intent);
 				}
 			};

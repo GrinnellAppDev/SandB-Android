@@ -1,4 +1,4 @@
-package edu.grinnell.sandb.comments;
+package edu.grinnell.sandb.data;
 
 import com.orm.SugarRecord;
 

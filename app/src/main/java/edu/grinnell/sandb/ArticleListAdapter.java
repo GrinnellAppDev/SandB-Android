@@ -7,14 +7,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.orm.query.Condition;
-import com.orm.query.Select;
-
 import java.util.List;
 
 import edu.grinnell.sandb.data.Article;
-import edu.grinnell.sandb.img.Image;
-import edu.grinnell.sandb.img.UniversalLoaderUtility;
+import edu.grinnell.sandb.data.Image;
+import edu.grinnell.sandb.util.DatabaseUtil;
+import edu.grinnell.sandb.util.UniversalLoaderUtility;
 
 /* List Adapter to populate the article list */
 public class ArticleListAdapter extends ArrayAdapter<Article> {
@@ -64,13 +62,12 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 			holder.image.setVisibility(View.VISIBLE);
 			//mLoader.loadPrimaryArticleImage(a, holder.image, mActivity);
 
-            Select<Image> imageQuery = Select.from(Image.class).where(Condition.prop("article_Title").eq(a.getTitle()));
-            Image articleImage = imageQuery.first();
+            Image articleImage = DatabaseUtil.getArticleImage(a);
 
-            if (articleImage!= null) {
+            if (articleImage != null) {
                 mLoader.loadImage(articleImage.getURL(), holder.image, mActivity);
             }
-            
+
 			holder.title.setText(a.getTitle());
 			holder.title.setPadding(3, 3, 3, 3);
 			holder.description.setText(a.getDescription());

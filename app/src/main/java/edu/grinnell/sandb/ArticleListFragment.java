@@ -81,13 +81,6 @@ public class ArticleListFragment extends ListFragment {
 
 	// Retrieve the articles for a given category from the sqlite database 
 	private List<Article> loadDataFromCache(String category) {
-		/*
-        ArticleTable table = new ArticleTable(getActivity());
-		table.open();
-		List<Article> data;
-		data = table.findByCategory(category);
-		table.close();
-		*/
         List<Article> articles = Article.listAll(Article.class);
 
         return articles;

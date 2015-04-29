@@ -1,11 +1,5 @@
 package edu.grinnell.sandb.xmlpull;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Calendar;
-
-import org.xmlpull.v1.XmlPullParserException;
-
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.PendingIntent;
@@ -13,8 +7,14 @@ import android.app.PendingIntent.CanceledException;
 import android.content.Intent;
 import android.database.SQLException;
 import android.util.Log;
+
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Calendar;
+
 import edu.grinnell.sandb.MainPrefs;
-import edu.grinnell.sandb.data.ArticleTable;
 
 public class XmlPullService extends IntentService {
 
@@ -94,13 +94,9 @@ public class XmlPullService extends IntentService {
 	}
 	
 	private void parseXmlFromStream(InputStream xmlStream) {
-
-		ArticleTable table = new ArticleTable(this);
 		
 		try {
-			table.open();
-			table.clearTable();
-			XmlParseTask.parseArticlesFromStream(xmlStream, this, table);
+			XmlParseTask.parseArticlesFromStream(xmlStream, this);
 		} catch (IOException ioe) {
 			Log.e(TAG, "parseArticlesFromStream", ioe);
 		} catch (XmlPullParserException xppe) {
@@ -110,7 +106,6 @@ public class XmlPullService extends IntentService {
 		} catch (Exception e) {
 			Log.e(TAG, "parseArticlesFromStream", e);
 		} finally {
-			table.close();
 			finishUp();
 		}
 	}
