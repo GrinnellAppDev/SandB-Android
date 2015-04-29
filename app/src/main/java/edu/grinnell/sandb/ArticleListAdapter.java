@@ -1,5 +1,6 @@
 package edu.grinnell.sandb;
 
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,9 +69,9 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
                 mLoader.loadImage(articleImage.getURL(), holder.image, mActivity);
             }
 
-			holder.title.setText(a.getTitle());
+			holder.title.setText(Html.fromHtml(a.getTitle()));
 			holder.title.setPadding(3, 3, 3, 3);
-			holder.description.setText(a.getDescription());
+			holder.description.setText(Html.fromHtml(a.getDescription()));
 		}
 		
 		return convertView;

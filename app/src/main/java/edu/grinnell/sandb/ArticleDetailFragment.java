@@ -33,7 +33,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import edu.grinnell.sandb.model.Article;
 import edu.grinnell.sandb.model.Image;
@@ -141,13 +145,21 @@ public class ArticleDetailFragment extends Fragment {
 		((TextView) rootView.findViewById(R.id.article_author)).setText("By: "
 				+ mArticle.getAuthor());
 
+        SimpleDateFormat parserSDF= new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+        String dateString;
+        try {
+            Date articleDate = parserSDF.parse(mArticle.getPubDate());
+            dateString = DateFormat.getDateTimeInstance().format(articleDate);
+        }catch (ParseException e) {
+            Log.e(TAG, e.getMessage());
+            dateString = "";
+        }
 		// add the date to the article
-		((TextView) rootView.findViewById(R.id.article_date)).setText(mArticle
-				.getPubDate());
+		((TextView) rootView.findViewById(R.id.article_date)).setText(dateString);
 
 		// add the title to the article
-		((TextView) rootView.findViewById(R.id.article_title)).setText(mArticle
-				.getTitle());
+		((TextView) rootView.findViewById(R.id.article_title)).setText(Html.fromHtml(mArticle
+				.getTitle()));
 
 		LinearLayout body = (LinearLayout) rootView
 				.findViewById(R.id.article_body_group);
