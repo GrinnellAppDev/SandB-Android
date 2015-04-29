@@ -25,6 +25,9 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
+import it.sephiroth.android.library.imagezoom.ImageViewTouch;
+import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
+
 /* Activity to display a full screen pager to scroll through images in an article */
 public class ImagePagerActivity extends ActionBarActivity {
 
@@ -35,6 +38,7 @@ public class ImagePagerActivity extends ActionBarActivity {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        
 		// Make the activity fill the whole screen
 		getSupportActionBar().hide();
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -131,6 +135,8 @@ public class ImagePagerActivity extends ActionBarActivity {
 						public void onLoadingComplete(String imageUri,
 								View view, Bitmap loadedImage) {
 							spinner.setVisibility(View.GONE);
+                            ((ImageViewTouch)view).setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
+                            ((ImageViewTouch)view).setImageBitmap(loadedImage);
 						}
 					});
 
