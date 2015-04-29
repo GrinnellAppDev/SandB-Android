@@ -1,13 +1,10 @@
 package edu.grinnell.sandb;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +28,8 @@ public class ArticleListFragment extends ListFragment {
 
 	public static final String[] CATEGORIES;
 
+    public MainActivity mActivity;
+
 	// Fill in the a map to correspond to section tabs for the article list
 	static {
 		titleToKey.put("All", null);
@@ -49,7 +48,6 @@ public class ArticleListFragment extends ListFragment {
 	public static final String UPDATE = "edu.grinnell.sandb.UPDATE";
 	private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
-	private Callbacks mCallbacks = sDummyCallbacks;
 	private int mActivatedPosition = ListView.INVALID_POSITION;
 
 	private ArticleListAdapter mAdapter;
@@ -75,6 +73,8 @@ public class ArticleListFragment extends ListFragment {
             mData = new ArrayList<Article>();
         }
 
+        mActivity = (MainActivity) getActivity();
+
 		mAdapter = new ArticleListAdapter((MainActivity) getActivity(),
 				R.layout.articles_row, mData);
 	}
@@ -92,35 +92,23 @@ public class ArticleListFragment extends ListFragment {
 		View rootView = inflater.inflate(R.layout.fragment_article_list,
 				container, false);
 
-		// Add Swipe-down to refresh functionality
-		pullToRefresh = (SwipeRefreshLayout) rootView
-				.findViewById(R.id.swipeRefresh);
-		pullToRefresh.setOnRefreshListener(mRefresh);
-		pullToRefresh.setColorScheme(R.color.gred,
-			R.color.DarkGray, R.color.black,R.color.gred );
+        pullToRefresh = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefresh);
+        pullToRefresh.setColorScheme(R.color.gred,
+                R.color.DarkGray, R.color.black,R.color.gred );
+        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mActivity.updateArticles();
+            }
+        });
+
+
+        if(DatabaseUtil.getArticleList().isEmpty()) {
+            mActivity.updateArticles();
+        }
+
 		return rootView;
 	}
-
-	
-	// Set OnRefreshListener 
-	OnRefreshListener mRefresh = new OnRefreshListener(){
-		@Override
-		public void onRefresh() {
-			// Update the article list. 
-			update();
-			pullToRefresh.setRefreshing(true);
-            Log.d("Swipe", "Refreshing Number");
-            ( new Handler()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    pullToRefresh.setRefreshing(false);
-                    
-                }
-            }, 1500);
-			// Stop the refreshing after list is updated
-			//pullToRefresh.setRefreshing(false);
-		}
-	};
 	
 	@Override
 	public void onActivityCreated(Bundle ofJoy) {
@@ -161,19 +149,12 @@ public class ArticleListFragment extends ListFragment {
 		empty.setText(text);
 	}
 
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		mCallbacks = sDummyCallbacks;
-	}
-
 	/* Open the ArticleDetailActivity when a list item is selected */
 	@Override
 	public void onListItemClick(ListView listView, View view, int position,
 			long id) {
 		super.onListItemClick(listView, view, position, id);
         Article thisArticle = mData.get(position);
-		mCallbacks.onItemSelected(position);
 		Intent detailIntent = new Intent(getActivity(),
 				ArticleDetailActivity.class);
 		detailIntent.putExtra(ArticleDetailFragment.ARTICLE_ID_KEY,
@@ -194,46 +175,7 @@ public class ArticleListFragment extends ListFragment {
 		}
 	}
 
-	public void setActivateOnItemClick(boolean activateOnItemClick) {
-		getListView().setChoiceMode(
-				activateOnItemClick ? ListView.CHOICE_MODE_SINGLE
-						: ListView.CHOICE_MODE_NONE);
-	}
-
-	public void setActivatedPosition(int position) {
-		if (position == ListView.INVALID_POSITION) {
-			getListView().setItemChecked(mActivatedPosition, false);
-		} else {
-			getListView().setItemChecked(position, true);
-		}
-
-		mActivatedPosition = position;
-	}
-
-	public interface Callbacks {
-		public void onItemSelected(int position);
-
-		public void setListActivateState();
-	}
-
-	private static Callbacks sDummyCallbacks = new Callbacks() {
-		@Override
-		public void onItemSelected(int position) {
-		}
-
-		@Override
-		public void setListActivateState() {
-		}
-	};
-
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		if (!(activity instanceof Callbacks)) {
-			throw new IllegalStateException(
-					"Activity must implement fragment's callbacks.");
-		}
-		mCallbacks = (Callbacks) activity;
-	}
-
+    public void setRefreshing(boolean refreshing) {
+        pullToRefresh.setRefreshing(refreshing);
+    }
 }

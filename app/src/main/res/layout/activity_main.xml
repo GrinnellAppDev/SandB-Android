@@ -5,30 +5,6 @@
     android:orientation="vertical"
     tools:context=".MainActivity" >
 
-    <LinearLayout
-        android:id="@+id/loading"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/gred"
-        android:orientation="horizontal"
-        android:visibility="gone" >
-
-        <ImageView
-            android:id="@+id/spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginRight="@dimen/pad5"
-            android:background="@drawable/loading"
-            android:scaleType="fitCenter" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/loading_articles"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"

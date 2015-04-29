@@ -38,7 +38,7 @@ public class ImagePagerActivity extends ActionBarActivity {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        
+
 		// Make the activity fill the whole screen
 		getSupportActionBar().hide();
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
