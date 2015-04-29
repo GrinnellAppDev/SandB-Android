@@ -17,7 +17,9 @@ public class Image extends SugarRecord<Image> {
 	protected byte[] image;
 	protected String imgTitle;
 
-	protected Image(int ArticleID, String articleURL, byte[] articleImage,
+    public Image(){}
+
+	public Image(int ArticleID, String articleURL, byte[] articleImage,
 			String articleImgTitle) {
 		articleId = ArticleID;
 		url = articleURL;
@@ -25,7 +27,7 @@ public class Image extends SugarRecord<Image> {
 		imgTitle = articleImgTitle;
 	}
 
-	protected Image(int id, int ArticleID, String articleURL,
+	public Image(int id, int ArticleID, String articleURL,
 			byte[] articleImage, String articleImgTitle) {
 		this(ArticleID, articleURL, articleImage, articleImgTitle);
         imageId = id;

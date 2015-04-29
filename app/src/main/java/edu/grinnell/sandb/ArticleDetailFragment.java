@@ -35,7 +35,6 @@ import android.widget.TextView;
 import java.io.File;
 
 import edu.grinnell.sandb.data.Article;
-import edu.grinnell.sandb.data.ArticleTable;
 import edu.grinnell.sandb.img.ImageTable;
 import edu.grinnell.sandb.img.UniversalLoaderUtility;
 
@@ -105,15 +104,20 @@ public class ArticleDetailFragment extends Fragment {
 							return false;
 					}
 				});
-		
+
+
 		//Find the article in the sqlite database using the ID key
 		activity = (ArticleDetailActivity) getActivity();
-		int id = activity.getIDKey();
+		long id = activity.getIDKey();
+          /*
 		ArticleTable table = new ArticleTable(getActivity());
 		table.open();
 		Log.i(TAG, "Looking for article with id = " + id);
 		mArticle = table.findById(id);
-	}
+		*/
+        mArticle = Article.findById(Article.class, id);
+    }
+
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -135,7 +139,7 @@ public class ArticleDetailFragment extends Fragment {
 
 		// add the date to the article
 		((TextView) rootView.findViewById(R.id.article_date)).setText(mArticle
-				.getPubDate().toString());
+				.getPubDate());
 
 		// add the title to the article
 		((TextView) rootView.findViewById(R.id.article_title)).setText(mArticle
@@ -163,7 +167,7 @@ public class ArticleDetailFragment extends Fragment {
 		//Load the images for the article
 		ImageTable imgTable = new ImageTable(getActivity());
 		imgTable.open();
-		String[] urls = imgTable.findUrlsByArticleId(mArticle.getId());
+		String[] urls = imgTable.findUrlsByArticleId(mArticle.getArticleID());
 		imgTable.close();
 		final int maxUrls = (urls == null) ? 0 : urls.length;
 		LayoutInflater i = getActivity().getLayoutInflater();
@@ -194,7 +198,7 @@ public class ArticleDetailFragment extends Fragment {
 					ImageTable imgTable = new ImageTable(getActivity());
 					imgTable.open();
 
-					int id = mArticle.getId();
+					int id = mArticle.getArticleID();
 					String[] URLS = imgTable.findUrlsByArticleId(id);
 
 					for (int i = 0; i < URLS.length; i++) {
@@ -364,7 +368,7 @@ public class ArticleDetailFragment extends Fragment {
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putInt(ARTICLE_ID_KEY, mArticle.getId());
+		outState.putInt(ARTICLE_ID_KEY, mArticle.getArticleID());
 		super.onSaveInstanceState(outState);
 	}
 }

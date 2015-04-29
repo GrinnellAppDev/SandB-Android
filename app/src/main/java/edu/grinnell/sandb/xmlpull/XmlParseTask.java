@@ -1,5 +1,11 @@
 package edu.grinnell.sandb.xmlpull;
 
+import android.content.Context;
+import android.util.Xml;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -8,15 +14,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import android.content.Context;
-import android.util.Xml;
 import edu.grinnell.sandb.Utility;
 import edu.grinnell.sandb.data.Article;
 import edu.grinnell.sandb.data.ArticleTable;
 import edu.grinnell.sandb.img.BodyImageGetter;
+import edu.grinnell.sandb.img.Image;
 
 public class XmlParseTask {
 
@@ -48,6 +50,10 @@ public class XmlParseTask {
 	private static List<Article> readFeed(XmlPullParser parser, Context c,
 			ArticleTable t) throws XmlPullParserException, IOException {
 		List<Article> articles = new ArrayList<Article>();
+
+        //Remove all previous articles in DB
+        Article.deleteAll(Article.class);
+        Image.deleteAll(Image.class);
 
 		BodyImageGetter big = new BodyImageGetter(c);
 
@@ -120,8 +126,11 @@ public class XmlParseTask {
 			}
 		}
 
-		return table.createArticle(guid, title, link, date, category,
-				description, body, comments, author);
+        //Save article to database
+        Article newArticle = new Article(guid, title, link, date, category, description, body, comments, author);
+        newArticle.save();
+        return newArticle;
+		//return table.createArticle(guid, title, link, date, category,description, body, comments, author);
 	}
 
 	/*

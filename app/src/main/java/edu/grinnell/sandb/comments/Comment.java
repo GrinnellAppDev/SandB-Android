@@ -11,6 +11,8 @@ public class Comment extends SugarRecord<Comment> {
 	protected String author;
 	protected String articleLink;
 
+    public Comment(){}
+
 	public Comment(String link, String postDate, String body,
 			String author, String article) {
 		this.link = link;

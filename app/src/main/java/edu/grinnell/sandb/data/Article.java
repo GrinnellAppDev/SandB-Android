@@ -17,12 +17,15 @@ public class Article extends SugarRecord<Article> {
 	protected String comments;
 	protected String author;
 
-	protected Article(String articleTitle, String articleBody) {
+    public Article() {
+    }
+
+    public Article(String articleTitle, String articleBody) {
 		title = articleTitle;
 		body = articleBody;
 	}
 
-	protected Article(String guid, String articleTitle, String articleLink,
+	public Article(String guid, String articleTitle, String articleLink,
 			String publicationDate, String category, String description,
 			String articleBody, String commentsLink, String author) {
 		this(articleTitle, articleBody);
@@ -35,7 +38,7 @@ public class Article extends SugarRecord<Article> {
 		this.author = author;
 	}
 
-	protected Article(int id, String guid, String articleTitle,
+    public Article(int id, String guid, String articleTitle,
 			String articleLink, String publicationDate, String category,
 			String description, String articleBody, String commentsLink,
 			String author) {

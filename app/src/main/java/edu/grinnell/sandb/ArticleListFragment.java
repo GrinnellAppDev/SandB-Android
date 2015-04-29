@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import edu.grinnell.sandb.data.Article;
-import edu.grinnell.sandb.data.ArticleTable;
 
 public class ArticleListFragment extends ListFragment {
 
@@ -72,8 +71,9 @@ public class ArticleListFragment extends ListFragment {
 		mData = loadDataFromCache(mCategory);
 		Log.i(TAG, "Loading data for the '" + mCategory + "' category..");
 
-		if (mData == null)
-			mData = new ArrayList<Article>();
+		if (mData == null) {
+            mData = new ArrayList<Article>();
+        }
 
 		mAdapter = new ArticleListAdapter((MainActivity) getActivity(),
 				R.layout.articles_row, mData);
@@ -81,12 +81,16 @@ public class ArticleListFragment extends ListFragment {
 
 	// Retrieve the articles for a given category from the sqlite database 
 	private List<Article> loadDataFromCache(String category) {
-		ArticleTable table = new ArticleTable(getActivity());
+		/*
+        ArticleTable table = new ArticleTable(getActivity());
 		table.open();
 		List<Article> data;
 		data = table.findByCategory(category);
 		table.close();
-		return data;
+		*/
+        List<Article> articles = Article.listAll(Article.class);
+
+        return articles;
 	}
 
 	@Override
@@ -177,13 +181,14 @@ public class ArticleListFragment extends ListFragment {
 	public void onListItemClick(ListView listView, View view, int position,
 			long id) {
 		super.onListItemClick(listView, view, position, id);
+        Article thisArticle = mData.get(position);
 		mCallbacks.onItemSelected(position);
 		Intent detailIntent = new Intent(getActivity(),
 				ArticleDetailActivity.class);
 		detailIntent.putExtra(ArticleDetailFragment.ARTICLE_ID_KEY,
-				mData.get(position).getId());
+                thisArticle.getId());
 		detailIntent.putExtra(ArticleDetailActivity.COMMENTS_FEED,
-				mData.get(position).getComments());
+                thisArticle.getComments());
 		startActivity(detailIntent);
 		// Add a smooth animation
 		getActivity().overridePendingTransition(R.anim.slide_in,

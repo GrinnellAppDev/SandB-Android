@@ -84,7 +84,7 @@ public class UniversalLoaderUtility {
 		ImageTable imgTable = new ImageTable(imgView.getContext());
 		imgTable.open();
 
-		int id = a.getId();
+		int id = a.getArticleID();
 		String[] URLS = imgTable.findUrlsByArticleId(id);
 		imgTable.close();
 
@@ -123,7 +123,7 @@ public class UniversalLoaderUtility {
 		ImageTable imgTable = new ImageTable(imgView.getContext());
 		imgTable.open();
 
-		int id = a.getId();
+		int id = a.getArticleID();
 		String[] URLS = imgTable.findUrlsByArticleId(id);
 
 		try {

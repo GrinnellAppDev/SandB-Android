@@ -34,7 +34,7 @@ public class ArticleDetailActivity extends ActionBarActivity {
 	public static final String COMMENTS_FEED = "Comments Feed";
 	public static final String TAG = "ArticleDetailActivity";
 
-	private int mIDKey = 0;
+	private long mIDKey = 0;
 	private String comments_feed = null;
 	private ArrayList<Comment> mComments = null;
 
@@ -52,7 +52,7 @@ public class ArticleDetailActivity extends ActionBarActivity {
 		Intent i = getIntent();
 
 		ArticleDetailFragment fragment = new ArticleDetailFragment();
-		mIDKey = i.getIntExtra(ArticleDetailFragment.ARTICLE_ID_KEY, 0);
+		mIDKey = i.getLongExtra(ArticleDetailFragment.ARTICLE_ID_KEY, 0);
 		comments_feed = i.getStringExtra(COMMENTS_FEED);
 
 		/* Download the comments as soon as the article is opened */
@@ -67,7 +67,7 @@ public class ArticleDetailActivity extends ActionBarActivity {
 
 	}
 
-	public int getIDKey() {
+	public long getIDKey() {
 		return mIDKey;
 	}
 

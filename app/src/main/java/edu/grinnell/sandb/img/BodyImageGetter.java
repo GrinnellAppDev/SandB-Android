@@ -1,16 +1,17 @@
 package edu.grinnell.sandb.img;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
+import android.content.Context;
+import android.os.AsyncTask;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import android.content.Context;
-import android.os.AsyncTask;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+
 import edu.grinnell.sandb.data.Article;
 
 public class BodyImageGetter {
@@ -42,7 +43,7 @@ public class BodyImageGetter {
 		protected Integer doInBackground(Article... article) {
 
 			String body = article[0].getBody();
-			int articleId = article[0].getId();
+			int articleId = article[0].getArticleID();
 
 			readImage(body, articleId);
 			return null;
@@ -77,8 +78,10 @@ public class BodyImageGetter {
 
 			//image = getImage(url, tagStart);
 			title = getSubstring("title=\"", body, tagStart);
-			
-			mImageTable.createImage(articleId, url, image, title);
+
+            Image newImage = new Image(articleId, url, image, title);
+            newImage.save();
+			//mImageTable.createImage(articleId, url, image, title);
 		}
 
 	}
