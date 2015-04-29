@@ -18,8 +18,8 @@ import com.orm.query.Condition;
 import com.orm.query.Select;
 
 import edu.grinnell.sandb.R;
-import edu.grinnell.sandb.data.Article;
-import edu.grinnell.sandb.data.Image;
+import edu.grinnell.sandb.model.Article;
+import edu.grinnell.sandb.model.Image;
 
 public class UniversalLoaderUtility {
 

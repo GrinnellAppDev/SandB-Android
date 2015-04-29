@@ -1,4 +1,4 @@
-package edu.grinnell.sandb.data;
+package edu.grinnell.sandb.model;
 
 import com.orm.SugarRecord;
 

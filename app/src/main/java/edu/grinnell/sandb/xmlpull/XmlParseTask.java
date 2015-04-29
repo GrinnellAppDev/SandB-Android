@@ -15,9 +15,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import edu.grinnell.sandb.util.Utility;
-import edu.grinnell.sandb.data.Article;
+import edu.grinnell.sandb.model.Article;
 import edu.grinnell.sandb.util.BodyImageGetter;
-import edu.grinnell.sandb.data.Image;
+import edu.grinnell.sandb.model.Image;
 
 public class XmlParseTask {
 
@@ -125,7 +125,7 @@ public class XmlParseTask {
 		}
 
         //Save article to database
-        Article newArticle = new Article(guid, title, link, date, category, description, body, comments, author);
+        Article newArticle = new Article(title, link, date, category, description, body, comments, author);
         return newArticle;
 		//return table.createArticle(guid, title, link, date, category,description, body, comments, author);
 	}

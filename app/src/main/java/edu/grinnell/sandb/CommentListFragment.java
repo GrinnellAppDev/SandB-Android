@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-import edu.grinnell.sandb.data.Comment;
+import edu.grinnell.sandb.model.Comment;
 
 public class CommentListFragment extends ListFragment {
 	public static final String TAG = "CommentsActivity";

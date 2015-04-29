@@ -2,8 +2,9 @@ package edu.grinnell.sandb;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,11 +25,18 @@ import android.widget.Spinner;
 
 import com.crashlytics.android.Crashlytics;
 import com.flurry.android.FlurryAgent;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
-import edu.grinnell.sandb.xmlpull.XmlPullReceiver;
-import edu.grinnell.sandb.xmlpull.XmlPullService;
+import edu.grinnell.sandb.model.Article;
 
 /* The main activity that the app will initialize to. This activity hosts the ArticleListFragment */
 public class MainActivity extends ActionBarActivity implements
@@ -76,74 +84,107 @@ public class MainActivity extends ActionBarActivity implements
 					.getInt(SELECTED_TAB));
 		}
 
-		// Notify the app when the feed data has been downloaded
-		mUpdateReceiver = new XmlPullReceiver();
-		registerReceiver(mUpdateReceiver, new IntentFilter(
-				XmlPullReceiver.FEED_PROCESSED));
+        updateArticles();
+
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		mPrefs.refresh();
-		registerReceiver(mUpdateReceiver, new IntentFilter(
-				XmlPullReceiver.FEED_PROCESSED));
-		// If this is the first time the app is run, download the feed
-		if (mPrefs.firstRun) {
-			// Show a spinner while the list is loading
-			if (!mUpdateInProgress) {
-				mLoading.setVisibility(View.VISIBLE);
-				mLoadingImage.startAnimation(AnimationUtils.loadAnimation(this,
-						R.anim.loading));
-				mUpdateInProgress = true;
-			}
-			startXmlPullService(true);
-		} else {
-			startXmlPullService(false);
-		}
+
 	}
 
-	// Start a service to download the
-	private void startXmlPullService(boolean forced) {
-		Intent loadFeed = new Intent(this, XmlPullService.class);
-		Intent feedLoaded = new Intent();
-		feedLoaded.setAction(XmlPullReceiver.FEED_PROCESSED);
-		mSendFeedLoaded = PendingIntent.getBroadcast(this, 0, feedLoaded,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-		loadFeed.putExtra(XmlPullService.RESULT_ACTION, mSendFeedLoaded);
+    public void updateArticles() {
+        String url = "http://www.thesandb.com/api/get_recent_posts/";
+        String[] params = {url};
+        new ArticleFetchTask().execute(params);
+    }
 
-		if (forced) {
-			loadFeed.setAction(XmlPullService.DOWNLOAD_FEED);
-		} else {
-			loadFeed.putExtra(XmlPullService.LAST_CHECKED_MS,
-					mPrefs.lastUpdated);
-			loadFeed.setAction(XmlPullService.CHECK_DOWNLOAD);
-		}
-		startService(loadFeed);
-	}
+    public class ArticleFetchTask extends AsyncTask<String, Void, Integer> {
 
-	@Override
-	protected void onNewIntent(Intent i) {
-		String action = i.getAction();
-		Log.i(TAG, "onNewIntent called | " + action);
+        final int SUCCESS = 0;
+        final int CONNECTIVITY_PROBLEMS = 1;
+        final int PARSING_PROBLEMS = 2;
+        final int UNKNOWN = 3;
 
-		// Clear the loading bar when the articles are loaded
-		if (ArticleListFragment.UPDATE.equals(action)) {
-			if (mUpdateInProgress) {
-				mUpdateInProgress = false;
-				mLoading.setVisibility(View.GONE);
-			}
-			mTabsAdapter.refresh();
-		}
-	}
+        public ArticleFetchTask() {}
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected Integer doInBackground(String... arg0) {
+
+            String url = arg0[0];
+            OkHttpClient client = new OkHttpClient();
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+            try {
+                Response response = client.newCall(request).execute();
+                JSONObject responseObject = new JSONObject(response.body().string());
+
+                Article.deleteAll(Article.class);
+                JSONArray posts = responseObject.getJSONArray("posts");
+
+                Article newArticle;
+                for (int i = 0; i < posts.length(); ++i) {
+                    newArticle = new Article();
+                    JSONObject thisPost = posts.getJSONObject(i);
+                    newArticle.setArticleID(thisPost.getInt("id"));
+                    newArticle.setAuthor(thisPost.getJSONObject("author").getString("name"));
+                    newArticle.setBody(thisPost.getString("content"));
+                    newArticle.setDescription(thisPost.getString("exerpt"));
+                    newArticle.setTitle(thisPost.getString("title"));
+                    newArticle.setCategory(thisPost.getJSONArray("catagories").getJSONObject(0).getString("title"));
+                    newArticle.setPubDate(thisPost.getString("date"));
+                    newArticle.setLink(thisPost.getString("url"));
+                    newArticle.save();
+                }
+                return SUCCESS;
+            }
+            catch (IOException e) {
+                Log.e(TAG, e.getMessage());
+                return CONNECTIVITY_PROBLEMS;
+            }
+            catch (JSONException e1) {
+                Log.e(TAG, e1.getMessage());
+                return PARSING_PROBLEMS;
+            }
+            finally {
+                return UNKNOWN;
+            }
+        }
+
+
+        @Override
+        protected void onPostExecute(Integer status) {
+            super.onPostExecute(status);
+            if (status != 0) {
+                //notify user of error
+            }
+            // Clear the loading bar when the articles are loaded
+            if (mUpdateInProgress) {
+                    mUpdateInProgress = false;
+                    mLoading.setVisibility(View.GONE);
+                }
+            mTabsAdapter.refresh();
+            }
+        }
+
+        /* Return true if the device has a network adapter that is capable of
+         * accessing the network. */
+        protected boolean networkEnabled(ConnectivityManager cm) {
+            NetworkInfo n = cm.getActiveNetworkInfo();
+            return (n != null) && n.isConnectedOrConnecting();
+        }
 
 	@Override
 	protected void onPause() {
-		unregisterReceiver(mUpdateReceiver);
 		super.onPause();
 
-		// if (mSendFeedLoaded != null)
-		// mSendFeedLoaded.cancel();
 	}
 
 	@Override
@@ -163,7 +204,7 @@ public class MainActivity extends ActionBarActivity implements
 				mLoadingImage.startAnimation(AnimationUtils.loadAnimation(this,
 						R.anim.loading));
 				mUpdateInProgress = true;
-				this.startXmlPullService(true);
+				updateArticles();
 			}
 			break;
 		// case R.id.menu_settings:

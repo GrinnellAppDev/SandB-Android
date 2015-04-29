@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.grinnell.sandb.data.Article;
+import edu.grinnell.sandb.model.Article;
 
 public class ArticleListFragment extends ListFragment {
 

@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.grinnell.sandb.data.Comment;
+import edu.grinnell.sandb.model.Comment;
 
 /* This activity displays the text, images, and comments for a selected article */
 public class ArticleDetailActivity extends ActionBarActivity {

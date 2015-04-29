@@ -1,13 +1,12 @@
-package edu.grinnell.sandb.data;
+package edu.grinnell.sandb.model;
 
 
 import com.orm.SugarRecord;
 
 public class Article extends SugarRecord<Article> {
 
-	protected int articleID;
+    protected int articleID;
 
-	protected String guid;
 	protected String title;
 	protected String link;
 	protected String pubDate;
@@ -25,11 +24,10 @@ public class Article extends SugarRecord<Article> {
 		body = articleBody;
 	}
 
-	public Article(String guid, String articleTitle, String articleLink,
+	public Article(String articleTitle, String articleLink,
 			String publicationDate, String category, String description,
 			String articleBody, String commentsLink, String author) {
 		this(articleTitle, articleBody);
-		this.guid = guid;
 		this.link = articleLink;
 		this.pubDate = publicationDate;
 		this.category = category;
@@ -44,10 +42,6 @@ public class Article extends SugarRecord<Article> {
 
 	public String getTitle() {
 		return title;
-	}
-
-	public String getGuid() {
-		return guid;
 	}
 
 	public String getLink() {
@@ -77,5 +71,42 @@ public class Article extends SugarRecord<Article> {
 	public String getAuthor() {
 		return author;
 	}
+
+
+    public void setArticleID(int articleID) {
+        this.articleID = articleID;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public void setPubDate(String pubDate) {
+        this.pubDate = pubDate;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
 
 }

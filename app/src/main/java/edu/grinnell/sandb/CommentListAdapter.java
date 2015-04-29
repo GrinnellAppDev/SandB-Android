@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import edu.grinnell.sandb.data.Comment;
+import edu.grinnell.sandb.model.Comment;
 
 /* List adapter to display the comments for a article */
 public class CommentListAdapter extends ArrayAdapter<Comment> {

@@ -35,8 +35,8 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.ArrayList;
 
-import edu.grinnell.sandb.data.Article;
-import edu.grinnell.sandb.data.Image;
+import edu.grinnell.sandb.model.Article;
+import edu.grinnell.sandb.model.Image;
 import edu.grinnell.sandb.util.DatabaseUtil;
 import edu.grinnell.sandb.util.UniversalLoaderUtility;
 

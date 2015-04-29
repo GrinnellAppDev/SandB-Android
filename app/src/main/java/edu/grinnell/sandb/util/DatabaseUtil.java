@@ -5,8 +5,8 @@ import com.orm.query.Select;
 
 import java.util.List;
 
-import edu.grinnell.sandb.data.Article;
-import edu.grinnell.sandb.data.Image;
+import edu.grinnell.sandb.model.Article;
+import edu.grinnell.sandb.model.Image;
 
 public class DatabaseUtil {
 
