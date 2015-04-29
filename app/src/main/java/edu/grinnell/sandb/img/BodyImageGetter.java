@@ -41,49 +41,39 @@ public class BodyImageGetter {
 
 		@Override
 		protected Integer doInBackground(Article... article) {
-
-			String body = article[0].getBody();
-			int articleId = article[0].getArticleID();
-
-			readImage(body, articleId);
+			//readImage(article[0]);
 			return null;
 		}
-	}
 
-	protected void onPostExecute(Integer i) {
-		if (--numTasks == 0)
-			mImageTable.close();
+        protected void onPostExecute(Integer i) {
+            if (--numTasks == 0)
+                mImageTable.close();
+        }
 	}
 
 	// Read an image from the body as a byte array
-	public void readImage(String body, int articleID) {
+	public void readImages(Article article) {
 
-		addImage(body, articleID, "<div");
+        addImage(article , "<div");
 //		addImage(body, articleID, "<a");
-		addImage(body, articleID, "<img");
+        addImage(article, "<img");
 	}
 
-	private void addImage(String body, int articleId, String tag) {
+	private void addImage(Article article, String tag) {
+        Image newImage = new Image();
+        String body = article.getBody();
 		int tagStart = 0;
 		String url = "";
-		byte[] image = null;
 		String title = "";
 
 		while ((tagStart = body.indexOf(tag, tagStart + 1)) >= 0) {
 			url = getSubstring("src=\"", body, tagStart);
-			
-			//check to make sure image has not yet been added
-			if ((Image) mImageTable.findByUrl(url) != null)
-				return;
-
-			//image = getImage(url, tagStart);
-			title = getSubstring("title=\"", body, tagStart);
-
-            Image newImage = new Image(articleId, url, image, title);
-            newImage.save();
-			//mImageTable.createImage(articleId, url, image, title);
+            newImage = new Image(article.getTitle(), url, title);
 		}
 
+        if (newImage.getURL() != null) {
+            newImage.save();
+        }
 	}
 
 	private static byte[] getImage(String imgSource, int start) {

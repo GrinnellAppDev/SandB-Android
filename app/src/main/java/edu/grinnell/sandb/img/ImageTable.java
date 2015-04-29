@@ -1,15 +1,14 @@
 package edu.grinnell.sandb.img;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImageTable {
 
@@ -162,8 +161,8 @@ public class ImageTable {
 
 	private Image cursorToImage(Cursor cursor) {
 
-		return new Image(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getBlob(3),
-				cursor.getString(4));
+		return new Image();
+                //cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getBlob(3), cursor.getString(4));
 	}
 	
 	private String cursorToURL(Cursor cursor) {

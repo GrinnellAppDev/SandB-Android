@@ -38,15 +38,6 @@ public class Article extends SugarRecord<Article> {
 		this.author = author;
 	}
 
-    public Article(int id, String guid, String articleTitle,
-			String articleLink, String publicationDate, String category,
-			String description, String articleBody, String commentsLink,
-			String author) {
-		this(guid, articleTitle, articleLink, publicationDate, category,
-				description, articleBody, commentsLink, author);
-		this.articleID = id;
-	}
-
 	public int getArticleID() {
 		return articleID;
 	}
@@ -86,4 +77,5 @@ public class Article extends SugarRecord<Article> {
 	public String getAuthor() {
 		return author;
 	}
+
 }

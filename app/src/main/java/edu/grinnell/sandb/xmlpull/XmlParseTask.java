@@ -69,7 +69,8 @@ public class XmlParseTask {
 			} else if (name.equals("item")) {
 				Article article = readArticle(parser, t);
 				articles.add(article);
-				big.buildImageCache(article);
+				big.readImages(article);
+                article.save();
 			} else {
 				skip(parser);
 			}
@@ -128,7 +129,6 @@ public class XmlParseTask {
 
         //Save article to database
         Article newArticle = new Article(guid, title, link, date, category, description, body, comments, author);
-        newArticle.save();
         return newArticle;
 		//return table.createArticle(guid, title, link, date, category,description, body, comments, author);
 	}

@@ -14,6 +14,8 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.orm.query.Condition;
+import com.orm.query.Select;
 
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.data.Article;
@@ -61,6 +63,13 @@ public class UniversalLoaderUtility {
 		}
 	};
 
+    public void loadPrimaryArticleImage(Article article, ImageView imgView, Context context) {
+        Select<Image> articleImageQuery = Select.from(Image.class)
+                .where(Condition.prop("article_Id").eq(article.getArticleID()));
+        Image articleImage = articleImageQuery.first();
+        loadImage(articleImage.getURL(), imgView, context);
+    }
+
 	// load image based on URL
 	public void loadImage(String imgUrl, ImageView imgView, Context context) {
 
@@ -81,6 +90,7 @@ public class UniversalLoaderUtility {
 
 	// load first image from an article, in low res
 	public void loadArticleImage(Article a, ImageView imgView, Context context) {
+
 		ImageTable imgTable = new ImageTable(imgView.getContext());
 		imgTable.open();
 

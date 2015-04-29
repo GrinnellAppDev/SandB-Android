@@ -1,15 +1,16 @@
 package edu.grinnell.sandb.data;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import junit.framework.Assert;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import junit.framework.Assert;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ArticleTable {
 
@@ -145,6 +146,7 @@ public class ArticleTable {
 	private Article cursorToArticle(Cursor cursor) {
 
 		Article a = null;
+        /*
 		try {
 			a = new Article(cursor.getInt(0), cursor.getString(1),
 					cursor.getString(2), cursor.getString(3),
@@ -155,7 +157,7 @@ public class ArticleTable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+*/
 		return a;
 	}
 
