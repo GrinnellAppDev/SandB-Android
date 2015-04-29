@@ -196,13 +196,12 @@ public class ArticleDetailFragment extends Fragment {
 			OnClickListener imgClick = new OnClickListener() {
 				public void onClick(View v) {
 
-                    String[] URLS = {};
-                    String[] titles = {};
+                    String[] URLS = new String[mImages.size()];
+                    String[] titles = new String[mImages.size()];
                     for (int i = 0; i < mImages.size(); i++) {
 						URLS[i] = mLoader.getHiResImage(mImages.get(i).getURL());
                         titles[i] = mImages.get(i).getImgTitle();
                     }
-
 
                     Intent intent = new Intent(getActivity(),
 							ImagePagerActivity.class);
