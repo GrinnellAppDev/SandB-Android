@@ -13,10 +13,13 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewParent;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -42,7 +45,7 @@ public class MainActivity extends ActionBarActivity {
 	private static final String SELECTED_TAB = "selected_tab";
 
 	private ArticleListFragment mListFrag;
-	private View mLoading;
+    private Menu mMenu;
 	private ViewPager mPager;
 	private TabsAdapter mTabsAdapter;
 
@@ -56,13 +59,11 @@ public class MainActivity extends ActionBarActivity {
 		Crashlytics.start(this);
 		setContentView(R.layout.activity_main);
 
-		mLoading = (View) findViewById(R.id.loading);
-
 		// setup action bar for tabs
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-		// setup a pager to scroll between catagory tabs
+        // setup a pager to scroll between catagory tabs
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mTabsAdapter = new TabsAdapter(getSupportFragmentManager(), mPager);
 		addTabs(actionBar, mTabsAdapter);
@@ -89,6 +90,7 @@ public class MainActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activity_main, menu);
+        mMenu = menu;
         return true;
     }
 
@@ -129,6 +131,7 @@ public class MainActivity extends ActionBarActivity {
         protected void onPreExecute() {
             mTabsAdapter.setRefreshing(true);
             mUpdateInProgress = true;
+            startActionBarAnim();
         }
 
         @Override
@@ -182,6 +185,7 @@ public class MainActivity extends ActionBarActivity {
             if (mUpdateInProgress) {
                 mUpdateInProgress = false;
             }
+            resetUpdating();
             mTabsAdapter.setRefreshing(false);
             mTabsAdapter.refresh();
             }
@@ -313,6 +317,31 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    public void resetUpdating()
+    {
+        // Get our refresh item from the menu
+        MenuItem m = mMenu.findItem(R.id.menu_refresh);
+        if(m.getActionView()!=null)
+        {
+            // Remove the animation.
+            m.getActionView().clearAnimation();
+            m.setActionView(null);
+        }
+    }
+
+    private void startActionBarAnim() {
+        MenuItem m = mMenu.findItem(R.id.menu_refresh);
+        if (m != null) {
+            // Do animation start
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            ImageView iv = (ImageView) inflater.inflate(R.layout.action_bar_refresh, null);
+            Animation rotation = AnimationUtils.loadAnimation(this, R.anim.rotate_refresh);
+            rotation.setRepeatCount(Animation.INFINITE);
+
+            iv.startAnimation(rotation);
+            m.setActionView(iv);
+        }
+    }
 
 	@Override
 	public void onSaveInstanceState(Bundle state) {

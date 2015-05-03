@@ -13,9 +13,12 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-condensed"
         android:paddingBottom="@dimen/pad3"
-        android:paddingLeft="@dimen/pad5"
-        android:paddingRight="@dimen/pad5"
-        android:paddingTop="@dimen/pad3"
+        android:paddingLeft="@dimen/pad7"
+        android:paddingRight="@dimen/pad7"
+        android:paddingTop="@dimen/pad7"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:gravity="center"
         android:textColor="@color/gmdarkred"
         android:textIsSelectable="true" />
 

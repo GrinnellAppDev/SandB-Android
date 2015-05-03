@@ -18,12 +18,4 @@
            />
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <TextView
-        android:id="@android:id/empty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/pad5"
-        android:text="@string/no_articles"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
 </LinearLayout>

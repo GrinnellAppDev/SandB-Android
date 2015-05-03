@@ -102,11 +102,6 @@ public class ArticleListFragment extends ListFragment {
             }
         });
 
-
-        if(DatabaseUtil.getArticleList().isEmpty()) {
-            mActivity.updateArticles();
-        }
-
 		return rootView;
 	}
 	
@@ -118,10 +113,9 @@ public class ArticleListFragment extends ListFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-
 		setListAdapter(mAdapter);
 
-		if (savedInstanceState != null
+        if (savedInstanceState != null
 				&& savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
 			// setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
 		}

@@ -36,37 +36,39 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-
 		ViewHolder holder;
 
 		if (convertView == null) {
 			LayoutInflater li = mActivity.getLayoutInflater();
 			convertView = li.inflate(R.layout.articles_row, parent, false);
 			holder = new ViewHolder();
-			//set the article title
+			//find the article title view
 			holder.title = (TextView) convertView
 					.findViewById(R.id.titleText);
-			//set the article description
+			//find the article description view
 			holder.description = (TextView) convertView
 					.findViewById(R.id.descriptionText);
-			//set the article thumbnail image
+			//find the article image view
 			holder.image = (ImageView) convertView
 					.findViewById(R.id.articleThumb);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
+
+
 		holder.image.setVisibility(View.VISIBLE);
 		final Article a = mData.get(position);
 				
 		if (a != null) {
 			holder.image.setVisibility(View.VISIBLE);
-			//mLoader.loadPrimaryArticleImage(a, holder.image, mActivity);
-
             Image articleImage = DatabaseUtil.getArticleImage(a);
 
             if (articleImage != null) {
                 mLoader.loadImage(articleImage.getURL(), holder.image, mActivity);
+            }
+            else {
+                holder.image.setImageResource(R.drawable.sb);
             }
 
 			holder.title.setText(Html.fromHtml(a.getTitle()));

@@ -20,6 +20,16 @@
 <resources>
 
     <style name="Theme.Sandb" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <!-- colorPrimary is used for the default action bar background -->
+        <item name="colorPrimary">@color/gdarkred</item>
+
+        <!-- colorPrimaryDark is used for the status bar -->
+        <item name="colorPrimaryDark">@color/gmdarkred</item>
+
+        <!-- colorAccent is used as the default value for colorControlActivated
+             which is used to tint widgets -->
+        <item name="colorAccent">@color/ggrey</item>
+
         <item name="actionBarItemBackground">@drawable/selectable_background_sandb</item>
         <item name="popupMenuStyle">@style/PopupMenu.Sandb</item>
         <item name="dropDownListViewStyle">@style/DropDownListView.Sandb</item>
