@@ -301,10 +301,14 @@ public class MainActivity extends ActionBarActivity {
 
         public void setRefreshing(boolean refreshing) {
             for (int i = 0; i < getCount(); i++) {
-                Fragment f = getSupportFragmentManager().findFragmentByTag(
+                try {
+                    Fragment f = getSupportFragmentManager().findFragmentByTag(
                         getFragmentTag(i));
-                if (f != null)
                     ((ArticleListFragment) f).setRefreshing(refreshing);
+                }
+                catch (NullPointerException e1) {
+                    Log.e(TAG, "Tried to Access A Null Fragment: " + e1.getMessage());
+                }
             }
         }
     }
