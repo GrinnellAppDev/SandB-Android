@@ -58,7 +58,7 @@ public class ArticleDetailFragment extends Fragment {
 	private static int scrnHeight;
 	private static final int SWIPE_MIN_DISTANCE = 300;
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
-	static GestureDetector gestureDetector;
+	public static GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
 
 	public static final String ARTICLE_ID_KEY = "article_id";
