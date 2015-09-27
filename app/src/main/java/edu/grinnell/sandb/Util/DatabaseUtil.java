@@ -1,4 +1,4 @@
-package edu.grinnell.sandb.util;
+package edu.grinnell.sandb.Util;
 
 import com.orm.query.Condition;
 import com.orm.query.Select;
@@ -6,8 +6,8 @@ import com.orm.query.Select;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.grinnell.sandb.model.Article;
-import edu.grinnell.sandb.model.Image;
+import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.Model.Image;
 
 public class DatabaseUtil {
 

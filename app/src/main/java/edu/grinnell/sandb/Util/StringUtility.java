@@ -1,4 +1,4 @@
-package edu.grinnell.sandb.util;
+package edu.grinnell.sandb.Util;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;

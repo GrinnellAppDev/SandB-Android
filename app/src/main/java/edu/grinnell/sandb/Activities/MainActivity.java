@@ -1,4 +1,4 @@
-package edu.grinnell.sandb;
+package edu.grinnell.sandb.Activities;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -34,9 +34,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.grinnell.sandb.model.Article;
-import edu.grinnell.sandb.util.BodyImageGetter;
-import edu.grinnell.sandb.util.JSONUtil;
+import edu.grinnell.sandb.Fragments.ArticleListFragment;
+import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.R;
+import edu.grinnell.sandb.Util.BodyImageGetter;
+import edu.grinnell.sandb.Util.JSONUtil;
 
 /* The main activity that the app will initialize to. This activity hosts the ArticleListFragment */
 public class MainActivity extends ActionBarActivity {

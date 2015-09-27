@@ -1,4 +1,4 @@
-package edu.grinnell.sandb;
+package edu.grinnell.sandb.Preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;

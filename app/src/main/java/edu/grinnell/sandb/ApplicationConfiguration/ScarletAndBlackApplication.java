@@ -1,4 +1,4 @@
-package edu.grinnell.sandb;
+package edu.grinnell.sandb.ApplicationConfiguration;
 
 import android.os.AsyncTask;
 import android.os.Build;

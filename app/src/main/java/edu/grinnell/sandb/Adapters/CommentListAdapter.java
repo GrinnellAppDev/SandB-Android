@@ -1,4 +1,4 @@
-package edu.grinnell.sandb;
+package edu.grinnell.sandb.Adapters;
 
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -9,7 +9,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import edu.grinnell.sandb.model.Comment;
+import edu.grinnell.sandb.Activities.ArticleDetailActivity;
+import edu.grinnell.sandb.Model.Comment;
+import edu.grinnell.sandb.R;
 
 /* List adapter to display the comments for a article */
 public class CommentListAdapter extends ArrayAdapter<Comment> {

@@ -1,4 +1,4 @@
-package edu.grinnell.sandb.util;
+package edu.grinnell.sandb.Util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -18,8 +18,8 @@ import com.orm.query.Condition;
 import com.orm.query.Select;
 
 import edu.grinnell.sandb.R;
-import edu.grinnell.sandb.model.Article;
-import edu.grinnell.sandb.model.Image;
+import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.Model.Image;
 
 public class UniversalLoaderUtility {
 

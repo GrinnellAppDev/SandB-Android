@@ -1,4 +1,4 @@
-package edu.grinnell.sandb;
+package edu.grinnell.sandb.Fragments;
 
 import android.content.Intent;
 import android.os.Build;
@@ -17,8 +17,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.grinnell.sandb.model.Article;
-import edu.grinnell.sandb.util.DatabaseUtil;
+import edu.grinnell.sandb.Activities.ArticleDetailActivity;
+import edu.grinnell.sandb.Activities.MainActivity;
+import edu.grinnell.sandb.Adapters.ArticleListAdapter;
+import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.R;
+import edu.grinnell.sandb.Util.DatabaseUtil;
 
 public class ArticleListFragment extends ListFragment {
 

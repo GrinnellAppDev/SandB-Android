@@ -1,4 +1,4 @@
-package edu.grinnell.sandb;
+package edu.grinnell.sandb.Adapters;
 
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -10,10 +10,12 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import edu.grinnell.sandb.model.Article;
-import edu.grinnell.sandb.model.Image;
-import edu.grinnell.sandb.util.DatabaseUtil;
-import edu.grinnell.sandb.util.UniversalLoaderUtility;
+import edu.grinnell.sandb.Activities.MainActivity;
+import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.Model.Image;
+import edu.grinnell.sandb.R;
+import edu.grinnell.sandb.Util.DatabaseUtil;
+import edu.grinnell.sandb.Util.UniversalLoaderUtility;
 
 /* List Adapter to populate the article list */
 public class ArticleListAdapter extends ArrayAdapter<Article> {

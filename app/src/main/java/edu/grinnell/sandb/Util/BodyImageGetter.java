@@ -1,7 +1,7 @@
-package edu.grinnell.sandb.util;
+package edu.grinnell.sandb.Util;
 
-import edu.grinnell.sandb.model.Article;
-import edu.grinnell.sandb.model.Image;
+import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.Model.Image;
 
 public class BodyImageGetter {
 

@@ -1,4 +1,4 @@
-package edu.grinnell.sandb;
+package edu.grinnell.sandb.Activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +22,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.grinnell.sandb.model.Comment;
+import edu.grinnell.sandb.Fragments.ArticleDetailFragment;
+import edu.grinnell.sandb.Fragments.CommentListFragment;
+import edu.grinnell.sandb.Model.Comment;
+import edu.grinnell.sandb.R;
 
 /* This activity displays the text, images, and comments for a selected article */
 public class ArticleDetailActivity extends ActionBarActivity {

@@ -1,4 +1,4 @@
-package edu.grinnell.sandb;
+package edu.grinnell.sandb.Fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -11,7 +11,10 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-import edu.grinnell.sandb.model.Comment;
+import edu.grinnell.sandb.Activities.ArticleDetailActivity;
+import edu.grinnell.sandb.Adapters.CommentListAdapter;
+import edu.grinnell.sandb.Model.Comment;
+import edu.grinnell.sandb.R;
 
 public class CommentListFragment extends ListFragment {
 	public static final String TAG = "CommentsActivity";

@@ -1,4 +1,4 @@
-package edu.grinnell.sandb.util;
+package edu.grinnell.sandb.Util;
 
 import com.squareup.okhttp.Response;
 
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.grinnell.sandb.model.Article;
+import edu.grinnell.sandb.Model.Article;
 
 public class JSONUtil {
 

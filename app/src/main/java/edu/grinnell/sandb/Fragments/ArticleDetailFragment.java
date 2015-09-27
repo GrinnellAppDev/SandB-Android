@@ -1,4 +1,4 @@
-package edu.grinnell.sandb;
+package edu.grinnell.sandb.Fragments;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -39,10 +39,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import edu.grinnell.sandb.model.Article;
-import edu.grinnell.sandb.model.Image;
-import edu.grinnell.sandb.util.DatabaseUtil;
-import edu.grinnell.sandb.util.UniversalLoaderUtility;
+import edu.grinnell.sandb.Activities.ArticleDetailActivity;
+import edu.grinnell.sandb.Activities.ImagePagerActivity;
+import edu.grinnell.sandb.Activities.MainActivity;
+import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.Model.Image;
+import edu.grinnell.sandb.R;
+import edu.grinnell.sandb.Util.DatabaseUtil;
+import edu.grinnell.sandb.Util.UniversalLoaderUtility;
 
 @SuppressLint("ClickableViewAccessibility") @TargetApi(Build.VERSION_CODES.FROYO)
 public class ArticleDetailFragment extends Fragment {
