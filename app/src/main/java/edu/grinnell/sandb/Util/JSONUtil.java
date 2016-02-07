@@ -1,6 +1,6 @@
 package edu.grinnell.sandb.Util;
 
-import com.squareup.okhttp.Response;
+import okhttp3.Response;
 
 import org.json.JSONArray;
 import org.json.JSONException;

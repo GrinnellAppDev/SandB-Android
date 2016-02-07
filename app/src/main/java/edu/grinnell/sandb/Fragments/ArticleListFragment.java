@@ -3,8 +3,12 @@ package edu.grinnell.sandb.Fragments;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,11 +24,12 @@ import java.util.Map;
 import edu.grinnell.sandb.Activities.ArticleDetailActivity;
 import edu.grinnell.sandb.Activities.MainActivity;
 import edu.grinnell.sandb.Adapters.ArticleListAdapter;
+import edu.grinnell.sandb.Adapters.ArticleRecyclerViewAdapter;
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Util.DatabaseUtil;
 
-public class ArticleListFragment extends ListFragment {
+public class ArticleListFragment extends Fragment {
 
 	public static String ARTICLE_CATEGORY_KEY = "category";
 	// LinkedHashMap retains insertion ordering
@@ -54,7 +59,8 @@ public class ArticleListFragment extends ListFragment {
 
 	private int mActivatedPosition = ListView.INVALID_POSITION;
 
-	private ArticleListAdapter mAdapter;
+	private RecyclerView mRecyclerView;
+	private ArticleRecyclerViewAdapter mAdapter;
 	private List<Article> mData;
 	private SwipeRefreshLayout pullToRefresh;
 	private static final String TAG = "ArticleListFragment";
@@ -79,7 +85,7 @@ public class ArticleListFragment extends ListFragment {
 
         mActivity = (MainActivity) getActivity();
 
-		mAdapter = new ArticleListAdapter((MainActivity) getActivity(),
+		mAdapter = new ArticleRecyclerViewAdapter((MainActivity) getActivity(),
 				R.layout.articles_row, mData);
 	}
 
@@ -96,6 +102,13 @@ public class ArticleListFragment extends ListFragment {
 		View rootView = inflater.inflate(R.layout.fragment_article_list,
 				container, false);
 
+		// set up the recyler view
+		mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv);
+		StaggeredGridLayoutManager layoutManager =
+				new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+		mRecyclerView.setLayoutManager(layoutManager);
+
+		// set up pull-to-refresh
         pullToRefresh = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefresh);
         pullToRefresh.setColorScheme(R.color.gred,
                 R.color.DarkGray, R.color.black,R.color.gred );
@@ -117,7 +130,7 @@ public class ArticleListFragment extends ListFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		setListAdapter(mAdapter);
+		mRecyclerView.setAdapter(mAdapter);
 
         if (savedInstanceState != null
 				&& savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
@@ -128,42 +141,16 @@ public class ArticleListFragment extends ListFragment {
 	/* Update the article list */
 	public void update() {
 		mData = loadDataFromCache(mCategory);
-		mAdapter.clear();
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			mAdapter.addAll(mData);
-		} else {
-			for (Article a : mData) {
-				mAdapter.add(a);
-			}
-		}
-
 		mAdapter.notifyDataSetChanged();
 	}
 
 	/* If no articles are available, notify the user */
 	public void setEmptyText(String text) {
-		TextView empty = (TextView) getListView().getEmptyView();
-		empty.setText(text);
+		//TextView empty = (TextView) mRecyclerView.getEmptyView();
+		//empty.setText(text);
+		// TODO: 2/7/16  Don't forget
 	}
 
-	/* Open the ArticleDetailActivity when a list item is selected */
-	@Override
-	public void onListItemClick(ListView listView, View view, int position,
-			long id) {
-		super.onListItemClick(listView, view, position, id);
-        Article thisArticle = mData.get(position);
-		Intent detailIntent = new Intent(getActivity(),
-				ArticleDetailActivity.class);
-		detailIntent.putExtra(ArticleDetailFragment.ARTICLE_ID_KEY,
-                thisArticle.getId());
-		detailIntent.putExtra(ArticleDetailActivity.COMMENTS_FEED,
-                thisArticle.getComments());
-		startActivity(detailIntent);
-		// Add a smooth animation
-		getActivity().overridePendingTransition(R.anim.slide_in,
-				R.anim.slide_out);
-	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
