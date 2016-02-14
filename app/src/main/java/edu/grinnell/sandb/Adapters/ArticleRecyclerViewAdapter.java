@@ -63,6 +63,7 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
             holder.title.setPadding(3, 3, 3, 3);
             //holder.description.setText(Html.fromHtml(a.getDescription()));
             holder.category.setText(a.getCategory());
+            holder.date.setText(a.getPubDate());
 
 
             // open the article when it is clicked
@@ -94,6 +95,7 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
         TextView title;
         TextView description;
         TextView category;
+        TextView date;
         ImageView image;
         View itemView;
 
@@ -109,6 +111,8 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
             image = (ImageView) itemView.findViewById(R.id.articleThumb);
             //find the category text view
             category = (TextView) itemView.findViewById(R.id.category);
+            //find the date text view
+            date = (TextView) itemView.findViewById(R.id.tv_date);
         }
     }
 }
