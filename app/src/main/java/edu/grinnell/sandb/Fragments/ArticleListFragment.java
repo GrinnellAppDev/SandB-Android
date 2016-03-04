@@ -89,7 +89,7 @@ public class ArticleListFragment extends Fragment {
 				R.layout.articles_row, mData);
 	}
 
-	// Retrieve the articles for a given category from the sqlite database 
+	// Retrieve the articles for a given category from the SQLite database
 	private List<Article> loadDataFromCache(String category) {
         return DatabaseUtil.getArticlesByCategory(category);
 	}
@@ -102,7 +102,7 @@ public class ArticleListFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.fragment_article_list,
 				container, false);
 
-		// set up the recyler view
+		// set up the recycler view
 		mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv);
 		StaggeredGridLayoutManager layoutManager =
 				new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
@@ -110,7 +110,7 @@ public class ArticleListFragment extends Fragment {
 
 		// set up pull-to-refresh
         pullToRefresh = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefresh);
-        pullToRefresh.setColorScheme(R.color.gred,
+        pullToRefresh.setColorSchemeResources(R.color.gred,
                 R.color.DarkGray, R.color.black,R.color.gred );
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
