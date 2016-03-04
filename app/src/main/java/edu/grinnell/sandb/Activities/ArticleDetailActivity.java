@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -26,7 +27,7 @@ import edu.grinnell.sandb.Model.Comment;
 import edu.grinnell.sandb.R;
 
 /* This activity displays the text, images, and comments for a selected article */
-public class ArticleDetailActivity extends ActionBarActivity {
+public class ArticleDetailActivity extends AppCompatActivity {
 
 	public static final String DETAIL_ARGS = "detail_args";
 	public static final String COMMENTS_FEED = "Comments Feed";
