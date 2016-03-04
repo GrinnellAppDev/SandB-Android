@@ -49,7 +49,7 @@ public class ArticleListFragment extends Fragment {
 		titleToKey.put("Opinion", "Opinion");
 		titleToKey.put("Sports", "Sports");
 
-		CATEGORIES = titleToKey.keySet().toArray(new String[0]);
+		CATEGORIES = titleToKey.keySet().toArray(new String[titleToKey.size()]);
 	}
 
 	public String mCategory;

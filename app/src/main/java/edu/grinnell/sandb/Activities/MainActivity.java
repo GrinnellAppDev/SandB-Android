@@ -10,16 +10,20 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewParent;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -50,10 +54,10 @@ public class MainActivity extends ActionBarActivity {
     private Menu mMenu;
 	private ViewPager mPager;
 	private TabsAdapter mTabsAdapter;
+	private DrawerLayout mDrawerLayout;
+	private ListView mDrawerList;
 
 	private boolean mUpdateInProgress;
-
-	private boolean mTwoPane = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +68,18 @@ public class MainActivity extends ActionBarActivity {
 		// setup action bar for tabs
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+		// setup navigation drawer
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		mDrawerList = (ListView) findViewById(R.id.left_drawer);
+		mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+				R.layout.drawer_list_item, ));
+		mDrawerList.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
+			}
+		});
 
         // setup a pager to scroll between catagory tabs
 		mPager = (ViewPager) findViewById(R.id.pager);
