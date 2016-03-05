@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import edu.grinnell.sandb.ArticleFetchTask;
 import edu.grinnell.sandb.Fragments.ArticleListFragment;
 import edu.grinnell.sandb.R;
+import edu.grinnell.sandb.Util.VersionUtil;
 
 /* The main activity that the app will initialize to. This activity hosts the ArticleListFragment */
 public class MainActivity extends AppCompatActivity {
@@ -43,6 +44,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Crashlytics.start(this);
         setContentView(R.layout.activity_main);
+
+        // set transition things for lollipop
+        if (VersionUtil.isLollipop()) {
+            getWindow().setAllowEnterTransitionOverlap(true);
+            getWindow().setAllowReturnTransitionOverlap(true);
+        }
 
         // setup tool bar
         Toolbar tooldbar = (Toolbar) findViewById(R.id.toolbar_main);
