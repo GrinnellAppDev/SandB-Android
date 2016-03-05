@@ -38,9 +38,6 @@
                 android:value=".Activities.MainActivity" />
         </activity>
 
-        <service
-            android:name="edu.grinnell.sandb.xmlpull.XmlPullService"
-            android:exported="false" />
 
         <activity android:name=".Activities.ImagePagerActivity" >
         </activity>

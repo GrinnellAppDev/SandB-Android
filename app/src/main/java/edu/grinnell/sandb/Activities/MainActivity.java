@@ -8,7 +8,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -58,17 +57,18 @@ public class MainActivity extends AppCompatActivity {
         }
         });
          **/
-        // setup a pager to scroll between catagory tabs
+        // setup a pager to scroll between category tabs
         mPager = (ViewPager) findViewById(R.id.pager);
 
-        mTabsAdapter = new TabsAdapter(getSupportFragmentManager(), mPager);
+        mTabsAdapter = new TabsAdapter(getSupportFragmentManager());
+        addTabs(mTabsAdapter);
+
+        mPager.setAdapter(mTabsAdapter);
 
         // setup the sliding tab strip
         PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabs.setViewPager(mPager);
-        tabs.setDividerColorResource(R.color.gdarkred);
 
-        //addTabs(actionBar, mTabsAdapter);
 
         if (savedInstanceState != null) {
             actionBar.setSelectedNavigationItem(savedInstanceState
@@ -144,20 +144,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // Add the catagory tabs
-    private void addTabs(ActionBar actionBar, TabsAdapter ta) {
+    // Add the category tabs
+    private void addTabs(TabsAdapter ta) {
         for (String category : ArticleListFragment.CATEGORIES) {
             Bundle args = new Bundle();
             args.putString(ArticleListFragment.ARTICLE_CATEGORY_KEY, category);
-            ActionBar.Tab tab = actionBar.newTab().setText(category);
-            ta.addTab(tab, ArticleListFragment.class, args);
+            ta.addTab(ArticleListFragment.class, args);
         }
     }
 
-    /* FragmentPagerAdapter to handle the catagory tabs */
+    /* FragmentPagerAdapter to handle the category tabs */
     public class TabsAdapter extends FragmentStatePagerAdapter {
 
-        private final ArrayList<TabInfo> tabs = new ArrayList<TabInfo>();
+        private final ArrayList<TabInfo> tabs = new ArrayList<>();
 
         final class TabInfo {
             private final Class<?> clss;
@@ -169,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        public TabsAdapter(FragmentManager fm, ViewPager pager) {
+        public TabsAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -192,6 +191,11 @@ public class MainActivity extends AppCompatActivity {
             return mListFrag;
         }
 
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return ArticleListFragment.CATEGORIES[position];
+        }
+
         public void refresh() {
             for (int i = 0; i < getCount(); i++) {
                 Fragment f = getSupportFragmentManager().findFragmentByTag(
@@ -207,13 +211,10 @@ public class MainActivity extends AppCompatActivity {
 
         public void setRefreshing(boolean refreshing) {
             for (int i = 0; i < getCount(); i++) {
-                try {
-                    Fragment f = getSupportFragmentManager().findFragmentByTag(
-                            getFragmentTag(i));
+                Fragment f = getSupportFragmentManager().findFragmentByTag(
+                        getFragmentTag(i));
+                if (f != null)
                     ((ArticleListFragment) f).setRefreshing(refreshing);
-                } catch (NullPointerException e1) {
-                    Log.e(TAG, "Tried to Access A Null Fragment: " + e1.getMessage());
-                }
             }
         }
     }
