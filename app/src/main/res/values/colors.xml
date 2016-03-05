@@ -3,7 +3,8 @@
 
     <!--Version 2.0 Colors-->
     <color name="primary" >#263238</color>
-    <color name="primary_dark" >#2B3134</color>
+    <!--<color name="primary_dark" >#2B3134</color>-->
+    <color name="primary_dark" >#000000</color>
     <color name="transparent_bar" >#22000000</color>
     <color name="accent" >#D50000</color>
     <color name="accent_dark">#a70012</color>

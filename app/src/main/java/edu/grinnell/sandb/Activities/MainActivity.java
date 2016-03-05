@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -45,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         Crashlytics.start(this);
         setContentView(R.layout.activity_main);
 
-        // setup action bar for tabs
+        // setup tool bar
         Toolbar tooldbar = (Toolbar) findViewById(R.id.toolbar_main);
 
         // setup navigation drawer

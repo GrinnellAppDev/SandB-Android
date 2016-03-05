@@ -42,12 +42,10 @@ public class ImagePagerActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 
 		// Make the activity fill the whole screen
-		getSupportActionBar().hide();
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		setContentView(R.layout.image_pager);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		Bundle bundle = getIntent().getExtras();
 		String[] imageUrls = bundle.getStringArray("ArticleImages");
