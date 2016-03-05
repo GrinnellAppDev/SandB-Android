@@ -4,45 +4,53 @@
     android:layout_height="match_parent">
 
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar_main"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/primary"
-            android:minHeight="?attr/actionBarSize"
-            app:subtitleTextColor="@color/white"
-            app:title="@string/app_name"
-            app:titleTextColor="@color/white" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <com.astuetz.PagerSlidingTabStrip
-            android:id="@+id/tabs"
-            android:layout_width="match_parent"
-            android:layout_height="48dip"
-            android:textColor="@color/primary"
-            android:textSize="14sp"
-            android:textStyle="normal"
-            app:pstsDividerColor="@color/transparent"
-            app:pstsDividerPadding="16dp"
-            app:pstsIndicatorColor="@color/accent_dark" />
-
-        <android.support.v4.view.ViewPager
-            android:id="@+id/pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <FrameLayout
-                android:id="@+id/content"
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar_main"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </android.support.v4.view.ViewPager>
+                android:layout_height="wrap_content"
+                android:background="@color/primary"
+                android:elevation="6dp"
+                android:minHeight="?attr/actionBarSize"
+                app:subtitleTextColor="@color/white"
+                app:title="@string/app_name"
+                app:titleTextColor="@color/white" />
 
-    </LinearLayout>
+            <com.astuetz.PagerSlidingTabStrip
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="48dip"
+                android:elevation="4dp"
+                android:textColor="@color/primary"
+                android:textSize="14sp"
+                android:textStyle="normal"
+                app:pstsDividerColor="@color/transparent"
+                app:pstsDividerPadding="16dp"
+                app:pstsIndicatorColor="@color/accent_dark" />
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <FrameLayout
+                    android:id="@+id/content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </android.support.v4.view.ViewPager>
+        </LinearLayout>
+    </android.support.design.widget.CoordinatorLayout>
 
     <!--Navigation Drawer-->
     <LinearLayout
@@ -54,19 +62,21 @@
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/sandblogo_a2"
-            android:clickable="true"/>
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/sb_nav_drawer" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
+            android:clickable="true"
+            android:padding="12dp"
             android:text="SECTIONS"
-            android:textColor="@color/bg_white"
+            android:textColor="@color/white_75"
             android:textSize="16sp"
-            android:clickable="true"/>
+            android:textStyle="bold" />
 
         <ListView
             android:id="@+id/left_drawer"

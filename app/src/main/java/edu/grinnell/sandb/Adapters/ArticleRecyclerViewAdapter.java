@@ -1,6 +1,9 @@
 package edu.grinnell.sandb.Adapters;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -19,6 +22,7 @@ import edu.grinnell.sandb.Model.Image;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Util.DatabaseUtil;
 import edu.grinnell.sandb.Util.UniversalLoaderUtility;
+import edu.grinnell.sandb.Util.VersionUtil;
 
 /**
  * Created by prabir on 2/7/16.
@@ -44,7 +48,7 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
 
         holder.image.setVisibility(View.VISIBLE);
         final Article a = mData.get(position);
@@ -75,10 +79,16 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
                             a.getId());
                     detailIntent.putExtra(ArticleDetailActivity.COMMENTS_FEED,
                             a.getComments());
-                    mActivity.startActivity(detailIntent);
-                    // Add a smooth animation
-                    mActivity.overridePendingTransition(R.anim.slide_in,
-                            R.anim.slide_out);
+
+                    if (VersionUtil.isLollipop()) {
+                        Pair<View, String> p1 = new Pair<>((View) holder.title, "article_title");
+                        //mActivity.startActivity(detailIntent,
+                        //        ActivityOptionsCompat.makeSceneTransitionAnimation(mActivity, p1).toBundle());;
+                        mActivity.startActivity(detailIntent,
+                                ActivityOptionsCompat.makeSceneTransitionAnimation(mActivity).toBundle());
+                    } else {
+                        mActivity.startActivity(detailIntent);
+                    }
                 }
             });
         }

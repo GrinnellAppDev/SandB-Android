@@ -1,24 +1,32 @@
 package edu.grinnell.sandb.Activities;
 
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.crashlytics.android.Crashlytics;
 import com.flurry.android.FlurryAgent;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.grinnell.sandb.ArticleFetchTask;
 import edu.grinnell.sandb.Fragments.ArticleListFragment;
@@ -36,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private TabsAdapter mTabsAdapter;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
+    private CoordinatorLayout mCoordinatorLayout;
 
     private boolean mUpdateInProgress;
 
@@ -45,20 +54,40 @@ public class MainActivity extends AppCompatActivity {
         Crashlytics.start(this);
         setContentView(R.layout.activity_main);
 
+        // for snackbars
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
+
         // set transition things for lollipop
         if (VersionUtil.isLollipop()) {
-            getWindow().setAllowEnterTransitionOverlap(true);
-            getWindow().setAllowReturnTransitionOverlap(true);
+            Window window = getWindow();
+            window.setExitTransition(new Fade());
+            window.setEnterTransition(new Fade());
         }
 
         // setup tool bar
-        Toolbar tooldbar = (Toolbar) findViewById(R.id.toolbar_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
+        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
 
         // setup navigation drawer
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+        mDrawerList.setAdapter(new ArrayAdapter<>(this,
                 R.layout.drawer_list_item, ArticleListFragment.CATEGORIES));
+        mDrawerList.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mPager.setCurrentItem(position, true);
+                mDrawerList.setSelection(position);
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+            }
+        });
 
 
         // setup a pager to scroll between category tabs
@@ -68,6 +97,21 @@ public class MainActivity extends AppCompatActivity {
         addTabs(mTabsAdapter);
 
         mPager.setAdapter(mTabsAdapter);
+        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                mDrawerList.setItemChecked(position, true);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         // setup the sliding tab strip
         PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
@@ -75,7 +119,14 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (savedInstanceState != null) {
-            mPager.setCurrentItem(savedInstanceState.getInt(SELECTED_TAB), false);
+            // if resuming to a page from before
+            int pos = savedInstanceState.getInt(SELECTED_TAB);
+            mPager.setCurrentItem(pos, false);
+            mDrawerList.setItemChecked(pos, true);
+        } else {
+            // start off at the 'All' page
+            mPager.setCurrentItem(0, false);
+            mDrawerList.setItemChecked(0, true);
         }
     }
 
@@ -127,20 +178,19 @@ public class MainActivity extends AppCompatActivity {
                     super.onPreExecute();
                     mTabsAdapter.setRefreshing(true);
                     mUpdateInProgress = true;
-                    Toast.makeText(getApplicationContext(), "OnPreExecute", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 protected void onPostExecute(Integer status) {
                     super.onPostExecute(status);
                     if (status != 0) {
-                        Toast.makeText(getApplicationContext(), "Error Downloading Articles", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(mCoordinatorLayout, "Error downloading articles", Snackbar.LENGTH_LONG).show();
                     }
                     // Clear the loading bar when the articles are loaded
                     mUpdateInProgress = false;
                     mTabsAdapter.setRefreshing(false);
                     mTabsAdapter.refresh();
-                    Toast.makeText(getApplicationContext(), "POSTExecute", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(mCoordinatorLayout, "Articles updated", Snackbar.LENGTH_SHORT).show();
                 }
             };
             task.execute(params);
@@ -215,11 +265,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void setRefreshing(boolean refreshing) {
-            for (int i = 0; i < getCount(); i++) {
-                Fragment f = getSupportFragmentManager().findFragmentByTag(
-                        getFragmentTag(i));
-                if (f != null)
-                    ((ArticleListFragment) f).setRefreshing(refreshing);
+            List<Fragment> fragments = getSupportFragmentManager().getFragments();
+            for (Fragment fragment : fragments) {
+                if (fragment != null)
+                    ((ArticleListFragment) fragment).setRefreshing(refreshing);
             }
         }
     }

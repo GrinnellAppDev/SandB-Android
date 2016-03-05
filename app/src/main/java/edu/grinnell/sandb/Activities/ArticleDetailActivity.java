@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -48,21 +50,23 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
         // set transition things for lollipop
         if (VersionUtil.isLollipop()) {
-            getWindow().setAllowEnterTransitionOverlap(true);
-            getWindow().setAllowReturnTransitionOverlap(true);
+            getWindow().setEnterTransition(new Fade());
+            getWindow().setExitTransition(new Fade());
         }
 
         setTitle("");
         setContentView(R.layout.activity_article_detail);
 
+        // setup toolbar and back navigation
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
-
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                supportFinishAfterTransition();
             }
         });
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+
         Intent i = getIntent();
 
         ArticleDetailFragment fragment = new ArticleDetailFragment();
@@ -158,8 +162,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        overridePendingTransition(R.anim.article_slide_in,
-                R.anim.article_slide_out);
     }
 
     // Return to the article list if a swipe motion is made

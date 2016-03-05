@@ -5,6 +5,15 @@
     <style name="Theme.Sandb" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <!-- enable window content transitions -->
         <item name="android:windowActivityTransitions">true</item>
+        <!-- specify shared element transitions -->
+        <item name="android:windowSharedElementEnterTransition">
+            @transition/change_transform
+        </item>
+        <item name="android:windowSharedElementExitTransition">
+            @transition/change_transform
+        </item>
+
+
         <!--Main Theme Colors-->
         <!--   primary branding color for the app -->
         <item name="colorPrimary">@color/primary</item>

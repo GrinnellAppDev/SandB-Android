@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginRight="12dp"
-    android:layout_marginTop="12dp">
+    android:layout_marginTop="12dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -21,8 +23,8 @@
                 android:adjustViewBounds="true"
                 android:contentDescription="article thumb"
                 android:gravity="center"
-                android:scaleType="centerCrop"
                 android:maxHeight="200dp"
+                android:scaleType="centerCrop"
                 android:src="@drawable/sandblogo_a2" />
 
             <TextView
@@ -57,14 +59,15 @@
             android:text="The Title Text Goes Here"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/accent_dark"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:transitionName="article_title" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
             android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:paddingBottom="8dp">
+            android:paddingRight="8dp">
 
             <ImageView
                 android:layout_width="wrap_content"
