@@ -60,7 +60,8 @@ public class ArticleFetchTask extends AsyncTask<String, Void, Integer> {
                 for (Article article : articleList) {
                     article.save();
                     //Parse out and save images from article body
-                    BodyImageGetter.readImages(article);
+                    //BodyImageGetter.readImages(article);
+                    Log.d(TAG, "doInBackground: article: " + article.getTitle());
                 }
                 return SUCCESS;
             } else {

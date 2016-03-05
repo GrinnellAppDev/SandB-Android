@@ -6,10 +6,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -44,19 +46,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // setup action bar for tabs
-        ActionBar actionBar = getSupportActionBar();
-        /**
-         // setup navigation drawer
-         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-         R.layout.drawer_list_item, ));
-         mDrawerList.setOnClickListener(new View.OnClickListener() {
-        @Override public void onClick(View v) {
+        Toolbar tooldbar = (Toolbar) findViewById(R.id.toolbar_main);
 
-        }
-        });
-         **/
+        // setup navigation drawer
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, ArticleListFragment.CATEGORIES));
+
+
         // setup a pager to scroll between category tabs
         mPager = (ViewPager) findViewById(R.id.pager);
 
@@ -71,8 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (savedInstanceState != null) {
-            actionBar.setSelectedNavigationItem(savedInstanceState
-                    .getInt(SELECTED_TAB));
+            mPager.setCurrentItem(savedInstanceState.getInt(SELECTED_TAB), false);
         }
     }
 
@@ -124,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
                     super.onPreExecute();
                     mTabsAdapter.setRefreshing(true);
                     mUpdateInProgress = true;
+                    Toast.makeText(getApplicationContext(), "OnPreExecute", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -136,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
                     mUpdateInProgress = false;
                     mTabsAdapter.setRefreshing(false);
                     mTabsAdapter.refresh();
+                    Toast.makeText(getApplicationContext(), "POSTExecute", Toast.LENGTH_SHORT).show();
                 }
             };
             task.execute(params);
@@ -222,8 +221,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle state) {
-        state.putInt(SELECTED_TAB, getSupportActionBar()
-                .getSelectedNavigationIndex());
+        state.putInt(SELECTED_TAB, mPager.getCurrentItem());
         super.onSaveInstanceState(state);
     }
 

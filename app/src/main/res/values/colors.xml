@@ -6,12 +6,13 @@
     <color name="primary_dark" >#2B3134</color>
     <color name="transparent_bar" >#22000000</color>
     <color name="accent" >#D50000</color>
+    <color name="accent_dark">#a70012</color>
     <color name="bg_white" >#F8F8F8</color>
     <color name="white" >#FFFFFF</color>
     <!--ripple color - 50% white-->
     <color name="ripple_color" >#32FFFFFF</color>
     <color name="transparent">#00000000</color>
-    <color name="tab_background">#ECEFF1</color>
+    <color name="background">#ECEFF1</color>
 
 
 

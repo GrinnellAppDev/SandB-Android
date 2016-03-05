@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
                 android:layout_marginTop="12dp"
-                android:background="@color/gmdarkred"
+                android:background="@color/accent_dark"
                 android:elevation="4dp"
                 android:paddingBottom="1dp"
                 android:paddingLeft="2dp"
@@ -39,7 +39,7 @@
                 android:paddingTop="1dp"
                 android:text="CATEGORY"
                 android:textAllCaps="true"
-                android:textColor="@color/gcream"
+                android:textColor="@color/white"
                 android:textSize="12sp"
                 android:textStyle="bold" />
         </FrameLayout>
@@ -56,8 +56,8 @@
             android:gravity="center_vertical"
             android:text="The Title Text Goes Here"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/gmdarkred"
-            android:textSize="18sp" />
+            android:textColor="@color/accent_dark"
+            android:textSize="16sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
