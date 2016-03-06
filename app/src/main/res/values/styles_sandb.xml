@@ -39,6 +39,7 @@
         <item name="actionModeBackground">@drawable/cab_background_top_sandb</item>
         <item name="actionModeSplitBackground">@drawable/cab_background_bottom_sandb</item>
         <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Sandb</item>
+        <item name="android:windowBackground">@color/background</item>
 
                 <!-- Light.DarkActionBar specific -->
         <item name="actionBarWidgetTheme">@style/Theme.Sandb.Widget</item>
