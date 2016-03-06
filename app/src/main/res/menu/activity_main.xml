@@ -2,12 +2,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- Disable refresh icon. Set showAsAction to "ifRoom" to enable -->
+    <!-- Remove the refresh icon altogether
     <item
         android:id="@+id/menu_refresh"
         android:icon="@drawable/ic_menu_refresh"
         android:orderInCategory="100"
         app:showAsAction="always"
         android:title="@string/menu_refresh"/>
-
+    -->
 
 </menu>

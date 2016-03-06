@@ -8,6 +8,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,7 +31,7 @@ import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
 /* Activity to display a full screen pager to scroll through images in an article */
-public class ImagePagerActivity extends ActionBarActivity {
+public class ImagePagerActivity extends AppCompatActivity {
 
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
 
@@ -41,12 +42,10 @@ public class ImagePagerActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 
 		// Make the activity fill the whole screen
-		getSupportActionBar().hide();
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		setContentView(R.layout.image_pager);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		Bundle bundle = getIntent().getExtras();
 		String[] imageUrls = bundle.getStringArray("ArticleImages");
