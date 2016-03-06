@@ -25,7 +25,7 @@
                 android:gravity="center"
                 android:maxHeight="200dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/sandblogo_a2" />
+                android:src="@drawable/sb" />
 
             <TextView
                 android:id="@+id/category"

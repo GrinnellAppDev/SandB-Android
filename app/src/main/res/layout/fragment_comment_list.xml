@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gcream"
-    android:orientation="vertical"
-    tools:context=".CommentListFragment" >
+    android:orientation="vertical">
 
     <ListView
         android:id="@android:id/list"
@@ -13,7 +12,6 @@
         android:layout_height="match_parent"
         android:divider="@color/gmdarkred"
         android:dividerHeight="@dimen/pad3"
-        android:listSelector="@drawable/glistselector"
         android:paddingLeft="0dp"
         android:paddingRight="0dp" />
 

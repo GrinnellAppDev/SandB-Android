@@ -66,6 +66,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
             }
         });
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        setSupportActionBar(toolbar);
 
         Intent i = getIntent();
 

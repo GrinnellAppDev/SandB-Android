@@ -53,8 +53,8 @@ public class ImagePagerActivity extends AppCompatActivity {
 
 		options = new DisplayImageOptions.Builder()
 				// change these images to error messages
-				.showImageForEmptyUri(R.drawable.sandblogo)
-				.showImageOnFail(R.drawable.sandblogo).resetViewBeforeLoading()
+				.showImageForEmptyUri(R.drawable.sb)
+				.showImageOnFail(R.drawable.sb).resetViewBeforeLoading()
 				.cacheOnDisc().imageScaleType(ImageScaleType.EXACTLY)
 				.bitmapConfig(Bitmap.Config.RGB_565)
 				.displayer(new FadeInBitmapDisplayer(300)).build();
