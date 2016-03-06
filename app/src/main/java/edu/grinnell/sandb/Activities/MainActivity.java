@@ -38,14 +38,12 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static final String SELECTED_TAB = "selected_tab";
-
     private ArticleListFragment mListFrag;
     private ViewPager mPager;
     private TabsAdapter mTabsAdapter;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private CoordinatorLayout mCoordinatorLayout;
-
     private boolean mUpdateInProgress;
 
     @Override
@@ -53,8 +51,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Crashlytics.start(this);
         setContentView(R.layout.activity_main);
-
-        // for snackbars
+        //Coordinator layout reference for use by SnackBar
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
 
         // set transition things for lollipop
@@ -169,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateArticles() {
         if (!mUpdateInProgress) {
-            String url = "http://www.thesandb.com/api/get_recent_posts?count=50/";
+            final String url = "http://www.thesandb.com/api/get_recent_posts?count=50/";
             String[] params = {url};
             ArticleFetchTask task = new ArticleFetchTask(getApplicationContext()) {
 
