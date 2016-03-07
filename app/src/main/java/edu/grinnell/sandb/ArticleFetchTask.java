@@ -3,7 +3,6 @@ package edu.grinnell.sandb;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONException;
 
@@ -19,7 +18,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /**
- * Created by prabir on 3/4/16.
+ * Created by prabir on 3/4/16, AppDev Grinnell.
+ *
  */
 
     /* Task to download, parse, and save JSON article data from WordPress S&B api */
@@ -29,18 +29,12 @@ public class ArticleFetchTask extends AsyncTask<String, Void, Integer> {
 
     private Context context;
 
-    final int SUCCESS = 0;
-    final int CONNECTIVITY_PROBLEMS = 1;
-    final int PARSING_PROBLEMS = 2;
+    public static final int SUCCESS = 0;
+    public static final int CONNECTIVITY_PROBLEMS = 1;
+    public static final int PARSING_PROBLEMS = 2;
 
     public ArticleFetchTask(Context context) {
         this.context = context;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        mTabsAdapter.setRefreshing(true);
-        mUpdateInProgress = true;
     }
 
     @Override
@@ -66,7 +60,8 @@ public class ArticleFetchTask extends AsyncTask<String, Void, Integer> {
                 for (Article article : articleList) {
                     article.save();
                     //Parse out and save images from article body
-                    BodyImageGetter.readImages(article);
+                    //BodyImageGetter.readImages(article);
+                    Log.d(TAG, "doInBackground: article: " + article.getTitle());
                 }
                 return SUCCESS;
             } else {
@@ -79,17 +74,5 @@ public class ArticleFetchTask extends AsyncTask<String, Void, Integer> {
             Log.e(TAG, e1.getMessage());
             return PARSING_PROBLEMS;
         }
-    }
-
-    @Override
-    protected void onPostExecute(Integer status) {
-        super.onPostExecute(status);
-        if (status != 0) {
-            Toast.makeText(context, "Error Downloading Articles", Toast.LENGTH_SHORT).show();
-        }
-        // Clear the loading bar when the articles are loaded
-        mUpdateInProgress = false;
-        mTabsAdapter.setRefreshing(false);
-        mTabsAdapter.refresh();
     }
 }
