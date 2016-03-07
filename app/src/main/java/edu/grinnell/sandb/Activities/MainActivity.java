@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.grinnell.sandb.ArticleFetchTask;
+import edu.grinnell.sandb.Constants;
+import edu.grinnell.sandb.DialogSettings;
 import edu.grinnell.sandb.Fragments.ArticleListFragment;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Util.VersionUtil;
@@ -80,10 +82,22 @@ public class MainActivity extends AppCompatActivity {
         mDrawerList.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mPager.setCurrentItem(position, true);
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 mDrawerList.setSelection(position);
                 mDrawerLayout.closeDrawer(GravityCompat.START);
+                // listener to make sure view pager changes only after drawer is fully closed
+                mDrawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+                    @Override
+                    public void onDrawerOpened(View drawerView) {
+                        mDrawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {});
+                    }
+
+                    @Override
+                    public void onDrawerClosed(View drawerView) {
+                        mPager.setCurrentItem(position, true);
+                    }
+                });
+
             }
         });
 
@@ -162,13 +176,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.settings:
+                new DialogSettings(MainActivity.this).show();
+                return true;
+            default:
+                return false;
+        }
     }
 
     public void updateArticles() {
         if (!mUpdateInProgress) {
-            final String url = "http://www.thesandb.com/api/get_recent_posts?count=50/";
-            String[] params = {url};
+            String[] params = {Constants.JSON_API_URL};
             ArticleFetchTask task = new ArticleFetchTask(getApplicationContext()) {
 
                 @Override

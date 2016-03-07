@@ -12,8 +12,9 @@
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingLeft="12dp"
-            android:paddingStart="12dp" />
+            android:paddingLeft="8dp"
+            android:paddingStart="8dp"
+            android:scrollbars="vertical" />
     </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>

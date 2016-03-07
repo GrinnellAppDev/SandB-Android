@@ -12,7 +12,8 @@
         <item name="android:windowSharedElementExitTransition">
             @transition/change_transform
         </item>
-
+        <!--<item name="actionModeBackground">@color/primary</item>-->
+        <item name="windowActionModeOverlay">true</item>
 
         <!--Main Theme Colors-->
         <!--   primary branding color for the app -->
@@ -29,7 +30,8 @@
         <item name="android:windowContentOverlay">@null</item>
         <!--   color of status bar-->
         <!--<item name="android:statusBarColor">@android:color/transparent</item>-->
-
+        <!--color for icons and secondary text-->
+        <item name="android:textColorSecondary">@color/white</item>
     </style>
 
 </resources>

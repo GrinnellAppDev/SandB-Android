@@ -23,6 +23,7 @@
                 android:background="@color/primary"
                 android:elevation="6dp"
                 android:minHeight="?attr/actionBarSize"
+                app:colorControlNormal="@color/white"
                 app:subtitleTextColor="@color/white"
                 app:title="@string/app_name"
                 app:titleTextColor="@color/white" />

@@ -19,6 +19,7 @@ import android.text.Html;
 import android.transition.Transition;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,12 +44,14 @@ import java.util.Date;
 import edu.grinnell.sandb.Activities.ArticleDetailActivity;
 import edu.grinnell.sandb.Activities.ImagePagerActivity;
 import edu.grinnell.sandb.Activities.MainActivity;
+import edu.grinnell.sandb.Constants;
+import edu.grinnell.sandb.DialogSettings;
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.Image;
+import edu.grinnell.sandb.Preferences.MainPrefs;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Util.DatabaseUtil;
 import edu.grinnell.sandb.Util.UniversalLoaderUtility;
-import edu.grinnell.sandb.Util.VersionUtil;
 
 @SuppressLint("ClickableViewAccessibility")
 @TargetApi(Build.VERSION_CODES.FROYO)
@@ -69,6 +72,7 @@ public class ArticleDetailFragment extends Fragment {
     protected UniversalLoaderUtility mLoader;
 
     public static final String TAG = "ArticleDetailFragment";
+    private int mFontSize;
 
     private PendingIntent mSendFeedLoaded;
     ArticleDetailActivity activity = (ArticleDetailActivity) getActivity();
@@ -92,6 +96,8 @@ public class ArticleDetailFragment extends Fragment {
         super.onCreate(ofJoy);
         setHasOptionsMenu(true);
         setRetainInstance(true);
+
+        mFontSize = new MainPrefs(getContext()).getArticleFontSize();
 
         // Scale the touch gesture listener sensitivty for the screen size
         DisplayMetrics metrics = new DisplayMetrics();
@@ -151,14 +157,15 @@ public class ArticleDetailFragment extends Fragment {
             // end the activity
             getActivity().finish();
         }
-
+        /*
         // load the article only after the transition ends
         if (VersionUtil.isLollipop()) {
             setTransitionListener(rootView);
         } else {
             displayArticle(rootView);
         }
-
+*/
+        displayArticle(rootView);
 
         return rootView;
     }
@@ -343,6 +350,7 @@ public class ArticleDetailFragment extends Fragment {
             TextView tv = (TextView) li
                     .inflate(R.layout.text_section, v, false);
             tv.setText(Html.fromHtml(text));
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.FONT_SIZE_TO_SP[mFontSize]);
             v.addView(tv);
         }
     }
@@ -403,17 +411,34 @@ public class ArticleDetailFragment extends Fragment {
             case R.id.menu_share:
                 share();
                 break;
-        /*case R.id.menu_share2:
-            share();
-			break;*/
             case R.id.menu_comments:
                 activity.flip();
+                break;
+            case R.id.settings:
+                DialogSettings ds = new DialogSettings(getContext()) {
+                    @Override
+                    public void onSettingsSaved() {
+                        mFontSize = new MainPrefs(getContext()).getArticleFontSize();
+                        reloadArticle();
+                    }
+                };
+                ds.show();
                 break;
             default:
                 break;
         }
         return false;
     }
+
+    public void reloadArticle() {
+        LinearLayout body = (LinearLayout) getView()
+                .findViewById(R.id.article_body_group);
+        body.removeAllViewsInLayout();
+        displayArticle(getView());
+        getView().invalidate();
+
+    }
+
 
     /* Allow the user to share the article url using the app of their choice */
     public void share() {

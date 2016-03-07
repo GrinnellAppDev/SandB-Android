@@ -4,7 +4,7 @@
        
     <item
         android:id="@+id/menu_comments"
-        android:orderInCategory="200"
+        android:orderInCategory="2"
         app:showAsAction="always"
         android:title="@string/menu_comments"
         android:text="@string/comments"
@@ -12,10 +12,15 @@
     
     <item
         android:id="@+id/menu_share"
-        android:orderInCategory="100"
+        android:orderInCategory="1"
         app:showAsAction="always"
         android:title="@string/menu_share"
         android:icon="@android:drawable/ic_menu_share"/>
+    <item
+        android:id="@+id/settings"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:title="@string/action_settings"/>
     
   
     

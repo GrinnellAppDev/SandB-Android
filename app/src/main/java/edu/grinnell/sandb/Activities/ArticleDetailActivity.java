@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.util.Log;
@@ -50,8 +51,8 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
         // set transition things for lollipop
         if (VersionUtil.isLollipop()) {
-            getWindow().setEnterTransition(new Fade());
-            getWindow().setExitTransition(new Fade());
+            getWindow().setEnterTransition(new Slide());
+            getWindow().setExitTransition(new Slide());
         }
 
         setTitle("");
@@ -100,17 +101,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            Intent upIntent = new Intent(this, MainActivity.class);
-            upIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            NavUtils.navigateUpTo(this, upIntent);
-            // Add a smooth transition animation
-            overridePendingTransition(R.anim.article_slide_in,
-                    R.anim.article_slide_out);
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
