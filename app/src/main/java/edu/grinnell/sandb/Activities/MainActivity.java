@@ -28,7 +28,7 @@ import com.flurry.android.FlurryAgent;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.grinnell.sandb.ArticleFetchTask;
+import edu.grinnell.sandb.Services.ArticleFetchTask;
 import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.DialogSettings;
 import edu.grinnell.sandb.Fragments.ArticleListFragment;
@@ -186,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateArticles() {
+        //TODO: Refactor updateArticles to use HttpClient service calls
         if (!mUpdateInProgress) {
             String[] params = {Constants.JSON_API_URL};
             ArticleFetchTask task = new ArticleFetchTask(getApplicationContext()) {
@@ -211,7 +212,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
             task.execute(params);
-
         }
     }
 

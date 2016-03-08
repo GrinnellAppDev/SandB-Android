@@ -1,4 +1,4 @@
-package edu.grinnell.sandb;
+package edu.grinnell.sandb.Services;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.List;
 
 import edu.grinnell.sandb.Model.Article;
-import edu.grinnell.sandb.Util.BodyImageGetter;
 import edu.grinnell.sandb.Util.JSONUtil;
 import edu.grinnell.sandb.Util.NetworkUtil;
 import okhttp3.OkHttpClient;
