@@ -33,6 +33,7 @@ import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.DialogSettings;
 import edu.grinnell.sandb.Fragments.ArticleListFragment;
 import edu.grinnell.sandb.R;
+import edu.grinnell.sandb.Services.SandBNetClient;
 import edu.grinnell.sandb.Util.VersionUtil;
 
 /* The main activity that the app will initialize to. This activity hosts the ArticleListFragment */
@@ -47,14 +48,18 @@ public class MainActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private CoordinatorLayout mCoordinatorLayout;
     private boolean mUpdateInProgress;
+    private SandBNetClient  networkClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //TODO : Dry out onCreate method
         super.onCreate(savedInstanceState);
         Crashlytics.start(this);
         setContentView(R.layout.activity_main);
         //Coordinator layout reference for use by SnackBar
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
+        networkClient = new SandBNetClient();
+        networkClient.getArticles(2);
 
         // set transition things for lollipop
         if (VersionUtil.isLollipop()) {
@@ -218,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Add the category tabs
     private void addTabs(TabsAdapter ta) {
+        //TODO : // CATEGORIES NOT BE CALLED FROM ARTICLELISTFRAGEMENT
         for (String category : ArticleListFragment.CATEGORIES) {
             Bundle args = new Bundle();
             args.putString(ArticleListFragment.ARTICLE_CATEGORY_KEY, category);
@@ -289,7 +295,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 
     @Override
     public void onSaveInstanceState(Bundle state) {

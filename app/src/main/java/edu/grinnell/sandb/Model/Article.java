@@ -1,20 +1,31 @@
 package edu.grinnell.sandb.Model;
 
 
+import com.google.gson.annotations.SerializedName;
 import com.orm.SugarRecord;
 
+import java.util.List;
+
 public class Article extends SugarRecord<Article> {
-
+	//@SerializedName("id")
     protected int articleID;
-
+	@SerializedName("title")
 	protected String title;
+	@SerializedName("url")
 	protected String link;
+	@SerializedName("date")
 	protected String pubDate;
-	protected String category;
+	@SerializedName("categories")
+	protected List<ArticleCategory> categories;
+	protected String category; //TODO : deprecate this field if not needed
+	@SerializedName("excerpt")
 	protected String description;
-	protected String body;
+	@SerializedName("content")
+	protected String body; //TODO : change body to content
 	protected String comments;
-	protected String author;
+	protected String aut;
+	@SerializedName("author")
+	protected ArticleAuthor author;
 
     public Article() {
     }
@@ -33,7 +44,7 @@ public class Article extends SugarRecord<Article> {
 		this.category = category;
 		this.description = description;
 		this.comments = commentsLink;
-		this.author = author;
+		//this.author = author;
 	}
 
 	public int getArticleID() {
@@ -69,7 +80,8 @@ public class Article extends SugarRecord<Article> {
 	}
 
 	public String getAuthor() {
-		return author;
+		//return author;
+		return aut;
 	}
 
 
@@ -106,7 +118,8 @@ public class Article extends SugarRecord<Article> {
     }
 
     public void setAuthor(String author) {
-        this.author = author;
+      //  this.author = author;
+		this.aut = author;
     }
 
 }
