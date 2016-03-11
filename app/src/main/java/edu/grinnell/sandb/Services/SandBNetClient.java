@@ -27,7 +27,7 @@ public class SandBNetClient {
 
     private void initialize(){
          retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.ENDPOINT_BASE_URL)
+                .baseUrl(Constants.PRABS_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }
@@ -39,7 +39,7 @@ public class SandBNetClient {
     public List<Article> getArticles(int numArticles){
         Log.i(SandBNetClient.class.getName() + "getArticles :","Inside getArticles");
         List<Article> articles = null;
-        Call<SandBResponse> call = serviceApi.getRecentPost(numArticles);
+        Call<SandBResponse> call = serviceApi.getRecentPostMathLAN();
         call.enqueue(new Callback<SandBResponse>() {
             @Override
             public void onResponse(Call<SandBResponse> call, Response<SandBResponse> response) {
@@ -48,7 +48,6 @@ public class SandBNetClient {
                 List<Article> articles = response.body().getArticles();
                 saveArticles(articles);
             }
-
             @Override
             public void onFailure(Call<SandBResponse> call, Throwable t) {
                 Log.e(SandBNetClient.class.getName(),"On Failure " + t.getMessage());

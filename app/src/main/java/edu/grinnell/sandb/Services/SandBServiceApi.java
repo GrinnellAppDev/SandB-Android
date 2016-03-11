@@ -19,4 +19,7 @@ public interface SandBServiceApi {
    // @GET("get_recent_posts/")
     @GET("api/get_recent_posts/")
     Call<SandBResponse> getRecentPost(@Query("count") int count);
+
+    @GET("~pradhanp/snb.json")
+    Call<SandBResponse> getRecentPostMathLAN();
 }
