@@ -6,10 +6,19 @@ import com.google.gson.annotations.SerializedName;
  * Created by albertowusu-asare on 3/8/16.
  */
 public class ArticleAuthor {
-    //private int id;
-    @SerializedName("name")
     private String name;
-    private String firstName;
-    private String lastName;
+    public ArticleAuthor(String name){
+        this.name = name;
+    }
+    /**
+     * @return the name of the Author
+     */
+    public String getName(){
+        return this.name;
+    }
+    @Override
+    public String toString(){
+        return getName();
+    }
 
 }

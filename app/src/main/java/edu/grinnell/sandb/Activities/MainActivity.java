@@ -33,7 +33,6 @@ import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.DialogSettings;
 import edu.grinnell.sandb.Fragments.ArticleListFragment;
 import edu.grinnell.sandb.R;
-import edu.grinnell.sandb.Services.SandBNetClient;
 import edu.grinnell.sandb.Util.VersionUtil;
 
 /* The main activity that the app will initialize to. This activity hosts the ArticleListFragment */
@@ -48,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private CoordinatorLayout mCoordinatorLayout;
     private boolean mUpdateInProgress;
-    private SandBNetClient  networkClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +56,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //Coordinator layout reference for use by SnackBar
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
-        networkClient = new SandBNetClient();
-        networkClient.getArticles(2);
+
 
         // set transition things for lollipop
         if (VersionUtil.isLollipop()) {

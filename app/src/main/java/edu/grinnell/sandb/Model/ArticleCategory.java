@@ -6,10 +6,16 @@ import com.google.gson.annotations.SerializedName;
  * Created by albertowusu-asare on 3/8/16.
  */
 public class ArticleCategory {
-    @SerializedName("id")
-    private int id;
-    @SerializedName("title")
-    private String title;
-    @SerializedName("description")
-    private String description;
+    String title;
+    public ArticleCategory(String title){
+        this.title = title;
+    }
+    /**
+     * @return the title of the category
+     */
+    public String getTitle(){return this.title;}
+    @Override
+    public String toString(){
+        return getTitle();
+    }
 }

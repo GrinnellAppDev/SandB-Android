@@ -7,25 +7,25 @@ import com.orm.SugarRecord;
 import java.util.List;
 
 public class Article extends SugarRecord<Article> {
-	//@SerializedName("id")
+	@SerializedName("id")
     protected int articleID;
-	@SerializedName("title")
 	protected String title;
 	@SerializedName("url")
 	protected String link;
-	@SerializedName("date")
-	protected String pubDate;
-	@SerializedName("categories")
-	protected List<ArticleCategory> categories;
-	protected String category; //TODO : deprecate this field if not needed
-	@SerializedName("excerpt")
-	protected String description;
 	@SerializedName("content")
 	protected String body; //TODO : change body to content
-	protected String comments;
-	protected String aut;
-	@SerializedName("author")
+	@SerializedName("date")
+	protected String pubDate;
+	@SerializedName("excerpt")
+	protected String description;
+	protected List<ArticleCategory> categories;
 	protected ArticleAuthor author;
+
+	/*Deprecate */
+	protected String category; //TODO : deprecate this field if not needed
+	protected transient String comments;
+	protected String aut;
+
 
     public Article() {
     }
@@ -33,6 +33,20 @@ public class Article extends SugarRecord<Article> {
     public Article(String articleTitle, String articleBody) {
 		title = articleTitle;
 		body = articleBody;
+
+	}
+
+
+	public Article(int id,String url, String title,String content,String date,String excerpt,
+				   List<ArticleCategory> categories, ArticleAuthor author){
+		this.articleID = id;
+		this.link = url;
+		this.title = title;
+		this.body = content;
+		this.pubDate = date;
+		this.description = excerpt;
+		this.categories = categories;
+		this.author = author;
 	}
 
 	public Article(String articleTitle, String articleLink,
@@ -121,5 +135,19 @@ public class Article extends SugarRecord<Article> {
       //  this.author = author;
 		this.aut = author;
     }
+	public String toString(){
+		StringBuffer sb = new StringBuffer();
+		sb.append("{ ");
+		sb.append(" id: " + this.id);
+		sb.append("   url: " + this.link);
+		sb.append("   title: " + this.title);
+		sb.append("   content: " + this.body);
+		sb.append("   excerpt: " + this.description);
+		sb.append("   date: " + this.pubDate);
+		sb.append("   categories: " + this.categories);
+		sb.append("   author " + this.author);
+		sb.append("}\n");
+		return sb.toString();
+	}
 
 }
