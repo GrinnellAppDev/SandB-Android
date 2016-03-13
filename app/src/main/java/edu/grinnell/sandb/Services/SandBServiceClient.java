@@ -6,18 +6,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.orm.SugarRecord;
 
+import java.io.IOException;
+import java.util.List;
+
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.QueryResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Converter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
-
-import java.io.IOException;
-import java.util.List;
 
 
 /**
@@ -28,7 +26,7 @@ public class SandBServiceClient {
     public static final String API_URL = "http://www.thesandb.com";
 
 
-    public void getRecentArticles(int numArticles) throws IOException {
+    public void getRecentArticles(int offset, int numArticles) throws IOException {
         // Create a very simple REST adapter which points the GitHub API.
 
         ExclusionStrategy exclusionStrategy = new SandBGsonExclusionStrategy();
@@ -42,7 +40,7 @@ public class SandBServiceClient {
                 .build();
         // Create an instance of our GitHub API interface.
         SandBServiceAPI sandBService = retrofit.create(SandBServiceAPI.class);
-        Call<QueryResponse> call = sandBService.posts(numArticles);
+        Call<QueryResponse> call = sandBService.posts(offset, numArticles);
 
         //Asynchronous call made with background thread
         call.enqueue(new Callback<QueryResponse>() {
@@ -89,7 +87,7 @@ public class SandBServiceClient {
 
     public static void main(String... args) throws IOException {
         SandBServiceClient sandBService = new SandBServiceClient();
-        sandBService.getRecentArticles(3);
+        sandBService.getRecentArticles(3, 1);
     }
 
 }
