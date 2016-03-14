@@ -33,20 +33,19 @@ import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 /* Activity to display a full screen pager to scroll through images in an article */
 public class ImagePagerActivity extends AppCompatActivity {
 
+	//Fields
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
-
 	DisplayImageOptions options;
 	ViewPager pager;
 
+	//Methods
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		// Make the activity fill the whole screen
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
 		setContentView(R.layout.image_pager);
-
 		Bundle bundle = getIntent().getExtras();
 		String[] imageUrls = bundle.getStringArray("ArticleImages");
 		String[] imageTitles = bundle.getStringArray("ImageTitles");
@@ -63,18 +62,24 @@ public class ImagePagerActivity extends AppCompatActivity {
 		pager.setAdapter(new ImagePagerAdapter(imageUrls, imageTitles));
 	}
 
+	/*
+		Implementation of ImagePagerAdapter, a custom pager adapter for images
+	 */
 	private class ImagePagerAdapter extends PagerAdapter {
 
+		//Fields
 		private String[] images;
 		private String[] titles;
 		private LayoutInflater inflater;
 
+		//Constructor
 		ImagePagerAdapter(String[] images, String[] titles) {
 			this.images = images;
 			this.titles = titles;
 			inflater = getLayoutInflater();
 		}
 
+		//Methods
 		@Override
 		public void destroyItem(ViewGroup container, int position, Object object) {
 			((ViewPager) container).removeView((View) object);
@@ -91,6 +96,8 @@ public class ImagePagerActivity extends AppCompatActivity {
 
 		@Override
 		public Object instantiateItem(ViewGroup view, int position) {
+
+			//Inflate layout
 			View imageLayout = inflater.inflate(R.layout.item_pager_image,
 					view, false);
 			ImageView imageView = (ImageView) imageLayout
@@ -98,6 +105,7 @@ public class ImagePagerActivity extends AppCompatActivity {
 			final ProgressBar spinner = (ProgressBar) imageLayout
 					.findViewById(R.id.loading);
 
+			//Load and display images
 			imageLoader.displayImage(images[position], imageView, options,
 					new SimpleImageLoadingListener() {
 						@Override
@@ -170,7 +178,7 @@ public class ImagePagerActivity extends AppCompatActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == android.R.id.home) {
-
+			//Set up-navigation
 			Intent upIntent = new Intent(this, MainActivity.class);
 			upIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 					| Intent.FLAG_ACTIVITY_SINGLE_TOP);

@@ -25,9 +25,7 @@ import okhttp3.Response;
 public class ArticleFetchTask extends AsyncTask<String, Void, Integer> {
 
     public static final String TAG = ArticleFetchTask.class.getSimpleName();
-
     private Context context;
-
     public static final int SUCCESS = 0;
     public static final int CONNECTIVITY_PROBLEMS = 1;
     public static final int PARSING_PROBLEMS = 2;

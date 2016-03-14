@@ -24,11 +24,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class SandBServiceClient {
 
     public static final String API_URL = "http://www.thesandb.com";
-
-
     public void getRecentArticles(int offset, int numArticles) throws IOException {
         // Create a very simple REST adapter which points the GitHub API.
-
         ExclusionStrategy exclusionStrategy = new SandBGsonExclusionStrategy();
         Gson gson = new GsonBuilder()
                 .setExclusionStrategies(exclusionStrategy)
