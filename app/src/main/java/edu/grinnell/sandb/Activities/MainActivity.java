@@ -249,9 +249,10 @@ public class MainActivity extends AppCompatActivity {
         Custom FragmentPagerAdapter to handle the category tabs
      */
     public class TabsAdapter extends FragmentStatePagerAdapter {
-
+        //Fields
         private final ArrayList<TabInfo> tabs = new ArrayList<>();
 
+        //Inner class representing TabInfo
         final class TabInfo {
             private final Class<?> clss;
             private final Bundle args;
@@ -262,6 +263,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        //  Constructor
         public TabsAdapter(FragmentManager fm) {
             super(fm);
         }
