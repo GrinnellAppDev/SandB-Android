@@ -55,8 +55,11 @@ import edu.grinnell.sandb.Util.UniversalLoaderUtility;
 
 @SuppressLint("ClickableViewAccessibility")
 @TargetApi(Build.VERSION_CODES.FROYO)
+/*
+    Custom Fragment to show Articles in details
+ */
 public class ArticleDetailFragment extends Fragment {
-
+    //Fields
     public final static String FEED_LINK = null;
     public final static String ARTICLE_LINK = null;
 
@@ -70,7 +73,6 @@ public class ArticleDetailFragment extends Fragment {
     public static final String ARTICLE_ID_KEY = "article_id";
     private Article mArticle;
     protected UniversalLoaderUtility mLoader;
-
     public static final String TAG = "ArticleDetailFragment";
     private int mFontSize;
 
@@ -84,13 +86,15 @@ public class ArticleDetailFragment extends Fragment {
     String fileName = "SBimage";
     File file = new File(path, fileName);
     DownloadManager mManager;
-
     ArrayList<Image> mImages;
 
+    //Constructor
     public ArticleDetailFragment() {
         super();
     }
 
+
+    //Methods
     @Override
     public void onCreate(Bundle ofJoy) {
         super.onCreate(ofJoy);
@@ -106,6 +110,7 @@ public class ArticleDetailFragment extends Fragment {
 
         scrnHeight = metrics.heightPixels - 100;
 
+        //Initialize Gesture listener
         gestureListener = new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
                 return gestureDetector.onTouchEvent(event);
@@ -145,6 +150,7 @@ public class ArticleDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        //Inflate layout
         View rootView = inflater.inflate(R.layout.fragment_article_detail,
                 container, false);
 
@@ -170,6 +176,8 @@ public class ArticleDetailFragment extends Fragment {
         return rootView;
     }
 
+
+    //Set transitions
     private void setTransitionListener(final View rootView) {
         final Transition transition = getActivity().getWindow().getEnterTransition();
         transition.addListener(new Transition.TransitionListener() {
@@ -202,6 +210,8 @@ public class ArticleDetailFragment extends Fragment {
 
     }
 
+
+    //Configuring the display of articles
     private void displayArticle(View rootView) {
         // add the author to the article
         String author = mArticle.getAuthor();
@@ -260,9 +270,11 @@ public class ArticleDetailFragment extends Fragment {
         Log.i(TAG, mArticle.getTitle());
     }
 
+
+    //Add Section Views
     private void addSectionViews(ViewGroup v, LayoutInflater li, String text,
                                  final String img) {
-
+        //Check for no image and inflate layout
         if (img != null) {
             ImageView imgView = (ImageView) li.inflate(R.layout.img_section, v,
                     false);
@@ -270,14 +282,12 @@ public class ArticleDetailFragment extends Fragment {
             // Open a full screen image pager if image is clicked
             OnClickListener imgClick = new OnClickListener() {
                 public void onClick(View v) {
-
                     String[] URLS = new String[mImages.size()];
                     String[] titles = new String[mImages.size()];
                     for (int i = 0; i < mImages.size(); i++) {
                         URLS[i] = mLoader.getHiResImage(mImages.get(i).getURL());
                         titles[i] = mImages.get(i).getImgTitle();
                     }
-
                     Intent intent = new Intent(getActivity(),
                             ImagePagerActivity.class);
                     intent.putExtra("ArticleImages", URLS);
@@ -329,6 +339,7 @@ public class ArticleDetailFragment extends Fragment {
                 }
             };
 
+            //Configure image view actions
             imgView.setOnTouchListener(gestureListener);
             imgView.setOnClickListener(imgClick);
             imgView.setOnLongClickListener(imgHold);
@@ -356,7 +367,7 @@ public class ArticleDetailFragment extends Fragment {
     }
 
     /* Download the selected image to "downloads" on user request */
-    public class DownloadFile extends AsyncTask<String, Integer, Drawable> {
+    private class DownloadFile extends AsyncTask<String, Integer, Drawable> {
 
         @SuppressLint("NewApi")
         protected Drawable doInBackground(String... sUrl) {
@@ -430,6 +441,7 @@ public class ArticleDetailFragment extends Fragment {
         return false;
     }
 
+    //Reload all articles
     public void reloadArticle() {
         LinearLayout body = (LinearLayout) getView()
                 .findViewById(R.id.article_body_group);
