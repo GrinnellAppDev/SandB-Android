@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.Util.BodyImageGetter;
 import edu.grinnell.sandb.Util.JSONUtil;
 import edu.grinnell.sandb.Util.NetworkUtil;
 import okhttp3.OkHttpClient;
@@ -59,7 +60,7 @@ public class ArticleFetchTask extends AsyncTask<String, Void, Integer> {
                 for (Article article : articleList) {
                     article.save();
                     //Parse out and save images from article body
-                    //BodyImageGetter.readImages(article);
+                    BodyImageGetter.readImages(article);
                     Log.d(TAG, "doInBackground: article: " + article.getTitle());
                 }
                 return SUCCESS;
