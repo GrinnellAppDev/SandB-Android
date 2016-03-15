@@ -34,14 +34,13 @@ import edu.grinnell.sandb.Util.VersionUtil;
 /* This activity displays the text, images, and comments for a selected article */
 public class ArticleDetailActivity extends AppCompatActivity {
 
+    //Fields
     public static final String DETAIL_ARGS = "detail_args";
     public static final String COMMENTS_FEED = "Comments Feed";
     public static final String TAG = "ArticleDetailActivity";
-
     private long mIDKey = 0;
     private String comments_feed = null;
     private ArrayList<Comment> mComments = null;
-
     private boolean mArticleSide = true;
     private boolean mCommentsParsed = false;
 
@@ -58,7 +57,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         setTitle("");
         setContentView(R.layout.activity_article_detail);
 
-        // setup toolbar and back navigation
+        // Setup toolbar and back navigation
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,11 +68,11 @@ public class ArticleDetailActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         setSupportActionBar(toolbar);
 
-        Intent i = getIntent();
+        Intent intent = getIntent();
 
         ArticleDetailFragment fragment = new ArticleDetailFragment();
-        mIDKey = i.getLongExtra(ArticleDetailFragment.ARTICLE_ID_KEY, 0);
-        comments_feed = i.getStringExtra(COMMENTS_FEED);
+        mIDKey = intent.getLongExtra(ArticleDetailFragment.ARTICLE_ID_KEY, 0);
+        comments_feed = intent.getStringExtra(COMMENTS_FEED);
 
 		/* Download the comments as soon as the article is opened */
         new ParseComments().execute(comments_feed);

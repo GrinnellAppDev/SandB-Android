@@ -38,6 +38,7 @@ import edu.grinnell.sandb.Util.VersionUtil;
 /* The main activity that the app will initialize to. This activity hosts the ArticleListFragment */
 public class MainActivity extends AppCompatActivity {
 
+    //Fields
     private static final String TAG = "MainActivity";
     private static final String SELECTED_TAB = "selected_tab";
     private ArticleListFragment mListFrag;
@@ -50,13 +51,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //TODO : Dry out onCreate method
         super.onCreate(savedInstanceState);
         Crashlytics.start(this);
         setContentView(R.layout.activity_main);
+
         //Coordinator layout reference for use by SnackBar
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
-
 
         // set transition things for lollipop
         if (VersionUtil.isLollipop()) {
@@ -65,7 +65,16 @@ public class MainActivity extends AppCompatActivity {
             window.setEnterTransition(new Fade());
         }
 
-        // setup tool bar
+        //UI configurations
+        setUpToolBar();
+        setUpNavigationDrawer();
+        slidingTabStripConfig(savedInstanceState);
+    }
+
+    /*
+        Set up toolbar
+     */
+    private void setUpToolBar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -75,8 +84,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         setSupportActionBar(toolbar);
+    }
 
-        // setup navigation drawer
+    /*
+        Set up navigation drawer
+     */
+    private void setUpNavigationDrawer() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mDrawerList.setAdapter(new ArrayAdapter<>(this,
@@ -102,14 +115,15 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
 
-
-        // setup a pager to scroll between category tabs
+    /*
+        Setup a pager to scroll between category tabs
+      */
+    private void slidingTabStripConfig(Bundle savedInstanceState) {
         mPager = (ViewPager) findViewById(R.id.pager);
-
         mTabsAdapter = new TabsAdapter(getSupportFragmentManager());
         addTabs(mTabsAdapter);
-
         mPager.setAdapter(mTabsAdapter);
         mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -127,10 +141,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // setup the sliding tab strip
+        //Setup the sliding tab strip
         PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabs.setViewPager(mPager);
-
 
         if (savedInstanceState != null) {
             // if resuming to a page from before
@@ -149,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         FlurryAgent.onStartSession(this, "B3PJX5MJNYMNSB9XQS3P");
     }
-
 
     @Override
     protected void onResume() {
@@ -187,6 +199,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /*
+        Update all articles
+     */
     public void updateArticles() {
         //TODO: Refactor updateArticles to use HttpClient service calls
         if (!mUpdateInProgress) {
@@ -218,7 +233,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // Add the category tabs
+    /*
+        Add the category tabs
+      */
     private void addTabs(TabsAdapter ta) {
         //TODO : // CATEGORIES NOT BE CALLED FROM ARTICLELISTFRAGEMENT
         for (String category : ArticleListFragment.CATEGORIES) {
@@ -228,11 +245,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /* FragmentPagerAdapter to handle the category tabs */
+    /*
+        Custom FragmentPagerAdapter to handle the category tabs
+     */
     public class TabsAdapter extends FragmentStatePagerAdapter {
-
+        //Fields
         private final ArrayList<TabInfo> tabs = new ArrayList<>();
 
+        //Inner class representing TabInfo
         final class TabInfo {
             private final Class<?> clss;
             private final Bundle args;
@@ -243,6 +263,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        //  Constructor
         public TabsAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -271,6 +292,9 @@ public class MainActivity extends AppCompatActivity {
             return ArticleListFragment.CATEGORIES[position];
         }
 
+        /*
+            Refresh articles
+         */
         public void refresh() {
             for (int i = 0; i < getCount(); i++) {
                 Fragment f = getSupportFragmentManager().findFragmentByTag(

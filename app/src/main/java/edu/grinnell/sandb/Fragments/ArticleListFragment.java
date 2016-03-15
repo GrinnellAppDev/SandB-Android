@@ -22,15 +22,24 @@ import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Util.DatabaseUtil;
 
+/*
+    Custom Fragment to show the list of all Articles
+ */
 public class ArticleListFragment extends Fragment {
-
+    //Fields
     public static String ARTICLE_CATEGORY_KEY = "category";
-    // LinkedHashMap retains insertion ordering
-    public static final Map<String, String> titleToKey = new LinkedHashMap<String, String>();
-
+    public static final Map<String, String> titleToKey = new LinkedHashMap<String, String>(); // LinkedHashMap retains insertion ordering
     public static final String[] CATEGORIES;
-
     public MainActivity mActivity;
+    public String mCategory;
+    public static final String UPDATE = "edu.grinnell.sandb.UPDATE";
+    private static final String STATE_ACTIVATED_POSITION = "activated_position";
+    private int mActivatedPosition = ListView.INVALID_POSITION;
+    private RecyclerView mRecyclerView;
+    private ArticleRecyclerViewAdapter mAdapter;
+    private List<Article> mData;
+    private SwipeRefreshLayout pullToRefresh;
+    private static final String TAG = "ArticleListFragment";
 
     // Fill in the a map to correspond to section tabs for the article list
     static {
@@ -41,23 +50,11 @@ public class ArticleListFragment extends Fragment {
         titleToKey.put("Features", "Features");
         titleToKey.put("Opinion", "Opinion");
         titleToKey.put("Sports", "Sports");
-
         CATEGORIES = titleToKey.keySet().toArray(new String[titleToKey.size()]);
     }
 
-    public String mCategory;
 
-    public static final String UPDATE = "edu.grinnell.sandb.UPDATE";
-    private static final String STATE_ACTIVATED_POSITION = "activated_position";
-
-    private int mActivatedPosition = ListView.INVALID_POSITION;
-
-    private RecyclerView mRecyclerView;
-    private ArticleRecyclerViewAdapter mAdapter;
-    private List<Article> mData;
-    private SwipeRefreshLayout pullToRefresh;
-    private static final String TAG = "ArticleListFragment";
-
+    //Methods
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,6 +150,7 @@ public class ArticleListFragment extends Fragment {
         }
     }
 
+    //Configure pull-to-refresh
     public void setRefreshing(boolean refreshing) {
         pullToRefresh.setRefreshing(refreshing);
     }

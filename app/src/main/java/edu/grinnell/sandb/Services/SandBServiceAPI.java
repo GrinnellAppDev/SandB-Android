@@ -14,5 +14,5 @@ import retrofit2.http.Query;
  */
 public interface SandBServiceAPI {
     @GET("/api/get_recent_posts/")
-    Call<QueryResponse> posts(@Query("count") int count);
+    Call<QueryResponse> posts(@Query("page") int offset, @Query("count") int count);
 }

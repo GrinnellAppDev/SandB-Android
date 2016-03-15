@@ -16,6 +16,9 @@ import edu.grinnell.sandb.Adapters.CommentListAdapter;
 import edu.grinnell.sandb.Model.Comment;
 import edu.grinnell.sandb.R;
 
+/*
+	Custom fragment to show list of comments posted on an Article
+ */
 public class CommentListFragment extends ListFragment {
 	public static final String TAG = "CommentsActivity";
 	private CommentListAdapter mAdapter;
