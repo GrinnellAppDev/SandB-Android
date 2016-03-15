@@ -66,7 +66,6 @@ public class ImagePagerActivity extends AppCompatActivity {
 		Implementation of ImagePagerAdapter, a custom pager adapter for images
 	 */
 	private class ImagePagerAdapter extends PagerAdapter {
-
 		//Fields
 		private String[] images;
 		private String[] titles;
