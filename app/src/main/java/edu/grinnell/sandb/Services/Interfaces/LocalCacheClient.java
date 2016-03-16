@@ -60,4 +60,9 @@ public interface LocalCacheClient {
      * @return a list of Articles satisfying the query.
      */
     List<Article> getNextPage(int currentPageNumber,int lastArticleId);
+
+    /**
+     * @return true if the cache is empty.
+     */
+    boolean isCacheEmpty();
 }
