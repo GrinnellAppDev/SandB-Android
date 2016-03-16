@@ -11,6 +11,7 @@ import java.util.List;
 
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.QueryResponse;
+import edu.grinnell.sandb.Services.Interfaces.SandBServiceAPI;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -83,8 +84,8 @@ public class SandBServiceClient {
 
 
     public static void main(String... args) throws IOException {
-        SandBServiceClient sandBService = new SandBServiceClient();
-        sandBService.getRecentArticles(3, 1);
+       // SandBServiceClient sandBService = new SandBServiceClient();
+        //sandBService.getRecentArticles(3, 1);
     }
 
 }
