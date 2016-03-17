@@ -64,9 +64,9 @@ public class ORMDbClient implements LocalCacheClient {
     }
 
     @Override
-    public List<Article> getNextPage(int currentPageNumber, int lastArticleId) {
+    public List<Article> getNextPage(String category, int currentPageNumber, int lastArticleId) {
         Select<Article> categoryQuery = Select.from(Article.class).orderBy("pubDate"+DESCENDING)
-                .where("articleId >"+Integer.toString(lastArticleId))
+                .where("category=="+category).where("articleId >"+Integer.toString(lastArticleId))
                 .limit(Integer.toString(numArticlesPerPage));
         List<Article> articles = categoryQuery.list();
         return !(articles == null) ?  articles : new ArrayList();

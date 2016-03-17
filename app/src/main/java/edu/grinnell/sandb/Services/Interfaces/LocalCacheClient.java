@@ -57,9 +57,10 @@ public interface LocalCacheClient {
      *
      * @param currentPageNumber the page that last accessed.
      * @param lastArticleId the id of the last article belonging to the last accessed page.
+     * @param categoryName the category to query from
      * @return a list of Articles satisfying the query.
      */
-    List<Article> getNextPage(int currentPageNumber,int lastArticleId);
+    List<Article> getNextPage(String categoryName, int currentPageNumber,int lastArticleId);
 
     /**
      * @return true if the cache is empty.

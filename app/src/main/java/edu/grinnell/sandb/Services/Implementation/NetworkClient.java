@@ -51,7 +51,7 @@ public class NetworkClient implements AppNetworkClientAPI {
     @Override
     public List<Article> getNextPage(String category, int currentPageNumber, int lastArticleId) {
         updateLocalCache();
-        return localClient.getNextPage(currentPageNumber, lastArticleId);
+        return localClient.getNextPage(category,currentPageNumber, lastArticleId);
     }
 
     @Override
