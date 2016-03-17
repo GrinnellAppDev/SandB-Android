@@ -5,22 +5,12 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.orm.SugarRecord;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.QueryResponse;
 import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
-import edu.grinnell.sandb.Services.Interfaces.SandBServiceAPI;
-import edu.grinnell.sandb.Util.StringUtility;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -30,7 +20,20 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 /**
- * Created by albertowusu-asare on 3/16/16.
+ * This class is a retrofit implementation of the RemoteServiceAPI for data retrieval
+ * from a remote server.
+ *
+ * <p> Most of the method calls perform an asynchronous fetching of data from some data end points
+ * at a given Base URL. Retrofit abstracts the nifty gritty details of the http calls.
+ * </p>
+ *
+ *
+ * @author Albert Owusu-Asare
+ * @version 1.1  Wed Mar 16 23:38:58 CDT 2016
+ * @see retrofit2.Retrofit  r
+ * @see retrofit2.Call
+ * @see java.util.Collections
+ * @see edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI
  */
 public class WordPressService implements RemoteServiceAPI {
 
@@ -121,6 +124,14 @@ public class WordPressService implements RemoteServiceAPI {
          Call<QueryResponse> postsAfter(@Query("after") String dateTime);
      }
 
+    /*
+     * This class is useful in the deserialization process by the Gson Converter. It specifies
+     * the fields that we will like to exclude from the serialization/ deserialization process.
+     *
+     * E.g in this particular case we are excluding article id field because we want to avoid
+     * conflicts with yet another "id" field which comes from the Sugar ORM extensions of the
+     * Article class.
+     */
     private class SandBGsonExclusionStrategy implements ExclusionStrategy{
         @Override
         public boolean shouldSkipField(FieldAttributes f) {
