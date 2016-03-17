@@ -23,10 +23,10 @@ public interface RemoteServiceAPI {
 
     /**
      * Fetches all the articles pushed to the remote database after a set date
-     * @param date the date after which to get all articles
+     * @param date the date after which to get all articles. DateTime string is in iso8601 format
      * @return all the articles pushed after the given date
      */
-    List<Article> getAfter(Date date);
+    List<Article> getAfter(String date);
 
     /**
      * Fetches all the Articles from the remote server

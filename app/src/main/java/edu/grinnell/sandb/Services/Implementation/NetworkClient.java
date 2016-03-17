@@ -32,7 +32,7 @@ public class NetworkClient implements AppNetworkClientAPI {
     public NetworkClient(){
         this.numArticlesPerPage = DEFAULT_NUM_ARTICLES_PER_PAGE;
         this.localClient = new ORMDbClient(numArticlesPerPage);
-        this.remoteClient = new WordPressService();
+        this.remoteClient = new WordPressService(numArticlesPerPage);
         this.currentPage = 0;
     }
     @Override
@@ -82,8 +82,7 @@ public class NetworkClient implements AppNetworkClientAPI {
             updates =remoteClient.getAll(currentPage, numArticlesPerPage);
         }
         else if(isRemoteArticlesUpdated(localFirst=this.remoteClient.getFirst())){
-            Date date = StringUtility.iso8601StringToDate(localFirst.getPubDate());
-            updates =remoteClient.getAfter(date);
+            updates =remoteClient.getAfter(localFirst.getPubDate());
         }
         localClient.saveArticles(updates);
     }

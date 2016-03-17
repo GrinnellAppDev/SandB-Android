@@ -135,6 +135,7 @@ public class Article extends SugarRecord<Article> {
       //  this.author = author;
 		this.aut = author;
     }
+
 	public String toString(){
 		StringBuffer sb = new StringBuffer();
 		sb.append("{ ");
