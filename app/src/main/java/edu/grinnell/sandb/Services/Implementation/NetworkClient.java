@@ -31,7 +31,7 @@ public class NetworkClient implements AppNetworkClientAPI {
 
     public NetworkClient(){
         this.numArticlesPerPage = DEFAULT_NUM_ARTICLES_PER_PAGE;
-        this.localClient = new ORMDbClient();
+        this.localClient = new ORMDbClient(numArticlesPerPage);
         this.remoteClient = new WordPressService();
         this.currentPage = 0;
     }

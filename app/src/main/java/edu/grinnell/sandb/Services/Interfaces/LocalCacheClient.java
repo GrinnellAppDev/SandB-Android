@@ -19,13 +19,13 @@ public interface LocalCacheClient {
      * @param articles the list of articles.
      * @return {@code true} if the persistence was successful.
      */
-    boolean saveArticles(List<Article> articles);
+    void saveArticles(List<Article> articles);
 
     /**
      * Persists an article object to the local cache.
      * @return {@code true} if the persistence was successful.
      */
-    boolean saveArticle(Article article);
+   void saveArticle(Article article);
 
     /**
      * Returns the Article that sits on top  of the local  cache.
@@ -65,4 +65,9 @@ public interface LocalCacheClient {
      * @return true if the cache is empty.
      */
     boolean isCacheEmpty();
+    /**
+     * Returns all the articles
+     * @return list of all the articles
+     */
+    List<Article> getAll();
 }
