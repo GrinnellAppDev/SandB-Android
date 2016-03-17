@@ -1,5 +1,7 @@
 package edu.grinnell.sandb.Services.Implementation;
 
+import android.net.Network;
+
 import java.util.Date;
 import java.util.List;
 
@@ -30,10 +32,15 @@ public class NetworkClient implements AppNetworkClientAPI {
     private int currentPage;
 
     public NetworkClient(){
-        this.numArticlesPerPage = DEFAULT_NUM_ARTICLES_PER_PAGE;
-        this.localClient = new ORMDbClient(numArticlesPerPage);
-        this.remoteClient = new WordPressService(numArticlesPerPage);
+        this(new ORMDbClient(DEFAULT_NUM_ARTICLES_PER_PAGE)
+                ,new WordPressService(DEFAULT_NUM_ARTICLES_PER_PAGE));
+    }
+    public NetworkClient(LocalCacheClient localClient, RemoteServiceAPI remoteClient){
         this.currentPage = 0;
+        this.numArticlesPerPage = DEFAULT_NUM_ARTICLES_PER_PAGE;
+        this.localClient = localClient;
+        this.remoteClient = remoteClient;
+
     }
     @Override
     public List<Article> getArticles(String category) {
@@ -75,7 +82,7 @@ public class NetworkClient implements AppNetworkClientAPI {
     /**
      *  Updates the local cache when necessary with data from the remote server.
      */
-    private void updateLocalCache() {
+    public void updateLocalCache() {
         List<Article> updates = null;
         Article localFirst;
         if(localClient.isCacheEmpty()) {

@@ -39,7 +39,7 @@ public class WordPressService implements RemoteServiceAPI {
 
     /* Constants */
     private static final String PUBLIC_API =
-            "https://public-api.wordpress.com/rest/v1.1/sites/www.thesandb.com";
+            "https://public-api.wordpress.com/rest/v1.1/sites/www.thesandb.com/";
     private static final int ZERO = 0;
     private static final int ONE = 1;
     private static final int FIRST_PAGE = ONE;
