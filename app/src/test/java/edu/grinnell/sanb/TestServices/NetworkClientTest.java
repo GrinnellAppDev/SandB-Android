@@ -9,7 +9,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -19,6 +18,7 @@ import edu.grinnell.sandb.Services.Implementation.NetworkClient;
 import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
 import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -34,9 +34,10 @@ public class NetworkClientTest {
     @Mock  private RemoteServiceAPI mockRemoteClient;
     @Mock private Article mockArticle;
     @Mock private List<Article> mockAllArticles;
-    private Random random;
     @Mock private NetworkClient client;
+    @Mock List<String> mockCategories;
     private final String ALL = "ALL";
+    private Random random;
 
     @Before
     public void initMocks() {
@@ -68,6 +69,28 @@ public class NetworkClientTest {
         int actualNumArticles = articles.size();
         assertTrue("Expected size of articles returned ", expectedNumArticles == actualNumArticles);
     }
+
+    @Test
+    public void testGetCategories (){
+        mockEmptyCache();
+        mockCategories.add("ALL");
+        mockCategories.add("News");
+        mockCategories.add("Sports");
+        when(mockLocalClient.getCategories())
+                .thenReturn(mockCategories);
+        List<String> actualResult = client.getCategories();
+        assertEquals("Expected List equals Actual list", actualResult,mockCategories);
+    }
+
+    @Test
+    public void testSetAndGetNumArticlesPerPage(){
+        int expectedNumArticlesPerPage = random.nextInt(19)+1;
+        client.setNumArticlesPerPage(expectedNumArticlesPerPage);
+        int actual = client.getNumArticlesPerPage();
+        assertEquals("Expected numArticlesPerpage = Actual", expectedNumArticlesPerPage,actual);
+    }
+
+
 
     /* Private Helper methods */
     private void mockEmptyCache(){
