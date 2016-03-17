@@ -87,6 +87,12 @@ public class WordPressService implements RemoteServiceAPI {
     public List<Article> getAll(List<String> fields) {
         return null;  //TODO  Implementation get all with dynamic querry parameters
     }
+
+    @Override
+    public boolean isUpdated(Article localFirst) {
+        return (localFirst == null) ? false : (localFirst.equals(this.getFirst()));
+    }
+
     /* Private Helper methods */
     private Retrofit initializeRetrofit() {
         ExclusionStrategy exclusionStrategy = new SandBGsonExclusionStrategy();

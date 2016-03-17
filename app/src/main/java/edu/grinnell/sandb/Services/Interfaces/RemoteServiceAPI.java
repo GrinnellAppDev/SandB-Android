@@ -53,4 +53,11 @@ public interface RemoteServiceAPI {
      */
     List<Article> getAll(List<String> fields);
 
+    /**
+     * Check if the remote service has been updated since the last time the local cache was updated
+     * @param localFirst
+     * @return
+     */
+    boolean isUpdated(Article localFirst);
+
 }

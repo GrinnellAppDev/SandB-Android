@@ -1,15 +1,11 @@
 package edu.grinnell.sandb.Services.Implementation;
 
-import android.net.Network;
-
-import java.util.Date;
 import java.util.List;
 
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Services.Interfaces.AppNetworkClientAPI;
 import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
 import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
-import edu.grinnell.sandb.Util.StringUtility;
 
 /**
  * Implements the AppNetworkClientAPI interface and handles the main data requests of the
@@ -70,14 +66,6 @@ public class NetworkClient implements AppNetworkClientAPI {
         return this.numArticlesPerPage;
     }
 
-    /**
-     * @return {@code true} if new articles have been updated since the last time articles were
-     * cached locally. Returns {@code false} if otherwise.
-     */
-    private boolean isRemoteArticlesUpdated(Article localFirst){
-        Article remoteFirst = this.remoteClient.getFirst();
-        return remoteFirst.equals(localFirst);
-    }
 
     /**
      *  Updates the local cache when necessary with data from the remote server.
@@ -88,10 +76,12 @@ public class NetworkClient implements AppNetworkClientAPI {
         if(localClient.isCacheEmpty()) {
             updates =remoteClient.getAll(currentPage, numArticlesPerPage);
         }
-        else if(isRemoteArticlesUpdated(localFirst=this.remoteClient.getFirst())){
+        else if(remoteClient.isUpdated(localFirst = this.localClient.getFirst())){
             updates =remoteClient.getAfter(localFirst.getPubDate());
         }
+
         localClient.saveArticles(updates);
     }
+
 
 }
