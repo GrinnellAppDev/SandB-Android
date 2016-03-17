@@ -9,6 +9,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -17,10 +19,14 @@ import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Services.Implementation.NetworkClient;
 import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
 import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
+import edu.grinnell.sandb.Util.StringUtility;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
+
 
 /**
  * This file contains local unit tests for the NetworkClient Implementation
@@ -36,6 +42,7 @@ public class NetworkClientTest {
     @Mock private List<Article> mockAllArticles;
     @Mock private NetworkClient client;
     @Mock List<String> mockCategories;
+    private static final int DEFAULT_NUM_ARTICLES_PER_PAGE = 50;
     private final String ALL = "ALL";
     private Random random;
 
@@ -49,7 +56,7 @@ public class NetworkClientTest {
     @Test
     public void testGetArticles(){
         final int randomNumArticles = random.nextInt(4) +1;
-        mockEmptyCache();
+        mockEmptyCache(true);
         when(mockLocalClient.getArticlesByCategory(ALL)).then(new CustomAnswer(randomNumArticles));
         List<Article> articles = client.getArticles(ALL);
         int expectedNumArticles = randomNumArticles;
@@ -61,10 +68,10 @@ public class NetworkClientTest {
     public void testGetNextPage(){
         final int currentPage = 0;
         final int numArticlesPerPage = random.nextInt(20);
-        mockEmptyCache();
-        when(mockLocalClient.getNextPage(ALL,currentPage,numArticlesPerPage))
+        mockEmptyCache(true);
+        when(mockLocalClient.getNextPage(ALL, currentPage, numArticlesPerPage))
                 .then(new CustomAnswer(numArticlesPerPage));
-        List<Article> articles = client.getNextPage(ALL,currentPage,numArticlesPerPage);
+        List<Article> articles = client.getNextPage(ALL, currentPage, numArticlesPerPage);
         int expectedNumArticles = numArticlesPerPage;
         int actualNumArticles = articles.size();
         assertTrue("Expected size of articles returned ", expectedNumArticles == actualNumArticles);
@@ -72,14 +79,14 @@ public class NetworkClientTest {
 
     @Test
     public void testGetCategories (){
-        mockEmptyCache();
+        mockEmptyCache(true);
         mockCategories.add("ALL");
         mockCategories.add("News");
         mockCategories.add("Sports");
         when(mockLocalClient.getCategories())
                 .thenReturn(mockCategories);
         List<String> actualResult = client.getCategories();
-        assertEquals("Expected List equals Actual list", actualResult,mockCategories);
+        assertEquals("Expected List equals Actual list", actualResult, mockCategories);
     }
 
     @Test
@@ -90,11 +97,27 @@ public class NetworkClientTest {
         assertEquals("Expected numArticlesPerpage = Actual", expectedNumArticlesPerPage,actual);
     }
 
+    @Test
+    public void testUpdateLocalCacheWhenCacheEmpty(){
+        mockEmptyCache(true);
+        int currentPage = 0;
+        client.updateLocalCache();
+        List<Article> updates= new ArrayList<>();
+        verify(mockRemoteClient,times(1)).getAll(currentPage, client.getNumArticlesPerPage());
+        verify(mockLocalClient,times(1)).saveArticles(updates);
+    }
+
+    @Test
+    public void testUpdateLocalCacheWhenCacheNotEmpty(){
+        mockEmptyCache(false);
+        //TODO : Implement test Update when cache not empty
+    }
+
 
 
     /* Private Helper methods */
-    private void mockEmptyCache(){
-        when(mockLocalClient.isCacheEmpty()).thenReturn(true); //for the update method
+    private void mockEmptyCache(boolean val){
+        when(mockLocalClient.isCacheEmpty()).thenReturn(val); //for the update method
     }
 
     private class CustomAnswer implements Answer<List<Article>> {
