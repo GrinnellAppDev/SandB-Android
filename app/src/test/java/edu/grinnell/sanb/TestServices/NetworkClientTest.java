@@ -36,6 +36,7 @@ public class NetworkClientTest {
     @Mock private List<Article> mockAllArticles;
     private Random random;
     @Mock private NetworkClient client;
+    private final String ALL = "ALL";
 
     @Before
     public void initMocks() {
@@ -45,23 +46,45 @@ public class NetworkClientTest {
     }
 
     @Test
-    public void testGetArticlesALLWhenLocalCacheEmpty(){
+    public void testGetArticles(){
         final int randomNumArticles = random.nextInt(4) +1;
-        final String ALL = "ALL";
-        when(mockLocalClient.isCacheEmpty()).thenReturn(true); //for the update method
-        when(mockLocalClient.getArticlesByCategory(ALL)).then(new Answer<List<Article>>() {
-            @Override
-            public List<Article> answer(InvocationOnMock invocation) throws Throwable {
-                List<Article> articles = TestUtils.generateRandomArticles(randomNumArticles);
-                return articles;
-            }
-        });
+        mockEmptyCache();
+        when(mockLocalClient.getArticlesByCategory(ALL)).then(new CustomAnswer(randomNumArticles));
         List<Article> articles = client.getArticles(ALL);
         int expectedNumArticles = randomNumArticles;
         int actualNumArticles = articles.size();
-        assertTrue("Expected size of articles returned ",expectedNumArticles == actualNumArticles);
+        assertTrue("Expected size of articles returned ", expectedNumArticles == actualNumArticles);
     }
 
+    @Test
+    public void testGetNextPage(){
+        final int currentPage = 0;
+        final int numArticlesPerPage = random.nextInt(20);
+        mockEmptyCache();
+        when(mockLocalClient.getNextPage(ALL,currentPage,numArticlesPerPage))
+                .then(new CustomAnswer(numArticlesPerPage));
+        List<Article> articles = client.getNextPage(ALL,currentPage,numArticlesPerPage);
+        int expectedNumArticles = numArticlesPerPage;
+        int actualNumArticles = articles.size();
+        assertTrue("Expected size of articles returned ", expectedNumArticles == actualNumArticles);
+    }
 
+    /* Private Helper methods */
+    private void mockEmptyCache(){
+        when(mockLocalClient.isCacheEmpty()).thenReturn(true); //for the update method
+    }
+
+    private class CustomAnswer implements Answer<List<Article>> {
+          int numArticles;
+        CustomAnswer(int numArticles){
+            this.numArticles = numArticles;
+        }
+
+        @Override
+        public List<Article> answer(InvocationOnMock invocation) throws Throwable {
+            List<Article> articles = TestUtils.generateRandomArticles(numArticles);
+            return articles;
+        }
+    }
 
 }
