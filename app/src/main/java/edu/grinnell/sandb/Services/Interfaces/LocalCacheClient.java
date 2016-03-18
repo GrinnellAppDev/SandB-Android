@@ -1,5 +1,7 @@
 package edu.grinnell.sandb.Services.Interfaces;
 
+import com.orm.SugarRecord;
+
 import java.util.List;
 
 import edu.grinnell.sandb.Model.Article;
@@ -71,4 +73,10 @@ public interface LocalCacheClient {
      * @return list of all the articles
      */
     List<Article> getAll();
+
+    /**
+     * Drops the table referenced to by clazz in the SQLiteDb
+     * @param tableName the name of the SQLite table
+     */
+    void deleteAllEntries(String tableName);
 }

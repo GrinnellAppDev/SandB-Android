@@ -1,5 +1,7 @@
 package edu.grinnell.sandb.Services.Implementation;
 
+import android.util.Log;
+
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -8,6 +10,8 @@ import com.orm.SugarRecord;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.QueryResponse;
 import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
@@ -51,6 +55,9 @@ public class WordPressService implements RemoteServiceAPI {
     private int currentPageNumber;
     private final List<Article> articles = Collections.synchronizedList(new ArrayList<Article>());
 
+    public WordPressService(){
+        this(Constants.DEFAULT_NUM_ARTICLES_PER_PAGE);
+    }
     public WordPressService(int numArticlesPerPage){
         this.retrofit = initializeRetrofit();
         this.restService = this.retrofit.create(RestAPI.class);
@@ -60,8 +67,8 @@ public class WordPressService implements RemoteServiceAPI {
 
     @Override
     public Article getFirst() {
-        getAll(ONE,ONE);
-        return this.articles.get(ZERO);
+        List<Article> articles =getAll(ONE,ONE);
+        return  articles.get(0);
     }
 
     @Override
@@ -79,7 +86,9 @@ public class WordPressService implements RemoteServiceAPI {
     @Override
     public List<Article> getAll(int page, int count) {
         Call<QueryResponse> call = restService.posts(page,count);
+
         makeAsyncCall(call);
+        System.out.println(call.request().url().url().toString());
         return this.articles;
     }
 
@@ -106,10 +115,12 @@ public class WordPressService implements RemoteServiceAPI {
     }
 
     private void makeAsyncCall(Call<QueryResponse> call) {
+        System.out.println("Inside make Async Call");
         call.enqueue(new Callback<QueryResponse>() {
             @Override
             public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
                 QueryResponse responseBody = response.body();
+                System.out.print(responseBody.toString());
                 List<Article> posts = responseBody.getPosts();
                 articles.clear();
                 articles.addAll(posts);
@@ -117,16 +128,17 @@ public class WordPressService implements RemoteServiceAPI {
             @Override
             public void onFailure(Call<QueryResponse> call, Throwable t) {
                 //TODO : Implement Failure response SnackBar?
+                t.printStackTrace();
             }
         });
     }
 
      /* Private Classes  and interfaces */
     private interface RestAPI {
-        @GET("/posts/")
+        @GET("posts/")
         Call<QueryResponse> posts(@Query("page") int pageNumber, @Query("number") int count);
 
-        @GET("/posts/")
+        @GET("posts/")
          Call<QueryResponse> postsAfter(@Query("after") String dateTime);
      }
 
@@ -141,7 +153,8 @@ public class WordPressService implements RemoteServiceAPI {
     private class SandBGsonExclusionStrategy implements ExclusionStrategy{
         @Override
         public boolean shouldSkipField(FieldAttributes f) {
-            return (f.getDeclaringClass() == SugarRecord.class && f.getName().equals("id"));
+            return (f.getDeclaringClass() == SugarRecord.class && (f.getName().equals("id") ||
+            f.getName().equals("categories")));
         }
 
         @Override

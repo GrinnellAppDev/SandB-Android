@@ -3,9 +3,12 @@ package edu.grinnell.sandb.Services.Implementation;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.ArticleCategory;
 import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
+
+import com.orm.SugarRecord;
 import com.orm.query.Condition;
 import com.orm.query.Select;
 
@@ -21,10 +24,15 @@ public class ORMDbClient implements LocalCacheClient {
     private static final String ASCENDING = " ASC";
     private static final String DESCENDING = " DSC";
     private static final String ALL ="ALL";
+    private static final int DEFAULT_NUM_ARTICLES_PER_PAGE = 50;
     private int numArticlesPerPage;
+    public ORMDbClient(){
+        this.numArticlesPerPage = DEFAULT_NUM_ARTICLES_PER_PAGE;
+    }
     public ORMDbClient(int numArticlesPerPage){
         this.numArticlesPerPage = numArticlesPerPage;
     }
+
     @Override
     public void saveArticles(List<Article> articles) {
         for(Article article : articles ){
@@ -66,7 +74,7 @@ public class ORMDbClient implements LocalCacheClient {
     @Override
     public List<Article> getNextPage(String category, int currentPageNumber, int lastArticleId) {
         Select<Article> categoryQuery = Select.from(Article.class).orderBy("pubDate"+DESCENDING)
-                .where("category=="+category).where("articleId >"+Integer.toString(lastArticleId))
+                .where("category==" + category).where("articleId >" + Integer.toString(lastArticleId))
                 .limit(Integer.toString(numArticlesPerPage));
         List<Article> articles = categoryQuery.list();
         return !(articles == null) ?  articles : new ArrayList();
@@ -83,6 +91,13 @@ public class ORMDbClient implements LocalCacheClient {
                 Integer.toString(numArticlesPerPage));
         return !(articles == null) ? articles : new ArrayList();
     }
+
+    @Override
+    public void deleteAllEntries(String tableName) {
+        if(tableName.equals(Constants.TableNames.ARTICLE.toString()))
+            Article.deleteAll(Article.class);
+    }
+
     /**
      * Checks if the article cache is empty
      */

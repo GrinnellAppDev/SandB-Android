@@ -18,7 +18,7 @@ public class Article extends SugarRecord<Article> {
 	protected String pubDate;
 	@SerializedName("excerpt")
 	protected String description;
-	protected List<ArticleCategory> categories;
+	protected transient List<ArticleCategory> categories;
 	protected ArticleAuthor author;
 
 	/*Deprecate */

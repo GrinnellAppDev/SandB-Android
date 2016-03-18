@@ -66,7 +66,6 @@ public class NetworkClient implements AppNetworkClientAPI {
         return this.numArticlesPerPage;
     }
 
-
     /**
      *  Updates the local cache when necessary with data from the remote server.
      */
