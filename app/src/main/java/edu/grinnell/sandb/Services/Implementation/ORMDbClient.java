@@ -40,8 +40,8 @@ public class ORMDbClient implements LocalCacheClient {
     @Override
     public Article getFirst() {
         List<Article> articles= Article.find(Article.class, null, null, null,
-                "articleID"+ASCENDING, "1");
-        return !(articles == null) ? articles.get(0) : null;
+                "id" + ASCENDING, "1");
+        return (!(articles == null) && articles.size() > 0)  ? articles.get(0) : null;
     }
 
     @Override

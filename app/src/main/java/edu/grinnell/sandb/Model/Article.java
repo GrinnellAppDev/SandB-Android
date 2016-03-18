@@ -136,6 +136,7 @@ public class Article extends SugarRecord<Article> {
 		this.aut = author;
     }
 
+	@Override
 	public String toString(){
 		StringBuffer sb = new StringBuffer();
 		sb.append("{ ");
@@ -150,5 +151,8 @@ public class Article extends SugarRecord<Article> {
 		sb.append("}\n");
 		return sb.toString();
 	}
+
+
+
 
 }

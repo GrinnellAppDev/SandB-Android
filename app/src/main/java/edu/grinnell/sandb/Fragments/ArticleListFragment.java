@@ -20,7 +20,9 @@ import edu.grinnell.sandb.Activities.MainActivity;
 import edu.grinnell.sandb.Adapters.ArticleRecyclerViewAdapter;
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.R;
+import edu.grinnell.sandb.Services.Implementation.NetworkClient;
 import edu.grinnell.sandb.Util.DatabaseUtil;
+import edu.grinnell.sandb.Util.NetworkUtil;
 
 /*
     Custom Fragment to show the list of all Articles
@@ -40,6 +42,10 @@ public class ArticleListFragment extends Fragment {
     private List<Article> mData;
     private SwipeRefreshLayout pullToRefresh;
     private static final String TAG = "ArticleListFragment";
+
+    // TODO: TESTING NEW NETWORK STUFF
+    List<Article> TEST_DATA = new ArrayList<>();
+    NetworkClient mNetworkClient;
 
     // Fill in the a map to correspond to section tabs for the article list
     static {
@@ -76,7 +82,19 @@ public class ArticleListFragment extends Fragment {
         mActivity = (MainActivity) getActivity();
 
         mAdapter = new ArticleRecyclerViewAdapter((MainActivity) getActivity(),
-                R.layout.articles_row, mData);
+                R.layout.articles_row, TEST_DATA);
+        // TODO  - USING TEST DATA RIGHT NOW
+
+        mNetworkClient = new NetworkClient() {
+            @Override
+            public void onArticlesRetrieved(List<Article> articles) {
+                TEST_DATA = articles;
+                mAdapter.notifyDataSetChanged();
+            }
+        };
+
+        mNetworkClient.getArticles(NetworkUtil.isNetworkEnabled(getContext()), mCategory);
+
     }
 
     // Retrieve the articles for a given category from the SQLite database
@@ -132,6 +150,10 @@ public class ArticleListFragment extends Fragment {
     public void update() {
         mData = loadDataFromCache(mCategory);
         mAdapter.notifyDataSetChanged();
+
+        // TODO: TEST STUFF
+        mNetworkClient.getArticles(NetworkUtil.isNetworkEnabled(getContext()), mCategory);
+
     }
 
     /* If no articles are available, notify the user */

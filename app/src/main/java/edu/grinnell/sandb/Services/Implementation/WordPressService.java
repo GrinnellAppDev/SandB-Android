@@ -1,5 +1,7 @@
 package edu.grinnell.sandb.Services.Implementation;
 
+import android.util.Log;
+
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -10,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.QueryResponse;
+import edu.grinnell.sandb.Services.Interfaces.ArticlesCallback;
 import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,6 +41,7 @@ import retrofit2.http.Query;
 public class WordPressService implements RemoteServiceAPI {
 
     /* Constants */
+    public static final String TAG = WordPressService.class.getSimpleName();
     private static final String PUBLIC_API =
             "https://public-api.wordpress.com/rest/v1.1/sites/www.thesandb.com/";
     private static final int ZERO = 0;
@@ -59,38 +63,34 @@ public class WordPressService implements RemoteServiceAPI {
     }
 
     @Override
-    public Article getFirst() {
-        getAll(ONE,ONE);
-        return this.articles.get(ZERO);
+    public void getFirst(ArticlesCallback articlesCallback) {
+        getAll(ONE,ONE, articlesCallback);
     }
 
     @Override
-    public List<Article> getAfter(String date) {
-        makeAsyncCall(restService.postsAfter(date));
-        return this.articles;
+    public void getAfter(String date, ArticlesCallback articlesCallback) {
+        makeAsyncCall(restService.postsAfter(date), articlesCallback);
     }
 
     @Override
-    public List<Article> getAll() {
-        getAll(currentPageNumber,numArticlesPerPage);
-        return this.articles;
+    public void getAll(ArticlesCallback articlesCallback) {
+        getAll(currentPageNumber,numArticlesPerPage, articlesCallback);
     }
 
     @Override
-    public List<Article> getAll(int page, int count) {
+    public void getAll(int page, int count, ArticlesCallback articlesCallback) {
         Call<QueryResponse> call = restService.posts(page,count);
-        makeAsyncCall(call);
-        return this.articles;
+        makeAsyncCall(call, articlesCallback);
     }
 
     @Override
-    public List<Article> getAll(List<String> fields) {
-        return null;  //TODO  Implementation get all with dynamic querry parameters
+    public void getAll(List<String> fields) {
+        //TODO  Implementation get all with dynamic query parameters
     }
 
-    @Override
-    public boolean isUpdated(Article localFirst) {
-        return (localFirst == null) ? false : (localFirst.equals(this.getFirst()));
+    public void isUpdated(Callback<QueryResponse> callback) {
+        Call<QueryResponse> call = restService.posts(1,1);
+        call.enqueue(callback);
     }
 
     /* Private Helper methods */
@@ -105,14 +105,16 @@ public class WordPressService implements RemoteServiceAPI {
                 .build();
     }
 
-    private void makeAsyncCall(Call<QueryResponse> call) {
+    private void makeAsyncCall(Call<QueryResponse> call, final ArticlesCallback articlesCallback) {
         call.enqueue(new Callback<QueryResponse>() {
             @Override
             public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                Log.e(TAG, "Response: " + response.code() + " | " + response.message());
                 QueryResponse responseBody = response.body();
                 List<Article> posts = responseBody.getPosts();
                 articles.clear();
                 articles.addAll(posts);
+                articlesCallback.onArticlesRetrieved(articles);
             }
             @Override
             public void onFailure(Call<QueryResponse> call, Throwable t) {

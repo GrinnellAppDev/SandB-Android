@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.Model.QueryResponse;
+import retrofit2.Callback;
 
 /**
  * Extracts the functionality of how we interact with the remote database.
@@ -19,20 +21,20 @@ public interface RemoteServiceAPI {
      *
      * Specifically, this method fetches the most recent Article according to ISO 8601 time.
      */
-    Article getFirst();
+    void getFirst(ArticlesCallback callback);
 
     /**
      * Fetches all the articles pushed to the remote database after a set date
      * @param date the date after which to get all articles. DateTime string is in iso8601 format
      * @return all the articles pushed after the given date
      */
-    List<Article> getAfter(String date);
+    void getAfter(String date, ArticlesCallback callback);
 
     /**
      * Fetches all the Articles from the remote server
      * @return a list of all the articles .
      */
-    List<Article> getAll();
+    void getAll(ArticlesCallback callback);
 
     /**
      * Fetches all the articles from the remote server given a page number and a count of the
@@ -41,7 +43,7 @@ public interface RemoteServiceAPI {
      * @param count the count of Articles to return
      * @return a list of all the articles that satisfies the query
      */
-    List<Article> getAll(int page, int count);
+    void getAll(int page, int count, ArticlesCallback callback);
 
     /**
      * Fetches all the articles from the remote server specifying which article fields to pull data.
@@ -51,13 +53,13 @@ public interface RemoteServiceAPI {
      * @param fields
      * @return
      */
-    List<Article> getAll(List<String> fields);
+    void getAll(List<String> fields);
 
     /**
      * Check if the remote service has been updated since the last time the local cache was updated
      * @param localFirst
      * @return
      */
-    boolean isUpdated(Article localFirst);
+    void isUpdated (Callback<QueryResponse> localFirst);
 
 }

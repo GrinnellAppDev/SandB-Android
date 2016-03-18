@@ -15,18 +15,9 @@ import edu.grinnell.sandb.Model.Article;
 public interface AppNetworkClientAPI {
     /**
      * Fetches all articles according to a specific category
-     * @return
+     * returns the articles through the ArticlesCallback
      */
-    List<Article> getArticles(String category);
-
-    /**
-     * Fetches all the articles according to a specific category by the page we are currently on.
-     * @param category
-     * @param currentPageNumber
-     * @param lastArticleId tells us from which article ID in the database to get the next page from.
-     * @return a list of Articles for the page
-     */
-    List<Article> getNextPage(String category, int currentPageNumber,int lastArticleId);
+    void getArticles(boolean isOnline, String category);
 
     /**
      * @return all the categories articles can be classed into
