@@ -222,7 +222,7 @@ public class ArticleDetailFragment extends Fragment {
         SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
         String dateString;
         try {
-            Date articleDate = parserSDF.parse(mArticle.getPubDate());
+            Date articleDate = parserSDF.parse(mArticle.getPub_date());
             dateString = DateFormat.getDateTimeInstance().format(articleDate);
         } catch (ParseException e) {
             Log.e(TAG, e.getMessage());
@@ -469,7 +469,7 @@ public class ArticleDetailFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(ARTICLE_ID_KEY, mArticle.getArticleID());
+        outState.putInt(ARTICLE_ID_KEY, mArticle.getArticle_id());
         super.onSaveInstanceState(outState);
     }
 }

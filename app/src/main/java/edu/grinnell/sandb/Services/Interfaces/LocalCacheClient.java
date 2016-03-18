@@ -71,4 +71,5 @@ public interface LocalCacheClient {
      * @return list of all the articles
      */
     List<Article> getAll();
+
 }

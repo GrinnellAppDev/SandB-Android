@@ -28,11 +28,13 @@ import com.flurry.android.FlurryAgent;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Services.ArticleFetchTask;
 import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.DialogSettings;
 import edu.grinnell.sandb.Fragments.ArticleListFragment;
 import edu.grinnell.sandb.R;
+import edu.grinnell.sandb.Services.Implementation.NetworkClient;
 import edu.grinnell.sandb.Util.VersionUtil;
 
 /* The main activity that the app will initialize to. This activity hosts the ArticleListFragment */
@@ -206,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
         //TODO: Refactor updateArticles to use HttpClient service calls
         if (!mUpdateInProgress) {
             String[] params = {Constants.JSON_API_URL};
+            /*
             ArticleFetchTask task = new ArticleFetchTask(getApplicationContext()) {
 
                 @Override
@@ -229,6 +232,20 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
             task.execute(params);
+
+            */
+
+            NetworkClient nc = new NetworkClient() {
+                @Override
+                public void onArticlesRetrieved(List<Article> articles) {
+                    mUpdateInProgress = false;
+                    mTabsAdapter.setRefreshing(false);
+                    mTabsAdapter.refresh();
+                    Snackbar.make(mCoordinatorLayout, "Articles updated", Snackbar.LENGTH_SHORT).show();
+
+                }
+            };
+            nc.updateLocalCache();
         }
     }
 

@@ -23,13 +23,13 @@ public class JSONUtil {
         for (int i = 0; i < posts.length(); ++i) {
             newArticle = new Article();
             JSONObject thisPost = posts.getJSONObject(i);
-            newArticle.setArticleID(Integer.parseInt(thisPost.getString("id")));
+            newArticle.setArticle_id(Integer.parseInt(thisPost.getString("id")));
             newArticle.setAuthor(thisPost.getJSONObject("author").getString("name"));
             newArticle.setBody(thisPost.getString("content"));
             newArticle.setDescription(thisPost.getString("excerpt"));
             newArticle.setTitle(thisPost.getString("title"));
             newArticle.setCategory(thisPost.getJSONArray("categories").getJSONObject(0).getString("title"));
-            newArticle.setPubDate(thisPost.getString("date"));
+            newArticle.setPub_date(thisPost.getString("date"));
             newArticle.setLink(thisPost.getString("url"));
             articles.add(newArticle);
 

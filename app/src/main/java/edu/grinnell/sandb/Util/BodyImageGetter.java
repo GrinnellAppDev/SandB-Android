@@ -9,7 +9,7 @@ public class BodyImageGetter {
 	public static void readImages(Article article) {
 
         addImage(article , "<div");
-//		addImage(body, articleID, "<a");
+//		addImage(body, article_id, "<a");
         addImage(article, "<img");
 	}
 

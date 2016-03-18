@@ -19,7 +19,7 @@ import com.orm.query.Select;
 public class ORMDbClient implements LocalCacheClient {
     /* Sugar ORM order convention leaves a space before the specified order*/
     private static final String ASCENDING = " ASC";
-    private static final String DESCENDING = " DSC";
+    private static final String DESCENDING = " DESC";
     private static final String ALL ="ALL";
     private int numArticlesPerPage;
     public ORMDbClient(int numArticlesPerPage){
@@ -39,9 +39,9 @@ public class ORMDbClient implements LocalCacheClient {
 
     @Override
     public Article getFirst() {
-        List<Article> articles= Article.find(Article.class, null, null, null,
-                "id" + ASCENDING, "1");
-        return (!(articles == null) && articles.size() > 0)  ? articles.get(0) : null;
+        // NOTE: SugarORM converts the field "article_id" to the column "articleid"
+        List<Article> articles = Select.from(Article.class).orderBy("articleid").limit("1").list();
+        return (articles != null && articles.size() > 0)  ? articles.get(0) : null;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ORMDbClient implements LocalCacheClient {
 
     @Override
     public List<Article> getNextPage(String category, int currentPageNumber, int lastArticleId) {
-        Select<Article> categoryQuery = Select.from(Article.class).orderBy("pubDate"+DESCENDING)
+        Select<Article> categoryQuery = Select.from(Article.class).orderBy("pub_date"+DESCENDING)
                 .where("category=="+category).where("articleId >"+Integer.toString(lastArticleId))
                 .limit(Integer.toString(numArticlesPerPage));
         List<Article> articles = categoryQuery.list();
@@ -73,8 +73,8 @@ public class ORMDbClient implements LocalCacheClient {
     }
 
     @Override
-    public boolean isCacheEmpty() {
-        return isArticleCacheEmpty() || isCategoryCacheEmpty();
+    public boolean isCacheEmpty() { // TODO: isCategoryCacheEmpty is giving error
+        return isArticleCacheEmpty() /*|| isCategoryCacheEmpty()*/;
     }
 
     @Override
@@ -87,7 +87,8 @@ public class ORMDbClient implements LocalCacheClient {
      * Checks if the article cache is empty
      */
     private boolean isArticleCacheEmpty(){
-        return (getFirst() == null);
+        List<Article> articles = Article.find(Article.class, null, null, null, null, "1");
+        return articles == null || articles.size() <= 0;
     }
 
     /**

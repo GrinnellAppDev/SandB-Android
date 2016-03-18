@@ -1,5 +1,7 @@
 package edu.grinnell.sandb.Services.Implementation;
 
+import android.util.Log;
+
 import java.util.List;
 
 import edu.grinnell.sandb.Model.Article;
@@ -39,6 +41,7 @@ public abstract class NetworkClient implements AppNetworkClientAPI, ArticlesCall
 
     @Override
     public void getArticles(boolean isOnline, String category) {
+        Log.d("NetworkClient", "getArticles()");
         this.category = category;
         // if there is an internet connection, then try to update
         if (isOnline)
@@ -69,11 +72,13 @@ public abstract class NetworkClient implements AppNetworkClientAPI, ArticlesCall
      * Updates the local cache when necessary with data from the remote server.
      */
     public void updateLocalCache() {
+        Log.d("NetworkClient", "updateLocalCache()");
 
         // callback to save the articles to cache
         final ArticlesCallback saveToCacheCallback = new ArticlesCallback() {
             @Override
             public void onArticlesRetrieved(List<Article> articles) {
+                Log.d("NetworkClient", "Articles saved to local client.");
                 localClient.saveArticles(articles);
                 // notify that the articles have been saved
                 onLocalCacheUpdated();
@@ -82,6 +87,8 @@ public abstract class NetworkClient implements AppNetworkClientAPI, ArticlesCall
 
 
         if (localClient.isCacheEmpty()) {
+            Log.d("NetworkClient", "cache is empty");
+
             // if there are no articles in the cache, get all articles
             remoteClient.getAll(currentPage, numArticlesPerPage, saveToCacheCallback);
         } else {
@@ -96,7 +103,7 @@ public abstract class NetworkClient implements AppNetworkClientAPI, ArticlesCall
                     if (!articles.get(0).getTitle().equals(localFirst.getTitle())) {
                         // if the not the same, then the cache is outdated,
                         // so update the cache to get the articles that haven't been cached
-                        remoteClient.getAfter(localFirst.getPubDate(), saveToCacheCallback);
+                        remoteClient.getAfter(localFirst.getPub_date(), saveToCacheCallback);
                     } else {
                         // otherwise, notify that the cache has been updated
                         onLocalCacheUpdated();

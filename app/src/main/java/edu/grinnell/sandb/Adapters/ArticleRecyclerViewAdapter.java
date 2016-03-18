@@ -1,11 +1,11 @@
 package edu.grinnell.sandb.Adapters;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,13 +32,18 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
     private List<Article> mData;
     protected UniversalLoaderUtility mLoader;
 
-    public ArticleRecyclerViewAdapter(MainActivity a, int layoutId, List<Article> data) {
+    public ArticleRecyclerViewAdapter(MainActivity a, List<Article> data) {
         super();
         mActivity = a;
         mData = data;
         mLoader = new UniversalLoaderUtility();
     }
 
+
+    public void setData(List<Article>data) {
+        mData = data;
+        notifyDataSetChanged();
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -49,7 +54,7 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-
+    
         holder.image.setVisibility(View.VISIBLE);
         final Article a = mData.get(position);
         if (a != null) {
@@ -66,7 +71,7 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
             holder.title.setPadding(3, 3, 3, 3);
             //holder.description.setText(Html.fromHtml(a.getDescription()));
             holder.category.setText(a.getCategory());
-            holder.date.setText(a.getPubDate());
+            holder.date.setText(a.getPub_date());
 
 
             // open the article when it is clicked

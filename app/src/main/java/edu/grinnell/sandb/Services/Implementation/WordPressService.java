@@ -42,8 +42,8 @@ public class WordPressService implements RemoteServiceAPI {
 
     /* Constants */
     public static final String TAG = WordPressService.class.getSimpleName();
-    private static final String PUBLIC_API =
-            "https://public-api.wordpress.com/rest/v1.1/sites/www.thesandb.com/";
+    //private static final String PUBLIC_API = "https://public-api.wordpress.com";
+    private static final String PUBLIC_API = "http://www.thesandb.com";
     private static final int ZERO = 0;
     private static final int ONE = 1;
     private static final int FIRST_PAGE = ONE;
@@ -79,6 +79,7 @@ public class WordPressService implements RemoteServiceAPI {
 
     @Override
     public void getAll(int page, int count, ArticlesCallback articlesCallback) {
+        Log.d(TAG, "getAll");
         Call<QueryResponse> call = restService.posts(page,count);
         makeAsyncCall(call, articlesCallback);
     }
@@ -109,7 +110,8 @@ public class WordPressService implements RemoteServiceAPI {
         call.enqueue(new Callback<QueryResponse>() {
             @Override
             public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
-                Log.e(TAG, "Response: " + response.code() + " | " + response.message());
+                Log.e(TAG, "Response: " + response.code() + " | " + response.message() + "\nURL: " + call.request().url());
+
                 QueryResponse responseBody = response.body();
                 List<Article> posts = responseBody.getPosts();
                 articles.clear();
@@ -125,10 +127,13 @@ public class WordPressService implements RemoteServiceAPI {
 
      /* Private Classes  and interfaces */
     private interface RestAPI {
-        @GET("/posts/")
+          final String SNB_URL = "/rest/v1.1/sites/www.thesandb.com";
+        //@GET(SNB_URL + "/posts/")
+        @GET("/api/get_recent_posts/")
         Call<QueryResponse> posts(@Query("page") int pageNumber, @Query("number") int count);
 
-        @GET("/posts/")
+        //@GET(SNB_URL + "/posts/")
+        @GET("/api/get_recent_posts/")
          Call<QueryResponse> postsAfter(@Query("after") String dateTime);
      }
 

@@ -21,6 +21,8 @@ import edu.grinnell.sandb.Adapters.ArticleRecyclerViewAdapter;
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Services.Implementation.NetworkClient;
+import edu.grinnell.sandb.Services.Implementation.ORMDbClient;
+import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
 import edu.grinnell.sandb.Util.DatabaseUtil;
 import edu.grinnell.sandb.Util.NetworkUtil;
 
@@ -39,13 +41,14 @@ public class ArticleListFragment extends Fragment {
     private int mActivatedPosition = ListView.INVALID_POSITION;
     private RecyclerView mRecyclerView;
     private ArticleRecyclerViewAdapter mAdapter;
-    private List<Article> mData;
+    // private List<Article> mData;
     private SwipeRefreshLayout pullToRefresh;
     private static final String TAG = "ArticleListFragment";
 
     // TODO: TESTING NEW NETWORK STUFF
-    List<Article> TEST_DATA = new ArrayList<>();
+    List<Article> TEST_DATA;
     NetworkClient mNetworkClient;
+    LocalCacheClient mLocalClient;
 
     // Fill in the a map to correspond to section tabs for the article list
     static {
@@ -72,27 +75,31 @@ public class ArticleListFragment extends Fragment {
             mCategory = titleToKey.get(b.getString(ARTICLE_CATEGORY_KEY));
 
         // Retrieve the articles for the selected category
-        mData = loadDataFromCache(mCategory);
+        //mData = loadDataFromCache(mCategory);
         Log.i(TAG, "Loading data for the '" + mCategory + "' category..");
 
-        if (mData == null) {
-            mData = new ArrayList<Article>();
-        }
+        //if (mData == null) {
+        //    mData = new ArrayList<Article>();
+        //}
 
         mActivity = (MainActivity) getActivity();
 
-        mAdapter = new ArticleRecyclerViewAdapter((MainActivity) getActivity(),
-                R.layout.articles_row, TEST_DATA);
-        // TODO  - USING TEST DATA RIGHT NOW
-
+        // initialize network and local clients
+        mLocalClient = new ORMDbClient(50);
         mNetworkClient = new NetworkClient() {
             @Override
             public void onArticlesRetrieved(List<Article> articles) {
+                // code to run when articles are updated
                 TEST_DATA = articles;
-                mAdapter.notifyDataSetChanged();
+                mAdapter.setData(TEST_DATA);
+                pullToRefresh.setRefreshing(false);
             }
         };
 
+        // load data from cache to populate the list initially
+        TEST_DATA = mLocalClient.getAll();
+
+        // start the network call to get articles
         mNetworkClient.getArticles(NetworkUtil.isNetworkEnabled(getContext()), mCategory);
 
     }
@@ -111,10 +118,14 @@ public class ArticleListFragment extends Fragment {
                 container, false);
 
         // set up the recycler view
+        mAdapter = new ArticleRecyclerViewAdapter((MainActivity) getActivity(), TEST_DATA);
+        // TODO  - USING TEST DATA RIGHT NOW
+
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv);
         StaggeredGridLayoutManager layoutManager =
                 new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setAdapter(mAdapter);
 
         // set up pull-to-refresh
         pullToRefresh = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefresh);
@@ -123,37 +134,23 @@ public class ArticleListFragment extends Fragment {
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mActivity.updateArticles();
+                //mActivity.updateArticles();
+                // TODO: TEST STUFF
+                update();
             }
         });
+
 
         return rootView;
     }
 
-    @Override
-    public void onActivityCreated(Bundle ofJoy) {
-        super.onActivityCreated(ofJoy);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mRecyclerView.setAdapter(mAdapter);
-
-        if (savedInstanceState != null
-                && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
-            // setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
-        }
-    }
-
     /* Update the article list */
     public void update() {
-        mData = loadDataFromCache(mCategory);
-        mAdapter.notifyDataSetChanged();
+        //mData = loadDataFromCache(mCategory);
 
         // TODO: TEST STUFF
         mNetworkClient.getArticles(NetworkUtil.isNetworkEnabled(getContext()), mCategory);
-
+        Log.d(TAG, "update()");
     }
 
     /* If no articles are available, notify the user */

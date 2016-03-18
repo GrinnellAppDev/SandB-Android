@@ -24,7 +24,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class SandBServiceClient {
 
-    public static final String API_URL = "http://www.thesandb.com";
+    //public static final String API_URL = "http://www.thesandb.com";
+    public static final String API_URL = "https://public-api.wordpress.com";
     public void getRecentArticles(int offset, int numArticles) throws IOException {
         // Create a very simple REST adapter which points the GitHub API.
         ExclusionStrategy exclusionStrategy = new SandBGsonExclusionStrategy();
@@ -39,15 +40,20 @@ public class SandBServiceClient {
         // Create an instance of our GitHub API interface.
         SandBServiceAPI sandBService = retrofit.create(SandBServiceAPI.class);
         Call<QueryResponse> call = sandBService.posts(offset, numArticles);
+        System.out.println(call.request().url());
 
         //Asynchronous call made with background thread
         call.enqueue(new Callback<QueryResponse>() {
             @Override
             public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                System.out.println("ON____RESPONSE");
                 QueryResponse responseBody = response.body();
                 System.out.println(responseBody);
-                /*
+
+
                 List<Article> articles = responseBody.getPosts();
+                System.out.println();
+                /*
                 cacheArticles(articles);
                 */
             }
@@ -55,6 +61,7 @@ public class SandBServiceClient {
             @Override
             public void onFailure(Call<QueryResponse> call, Throwable t) {
                 //Log error TODO: determine what actions to take on Failure
+                System.out.println("failure");
             }
         });
 
@@ -84,8 +91,8 @@ public class SandBServiceClient {
 
 
     public static void main(String... args) throws IOException {
-       // SandBServiceClient sandBService = new SandBServiceClient();
-        //sandBService.getRecentArticles(3, 1);
+        SandBServiceClient sandBService = new SandBServiceClient();
+        sandBService.getRecentArticles(3, 1);
     }
 
 }

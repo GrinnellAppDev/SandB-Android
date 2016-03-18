@@ -3,22 +3,26 @@ package edu.grinnell.sandb.Model;
 
 import com.google.gson.annotations.SerializedName;
 import com.orm.SugarRecord;
+import com.orm.dsl.Ignore;
 
 import java.util.List;
 
 public class Article extends SugarRecord<Article> {
 	@SerializedName("id")
-    protected int articleID;
+    protected int article_id;
 	protected String title;
 	@SerializedName("url")
 	protected String link;
 	@SerializedName("content")
 	protected String body; //TODO : change body to content
 	@SerializedName("date")
-	protected String pubDate;
+	protected String pub_date;
 	@SerializedName("excerpt")
 	protected String description;
+
+	@Ignore
 	protected List<ArticleCategory> categories;
+	@Ignore
 	protected ArticleAuthor author;
 
 	/*Deprecate */
@@ -39,11 +43,11 @@ public class Article extends SugarRecord<Article> {
 
 	public Article(int id,String url, String title,String content,String date,String excerpt,
 				   List<ArticleCategory> categories, ArticleAuthor author){
-		this.articleID = id;
+		this.article_id = id;
 		this.link = url;
 		this.title = title;
 		this.body = content;
-		this.pubDate = date;
+		this.pub_date = date;
 		this.description = excerpt;
 		this.categories = categories;
 		this.author = author;
@@ -54,15 +58,15 @@ public class Article extends SugarRecord<Article> {
 			String articleBody, String commentsLink, String author) {
 		this(articleTitle, articleBody);
 		this.link = articleLink;
-		this.pubDate = publicationDate;
+		this.pub_date = publicationDate;
 		this.category = category;
 		this.description = description;
 		this.comments = commentsLink;
 		//this.author = author;
 	}
 
-	public int getArticleID() {
-		return articleID;
+	public int getArticle_id() {
+		return article_id;
 	}
 
 	public String getTitle() {
@@ -89,8 +93,8 @@ public class Article extends SugarRecord<Article> {
 		return body;
 	}
 
-	public String getPubDate() {
-		return pubDate;
+	public String getPub_date() {
+		return pub_date;
 	}
 
 	public String getAuthor() {
@@ -99,8 +103,8 @@ public class Article extends SugarRecord<Article> {
 	}
 
 
-    public void setArticleID(int articleID) {
-        this.articleID = articleID;
+    public void setArticle_id(int article_id) {
+        this.article_id = article_id;
     }
 
     public void setTitle(String title) {
@@ -111,8 +115,8 @@ public class Article extends SugarRecord<Article> {
         this.link = link;
     }
 
-    public void setPubDate(String pubDate) {
-        this.pubDate = pubDate;
+    public void setPub_date(String pub_date) {
+        this.pub_date = pub_date;
     }
 
     public void setCategory(String category) {
@@ -145,7 +149,7 @@ public class Article extends SugarRecord<Article> {
 		sb.append("   title: " + this.title);
 		sb.append("   content: " + this.body);
 		sb.append("   excerpt: " + this.description);
-		sb.append("   date: " + this.pubDate);
+		sb.append("   date: " + this.pub_date);
 		sb.append("   categories: " + this.categories);
 		sb.append("   author " + this.author);
 		sb.append("}\n");
