@@ -20,23 +20,32 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 import com.astuetz.PagerSlidingTabStrip;
 import com.crashlytics.android.Crashlytics;
 import com.flurry.android.FlurryAgent;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Observable;
+import java.util.Observer;
 import edu.grinnell.sandb.Services.ArticleFetchTask;
 import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.DialogSettings;
 import edu.grinnell.sandb.Fragments.ArticleListFragment;
 import edu.grinnell.sandb.R;
+import edu.grinnell.sandb.Services.Implementation.NetworkClient;
 import edu.grinnell.sandb.Util.VersionUtil;
 
-/* The main activity that the app will initialize to. This activity hosts the ArticleListFragment */
-public class MainActivity extends AppCompatActivity {
+/**
+ * Main Activity for the application. This activity is the host for the ArticleList fragments.
+ * <p> The activity also listens for any updates from the initial remote call to fetch data
+ * to the local cache. </p>
+ *
+ * @see Observer
+ * @see NetworkClient
+ * @see edu.grinnell.sandb.Activities.MainActivity.TabsAdapter
+ * @see ArticleListFragment
+ */
+public class MainActivity extends AppCompatActivity implements Observer{
 
     //Fields
     private static final String TAG = "MainActivity";
@@ -48,113 +57,19 @@ public class MainActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private CoordinatorLayout mCoordinatorLayout;
     private boolean mUpdateInProgress;
+    NetworkClient networkClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Crashlytics.start(this);
         setContentView(R.layout.activity_main);
-
-        //Coordinator layout reference for use by SnackBar
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
-
-        // set transition things for lollipop
-        if (VersionUtil.isLollipop()) {
-            Window window = getWindow();
-            window.setExitTransition(new Fade());
-            window.setEnterTransition(new Fade());
-        }
-
-        //UI configurations
+        initializeNetworkClient();
+        setLollipopTransitions();
         setUpToolBar();
         setUpNavigationDrawer();
         slidingTabStripConfig(savedInstanceState);
-    }
-
-    /*
-        Set up toolbar
-     */
-    private void setUpToolBar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
-        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDrawerLayout.openDrawer(GravityCompat.START);
-            }
-        });
-        setSupportActionBar(toolbar);
-    }
-
-    /*
-        Set up navigation drawer
-     */
-    private void setUpNavigationDrawer() {
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        mDrawerList.setAdapter(new ArrayAdapter<>(this,
-                R.layout.drawer_list_item, ArticleListFragment.CATEGORIES));
-        mDrawerList.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                mDrawerList.setSelection(position);
-                mDrawerLayout.closeDrawer(GravityCompat.START);
-                // listener to make sure view pager changes only after drawer is fully closed
-                mDrawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-                    @Override
-                    public void onDrawerOpened(View drawerView) {
-                        mDrawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {});
-                    }
-
-                    @Override
-                    public void onDrawerClosed(View drawerView) {
-                        mPager.setCurrentItem(position, true);
-                    }
-                });
-
-            }
-        });
-    }
-
-    /*
-        Setup a pager to scroll between category tabs
-      */
-    private void slidingTabStripConfig(Bundle savedInstanceState) {
-        mPager = (ViewPager) findViewById(R.id.pager);
-        mTabsAdapter = new TabsAdapter(getSupportFragmentManager());
-        addTabs(mTabsAdapter);
-        mPager.setAdapter(mTabsAdapter);
-        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                mDrawerList.setItemChecked(position, true);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
-        //Setup the sliding tab strip
-        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-        tabs.setViewPager(mPager);
-
-        if (savedInstanceState != null) {
-            // if resuming to a page from before
-            int pos = savedInstanceState.getInt(SELECTED_TAB);
-            mPager.setCurrentItem(pos, false);
-            mDrawerList.setItemChecked(pos, true);
-        } else {
-            // start off at the 'All' page
-            mPager.setCurrentItem(0, false);
-            mDrawerList.setItemChecked(0, true);
-        }
     }
 
     @Override
@@ -199,51 +114,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /*
-        Update all articles
-     */
-    public void updateArticles() {
-        //TODO: Refactor updateArticles to use HttpClient service calls
-        if (!mUpdateInProgress) {
-            String[] params = {Constants.JSON_API_URL};
-            ArticleFetchTask task = new ArticleFetchTask(getApplicationContext()) {
 
-                @Override
-                protected void onPreExecute() {
-                    super.onPreExecute();
-                    mTabsAdapter.setRefreshing(true);
-                    mUpdateInProgress = true;
-                }
-
-                @Override
-                protected void onPostExecute(Integer status) {
-                    super.onPostExecute(status);
-                    if (status != 0) {
-                        Snackbar.make(mCoordinatorLayout, "Error downloading articles", Snackbar.LENGTH_LONG).show();
-                    }
-                    // Clear the loading bar when the articles are loaded
-                    mUpdateInProgress = false;
-                    mTabsAdapter.setRefreshing(false);
-                    mTabsAdapter.refresh();
-                    Snackbar.make(mCoordinatorLayout, "Articles updated", Snackbar.LENGTH_SHORT).show();
-                }
-            };
-            task.execute(params);
-        }
+    @Override
+    public void update(Observable observable, Object data) {
+        Snackbar.make(mCoordinatorLayout,Constants.SnackBarMessages.CONNECTED.toString(),
+                Snackbar.LENGTH_SHORT).show();
     }
 
-
-    /*
-        Add the category tabs
-      */
-    private void addTabs(TabsAdapter ta) {
-        //TODO : // CATEGORIES NOT BE CALLED FROM ARTICLELISTFRAGEMENT
-        for (String category : ArticleListFragment.CATEGORIES) {
-            Bundle args = new Bundle();
-            args.putString(ArticleListFragment.ARTICLE_CATEGORY_KEY, category);
-            ta.addTab(ArticleListFragment.class, args);
-        }
+    @Override
+    public void onSaveInstanceState(Bundle state) {
+        state.putInt(SELECTED_TAB, mPager.getCurrentItem());
+        super.onSaveInstanceState(state);
     }
+
 
     /*
         Custom FragmentPagerAdapter to handle the category tabs
@@ -289,7 +172,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return ArticleListFragment.CATEGORIES[position];
+           // return ArticleListFragment.CATEGORIES[position];
+            return Constants.CATEGORIES[position];
         }
 
         /*
@@ -317,10 +201,149 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle state) {
-        state.putInt(SELECTED_TAB, mPager.getCurrentItem());
-        super.onSaveInstanceState(state);
+
+    /*
+        Update all articles
+     */
+    public void updateArticles() {
+        //TODO: Refactor updateArticles to use HttpClient service calls
+        if (!mUpdateInProgress) {
+            String[] params = {Constants.JSON_API_URL};
+            ArticleFetchTask task = new ArticleFetchTask(getApplicationContext()) {
+
+                @Override
+                protected void onPreExecute() {
+                    super.onPreExecute();
+                    mTabsAdapter.setRefreshing(true);
+                    mUpdateInProgress = true;
+                }
+
+                @Override
+                protected void onPostExecute(Integer status) {
+                    super.onPostExecute(status);
+                    if (status != 0) {
+                        Snackbar.make(mCoordinatorLayout, "Error downloading articles", Snackbar.LENGTH_LONG).show();
+                    }
+                    // Clear the loading bar when the articles are loaded
+                    mUpdateInProgress = false;
+                    mTabsAdapter.setRefreshing(false);
+                    mTabsAdapter.refresh();
+                    Snackbar.make(mCoordinatorLayout, "Articles updated", Snackbar.LENGTH_SHORT).show();
+                }
+            };
+            task.execute(params);
+        }
+    }
+
+
+
+    /* Private Methods */
+
+    private void initializeNetworkClient(){
+        this.networkClient = new NetworkClient();
+        this.networkClient.addObserver(this);
+        this.networkClient.deleteLocalCache();
+        if(Constants.FIRST_CALL_TO_UPDATE){
+            Constants.FIRST_CALL_TO_UPDATE = false;
+            networkClient.firstTimeSyncLocalAndRemoteData();
+        }
+    }
+
+    private void setLollipopTransitions() {
+        if (VersionUtil.isLollipop()) {
+            Window window = getWindow();
+            window.setExitTransition(new Fade());
+            window.setEnterTransition(new Fade());
+        }
+    }
+
+    private void setUpToolBar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
+        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+        setSupportActionBar(toolbar);
+    }
+
+    private void setUpNavigationDrawer() {
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        mDrawerList.setAdapter(new ArrayAdapter<>(this,
+                R.layout.drawer_list_item, Constants.CATEGORIES));
+        // R.layout.drawer_list_item, ArticleListFragment.CATEGORIES));
+        mDrawerList.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                mDrawerList.setSelection(position);
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+                // listener to make sure view pager changes only after drawer is fully closed
+                mDrawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+                    @Override
+                    public void onDrawerOpened(View drawerView) {
+                        mDrawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+                        });
+                    }
+
+                    @Override
+                    public void onDrawerClosed(View drawerView) {
+                        mPager.setCurrentItem(position, true);
+                    }
+                });
+
+            }
+        });
+    }
+
+
+    private void slidingTabStripConfig(Bundle savedInstanceState) {
+        mPager = (ViewPager) findViewById(R.id.pager);
+        mTabsAdapter = new TabsAdapter(getSupportFragmentManager());
+        addTabs(mTabsAdapter);
+        mPager.setAdapter(mTabsAdapter);
+        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                mDrawerList.setItemChecked(position, true);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        //Setup the sliding tab strip
+        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        tabs.setViewPager(mPager);
+
+        if (savedInstanceState != null) {
+            // if resuming to a page from before
+            int pos = savedInstanceState.getInt(SELECTED_TAB);
+            mPager.setCurrentItem(pos, false);
+            mDrawerList.setItemChecked(pos, true);
+        } else {
+            // start off at the 'All' page
+            mPager.setCurrentItem(0, false);
+            mDrawerList.setItemChecked(0, true);
+        }
+    }
+
+    private void addTabs(TabsAdapter ta) {
+        //TODO : // CATEGORIES NOT BE CALLED FROM ARTICLELISTFRAGEMENT
+        for (String category :Constants.CATEGORIES) {
+            Bundle args = new Bundle();
+            args.putString(ArticleListFragment.ARTICLE_CATEGORY_KEY, category);
+            ta.addTab(ArticleListFragment.class, args);
+        }
     }
 
 }
