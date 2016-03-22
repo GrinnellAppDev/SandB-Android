@@ -3,6 +3,7 @@ package edu.grinnell.sandb.Model;
 
 import com.google.gson.annotations.SerializedName;
 import com.orm.SugarRecord;
+import com.orm.dsl.Ignore;
 
 import java.util.List;
 
@@ -18,14 +19,11 @@ public class Article extends SugarRecord<Article> {
 	protected String pubDate;
 	@SerializedName("excerpt")
 	protected String description;
+	protected String category;
+	@Ignore
 	protected transient List<ArticleCategory> categories;
+	@Ignore
 	protected ArticleAuthor author;
-
-	/*Deprecate */
-	protected String category; //TODO : deprecate this field if not needed
-	protected transient String comments;
-	protected String aut;
-
 
     public Article() {
     }
@@ -35,7 +33,6 @@ public class Article extends SugarRecord<Article> {
 		body = articleBody;
 
 	}
-
 
 	public Article(int id,String url, String title,String content,String date,String excerpt,
 				   List<ArticleCategory> categories, ArticleAuthor author){
@@ -50,20 +47,19 @@ public class Article extends SugarRecord<Article> {
 	}
 
 	public Article(String articleTitle, String articleLink,
-			String publicationDate, String category, String description,
-			String articleBody, String commentsLink, String author) {
+			String publicationDate, String description,
+			String articleBody, String author) {
 		this(articleTitle, articleBody);
 		this.link = articleLink;
 		this.pubDate = publicationDate;
-		this.category = category;
 		this.description = description;
-		this.comments = commentsLink;
-		//this.author = author;
 	}
 
 	public int getArticleID() {
 		return articleID;
 	}
+
+	public String getCategory(){return category;}
 
 	public String getTitle() {
 		return title;
@@ -73,13 +69,9 @@ public class Article extends SugarRecord<Article> {
 		return link;
 	}
 
-	public String getComments() {
-		return comments;
-	}
 
-	public String getCategory() {
-		return category;
-	}
+	public ArticleAuthor getAuthor (){ return this.author;}
+
 
 	public String getDescription() {
 		return description;
@@ -92,12 +84,6 @@ public class Article extends SugarRecord<Article> {
 	public String getPubDate() {
 		return pubDate;
 	}
-
-	public String getAuthor() {
-		//return author;
-		return aut;
-	}
-
 
     public void setArticleID(int articleID) {
         this.articleID = articleID;
@@ -125,15 +111,6 @@ public class Article extends SugarRecord<Article> {
 
     public void setBody(String body) {
         this.body = body;
-    }
-
-    public void setComments(String comments) {
-        this.comments = comments;
-    }
-
-    public void setAuthor(String author) {
-      //  this.author = author;
-		this.aut = author;
     }
 
 	public String toString(){
