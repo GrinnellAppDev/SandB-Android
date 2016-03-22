@@ -79,4 +79,6 @@ public interface LocalCacheClient {
      * @param tableName the name of the SQLite table
      */
     void deleteAllEntries(String tableName);
+
+    int getNumArticlesPerPage();
 }

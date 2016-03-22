@@ -42,18 +42,21 @@ public class ORMDbClient implements LocalCacheClient {
 
     @Override
     public void saveArticle(Article article) {
+        String categoryName = article.getAuthor().getName();
+        article.setCategory(categoryName);
         article.save();
     }
 
     @Override
     public Article getFirst() {
         List<Article> articles= Article.find(Article.class, null, null, null,
-                "articleID"+ASCENDING, "1");
+                "pubDate"+ASCENDING, "1");
         return !(articles == null) ? articles.get(0) : null;
     }
 
     @Override
     public List<Article> getArticlesByCategory(String categoryName) {
+
         if (categoryName == null || categoryName.equals(ALL)) {
             return getAll();
         }
@@ -96,6 +99,11 @@ public class ORMDbClient implements LocalCacheClient {
     public void deleteAllEntries(String tableName) {
         if(tableName.equals(Constants.TableNames.ARTICLE.toString()))
             Article.deleteAll(Article.class);
+    }
+
+    @Override
+    public int getNumArticlesPerPage() {
+        return numArticlesPerPage;
     }
 
     /**

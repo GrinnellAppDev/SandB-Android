@@ -1,7 +1,13 @@
 package edu.grinnell.sandb.Services.Implementation;
 
-import java.util.List;
+import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
+import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Services.Interfaces.AppNetworkClientAPI;
 import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
@@ -19,35 +25,42 @@ import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
  * @author  Albert Owusu-Asare
  * @see edu.grinnell.sandb.Services.Interfaces.AppNetworkClientAPI
  * @see edu.grinnell.sandb.Services.Interfaces.LocalCacheClient
+ * @see Observer
+ * @see SyncMessage
  */
-public class NetworkClient implements AppNetworkClientAPI {
+public class NetworkClient extends Observable implements Observer, AppNetworkClientAPI {
     private LocalCacheClient localClient;
     private RemoteServiceAPI remoteClient;
-    private static final int DEFAULT_NUM_ARTICLES_PER_PAGE = 50;
     private int numArticlesPerPage;
     private int currentPage;
 
     public NetworkClient(){
-        this(new ORMDbClient(DEFAULT_NUM_ARTICLES_PER_PAGE)
-                ,new WordPressService(DEFAULT_NUM_ARTICLES_PER_PAGE));
+        this(new ORMDbClient());
     }
+
+    public NetworkClient(LocalCacheClient localCacheClient){
+        this(localCacheClient, new WordPressService(localCacheClient));
+    }
+
     public NetworkClient(LocalCacheClient localClient, RemoteServiceAPI remoteClient){
         this.currentPage = 0;
-        this.numArticlesPerPage = DEFAULT_NUM_ARTICLES_PER_PAGE;
+        this.numArticlesPerPage = Constants.DEFAULT_NUM_ARTICLES_PER_PAGE;
         this.localClient = localClient;
         this.remoteClient = remoteClient;
-
+        addRemoteServiceListeners();
     }
+
+
     @Override
     public List<Article> getArticles(String category) {
-        updateLocalCache();
-        return localClient.getArticlesByCategory(category);
+       // updateLocalCache(); TODO :fix bug with remote pull
+        return localClient.getArticlesByCategory(category.toLowerCase());
     }
 
     @Override
     public List<Article> getNextPage(String category, int currentPageNumber, int lastArticleId) {
         updateLocalCache();
-        return localClient.getNextPage(category,currentPageNumber, lastArticleId);
+        return localClient.getNextPage(category, currentPageNumber, lastArticleId);
     }
 
     @Override
@@ -66,21 +79,46 @@ public class NetworkClient implements AppNetworkClientAPI {
         return this.numArticlesPerPage;
     }
 
+    @Override
+    public void deleteLocalCache() {
+        localClient.deleteAllEntries(Constants.TableNames.ARTICLE.toString());
+    }
+
     /**
      *  Updates the local cache when necessary with data from the remote server.
      */
     public void updateLocalCache() {
-        List<Article> updates = null;
-        Article localFirst;
         if(localClient.isCacheEmpty()) {
-            updates =remoteClient.getAll(currentPage, numArticlesPerPage);
+            remoteClient.getAll(currentPage, numArticlesPerPage);
         }
-        else if(remoteClient.isUpdated(localFirst = this.localClient.getFirst())){
-            updates =remoteClient.getAfter(localFirst.getPubDate());
-        }
-
-        localClient.saveArticles(updates);
+        syncLocalAndRemoteData(false);
     }
 
+    public void syncLocalAndRemoteData(boolean firstCall){
+        Article localFirst = null;
+        if(!firstCall) {
+             localFirst= this.localClient.getFirst();
+        }
+        remoteClient.syncWithLocalCache(localFirst);
+    }
+    @Override
+    public void update(Observable observable, Object data) {
+        Log.d("Network Client", "Reached Update");
+        SyncMessage message = (SyncMessage) data;
+        if(message != null){
+            setChanged();
+            notifyObservers(message);
+        }
+    }
+
+    private void addRemoteServiceListeners() {
+        List<Observer> remoteServiceObservers = new ArrayList<>(1);
+        remoteServiceObservers.add(this);
+        this.remoteClient.addObservers(remoteServiceObservers);
+    }
+
+    public void firstTimeSyncLocalAndRemoteData(){
+        this.remoteClient.getAll();
+    }
 
 }

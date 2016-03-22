@@ -10,29 +10,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-
+import java.util.Observable;
+import java.util.Observer;
 import edu.grinnell.sandb.Activities.MainActivity;
 import edu.grinnell.sandb.Adapters.ArticleRecyclerViewAdapter;
+import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.R;
+import edu.grinnell.sandb.Services.Implementation.NetworkClient;
+import edu.grinnell.sandb.Services.Implementation.SyncMessage;
 import edu.grinnell.sandb.Util.DatabaseUtil;
 
 /*
     Custom Fragment to show the list of all Articles
  */
-public class ArticleListFragment extends Fragment {
-    //Fields
-    public static String ARTICLE_CATEGORY_KEY = "category";
-    public static final Map<String, String> titleToKey = new LinkedHashMap<String, String>(); // LinkedHashMap retains insertion ordering
-    public static final String[] CATEGORIES;
+public class ArticleListFragment extends Fragment implements Observer {
+
     public MainActivity mActivity;
     public String mCategory;
-    public static final String UPDATE = "edu.grinnell.sandb.UPDATE";
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
     private int mActivatedPosition = ListView.INVALID_POSITION;
     private RecyclerView mRecyclerView;
@@ -40,48 +37,25 @@ public class ArticleListFragment extends Fragment {
     private List<Article> mData;
     private SwipeRefreshLayout pullToRefresh;
     private static final String TAG = "ArticleListFragment";
+    private NetworkClient networkClient;
 
-    // Fill in the a map to correspond to section tabs for the article list
-    static {
-        titleToKey.put("All", null);
-        titleToKey.put("News", "News");
-        titleToKey.put("Arts", "Arts");
-        titleToKey.put("Community", "Community");
-        titleToKey.put("Features", "Features");
-        titleToKey.put("Opinion", "Opinion");
-        titleToKey.put("Sports", "Sports");
-        CATEGORIES = titleToKey.keySet().toArray(new String[titleToKey.size()]);
-    }
-
-
-    //Methods
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        networkClient = new NetworkClient();
+        networkClient.addObserver(this);
         Bundle b = getArguments();
 
+        /* Set the category of this fragment */
         mCategory = null;
         if (b != null)
-            mCategory = titleToKey.get(b.getString(ARTICLE_CATEGORY_KEY));
-
-        // Retrieve the articles for the selected category
-        mData = loadDataFromCache(mCategory);
-        Log.i(TAG, "Loading data for the '" + mCategory + "' category..");
-
-        if (mData == null) {
-            mData = new ArrayList<Article>();
-        }
+            mCategory = Constants.titleToKey.get(b.getString(Constants.ARTICLE_CATEGORY_KEY));
+        populateListData();
 
         mActivity = (MainActivity) getActivity();
-
         mAdapter = new ArticleRecyclerViewAdapter((MainActivity) getActivity(),
                 R.layout.articles_row, mData);
-    }
-
-    // Retrieve the articles for a given category from the SQLite database
-    private List<Article> loadDataFromCache(String category) {
-        return DatabaseUtil.getArticlesByCategory(category);
     }
 
     @Override
@@ -105,10 +79,9 @@ public class ArticleListFragment extends Fragment {
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mActivity.updateArticles();
+                networkClient.getArticles(mCategory);
             }
         });
-
         return rootView;
     }
 
@@ -128,20 +101,6 @@ public class ArticleListFragment extends Fragment {
         }
     }
 
-    /* Update the article list */
-    public void update() {
-        mData = loadDataFromCache(mCategory);
-        mAdapter.notifyDataSetChanged();
-    }
-
-    /* If no articles are available, notify the user */
-    public void setEmptyText(String text) {
-        //TextView empty = (TextView) mRecyclerView.getEmptyView();
-        //empty.setText(text);
-        // TODO: 2/7/16  Don't forget
-    }
-
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -154,4 +113,50 @@ public class ArticleListFragment extends Fragment {
     public void setRefreshing(boolean refreshing) {
         pullToRefresh.setRefreshing(refreshing);
     }
+
+    /* This method is called whenever the observable updates its state */
+    @Override
+    public void update(Observable observable, Object data) {
+        SyncMessage message = (SyncMessage) data;
+        if(message != null){
+            mData = (List<Article>)((SyncMessage) data).getMessageData();
+            mAdapter.notifyDataSetChanged();
+        }
+
+    }
+
+    /* Update the article list TODO : Deprecate this */
+    public void update() {
+        mData = loadDataFromCache(mCategory);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    /* If no articles are available, notify the user  TODO : Deprecate this*/
+    public void setEmptyText(String text) {
+        //TextView empty = (TextView) mRecyclerView.getEmptyView();
+        //empty.setText(text);
+        // TODO: 2/7/16  Don't forget
+    }
+
+
+    /* Private Helper methods */
+
+    private void populateListData() {
+        Log.i(TAG, "Loading data for the '" + mCategory + "' category..");
+        if(mCategory.equals("All") && Constants.FIRST_CALL_TO_UPDATE){
+            Constants.FIRST_CALL_TO_UPDATE = false;
+            networkClient.firstTimeSyncLocalAndRemoteData();
+        } else {
+            mData = networkClient.getArticles(mCategory);
+        }
+        if (mData == null) {
+            mData = new ArrayList<Article>();
+        }
+    }
+
+    // Retrieve the articles for a given category from the SQLite database TODO:Deprecate this
+    private List<Article> loadDataFromCache(String category) {
+        return DatabaseUtil.getArticlesByCategory(category);
+    }
+
 }

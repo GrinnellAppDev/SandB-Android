@@ -44,4 +44,10 @@ public interface AppNetworkClientAPI {
      */
     int getNumArticlesPerPage();
 
+    /**
+     * Clears the local Cahce
+     */
+
+    void deleteLocalCache();
+
 }

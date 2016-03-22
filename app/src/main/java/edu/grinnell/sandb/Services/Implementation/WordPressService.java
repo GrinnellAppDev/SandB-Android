@@ -1,5 +1,6 @@
 package edu.grinnell.sandb.Services.Implementation;
 
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 
 import com.google.gson.ExclusionStrategy;
@@ -9,11 +10,15 @@ import com.google.gson.GsonBuilder;
 import com.orm.SugarRecord;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.QueryResponse;
+import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
 import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,68 +43,92 @@ import retrofit2.http.Query;
  * @see retrofit2.Call
  * @see java.util.Collections
  * @see edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI
+ * @see Observable
  */
-public class WordPressService implements RemoteServiceAPI {
-
-    /* Constants */
-    private static final String PUBLIC_API =
-            "https://public-api.wordpress.com/rest/v1.1/sites/www.thesandb.com/";
-    private static final int ZERO = 0;
-    private static final int ONE = 1;
-    private static final int FIRST_PAGE = ONE;
+public class WordPressService extends Observable implements RemoteServiceAPI  {
 
     /* Class Fields */
     private Retrofit retrofit;
     private RestAPI restService;
+    private LocalCacheClient localCacheClient;
+    private final List<Article> articles = Collections.synchronizedList(new ArrayList<Article>());
     private int numArticlesPerPage;
     private int currentPageNumber;
-    private final List<Article> articles = Collections.synchronizedList(new ArrayList<Article>());
+
 
     public WordPressService(){
-        this(Constants.DEFAULT_NUM_ARTICLES_PER_PAGE);
+        this(new ORMDbClient());
     }
-    public WordPressService(int numArticlesPerPage){
+
+    public WordPressService(LocalCacheClient localCacheClient){
         this.retrofit = initializeRetrofit();
         this.restService = this.retrofit.create(RestAPI.class);
-        this.numArticlesPerPage = numArticlesPerPage;
-        this.currentPageNumber = FIRST_PAGE;
+        this.localCacheClient = localCacheClient;
+        this.numArticlesPerPage = localCacheClient.getNumArticlesPerPage();
+        this.currentPageNumber = Constants.FIRST_PAGE;
+    }
+
+
+    @Override
+    public void getFirst() {
+        getAll(Constants.ONE, Constants.ONE);
     }
 
     @Override
-    public Article getFirst() {
-        List<Article> articles =getAll(ONE,ONE);
-        return  articles.get(0);
-    }
-
-    @Override
-    public List<Article> getAfter(String date) {
+    public void  getAfter(String date) {
         makeAsyncCall(restService.postsAfter(date));
-        return this.articles;
     }
 
     @Override
-    public List<Article> getAll() {
-        getAll(currentPageNumber,numArticlesPerPage);
-        return this.articles;
+    public void getAll() {
+        getAll(currentPageNumber, numArticlesPerPage);
     }
 
     @Override
-    public List<Article> getAll(int page, int count) {
-        Call<QueryResponse> call = restService.posts(page,count);
-
-        makeAsyncCall(call);
-        System.out.println(call.request().url().url().toString());
-        return this.articles;
+    public void getAll(int page, int count) {
+        makeAsyncCall(restService.posts(page,count));
     }
 
     @Override
-    public List<Article> getAll(List<String> fields) {
-        return null;  //TODO  Implementation get all with dynamic querry parameters
+    public void getAll(List<String> fields) {
+       return;
     }
 
     @Override
     public boolean isUpdated(Article localFirst) {
-        return (localFirst == null) ? false : (localFirst.equals(this.getFirst()));
+       // return (localFirst == null) ? false : (localFirst.equals(this.getFirst()));
+        return true;
+    }
+
+    @Override
+    public void addObservers(List<Observer> observers) {
+        for(Observer observer :observers)
+            addObserver(observer);
+    }
+
+    @Override
+    public void syncWithLocalCache(Article localFirst) {
+        if(localFirst == null) {
+            firstTimeSyncWithLocalCache();
+            return;
+        }
+        SyncMessage message;
+        Article remoteFirst = null;
+        if(localFirst.equals(remoteFirst)){
+                message = new SyncMessage(null);
+
+        } else {
+            this.getAfter(localFirst.getPubDate());
+            localCacheClient.saveArticles(articles);
+            message = new SyncMessage((localCacheClient.getAll()));
+        }
+
+        notifyObservers(message);
+
+    }
+
+    public void firstTimeSyncWithLocalCache() {
+        this.getAll();
     }
 
     /* Private Helper methods */
@@ -109,25 +138,32 @@ public class WordPressService implements RemoteServiceAPI {
                 .setExclusionStrategies(exclusionStrategy)
                 .create();
          return new Retrofit.Builder()
-                .baseUrl(PUBLIC_API)
+                .baseUrl(Constants.PUBLIC_API)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
     }
 
     private void makeAsyncCall(Call<QueryResponse> call) {
-        System.out.println("Inside make Async Call");
         call.enqueue(new Callback<QueryResponse>() {
             @Override
             public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                Log.d("Call back success", "makeAsyncCall()");
+                SyncMessage message;
                 QueryResponse responseBody = response.body();
-                System.out.print(responseBody.toString());
                 List<Article> posts = responseBody.getPosts();
-                articles.clear();
                 articles.addAll(posts);
+                System.out.println(responseBody);
+                localCacheClient.saveArticles(posts);
+                setChanged();
+                Log.d("Observer change", "client ovserver : " +hasChanged());
+                message = new SyncMessage(localCacheClient.getAll());
+                notifyObservers(message);
+
             }
             @Override
             public void onFailure(Call<QueryResponse> call, Throwable t) {
                 //TODO : Implement Failure response SnackBar?
+                Log.e("Call back failure", "MakeAsynCall");
                 t.printStackTrace();
             }
         });
