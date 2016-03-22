@@ -214,10 +214,11 @@ public class ArticleDetailFragment extends Fragment {
     //Configuring the display of articles
     private void displayArticle(View rootView) {
         // add the author to the article
-        String author = mArticle.getAuthor();
+       /* String author = mArticle.getAuthor();
         if (author != null && !author.equals("")) {
             ((TextView) rootView.findViewById(R.id.article_author)).setText("By: " + author);
         }
+        */
 
         SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
         String dateString;
