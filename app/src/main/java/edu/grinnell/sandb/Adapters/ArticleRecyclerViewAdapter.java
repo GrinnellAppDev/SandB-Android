@@ -77,8 +77,8 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
                             ArticleDetailActivity.class);
                     detailIntent.putExtra(ArticleDetailFragment.ARTICLE_ID_KEY,
                             a.getId());
-                    detailIntent.putExtra(ArticleDetailActivity.COMMENTS_FEED,
-                            a.getComments());
+                  //  detailIntent.putExtra(ArticleDetailActivity.COMMENTS_FEED,
+                    //        a.getComments());
 
                     if (VersionUtil.isLollipop()) {
                         Pair<View, String> p1 = new Pair<>((View) holder.title, "article_title");

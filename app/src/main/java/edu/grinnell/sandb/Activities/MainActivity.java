@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements Observer{
     //Fields
     private static final String TAG = "MainActivity";
     private static final String SELECTED_TAB = "selected_tab";
-    private ArticleListFragment mListFrag;
     private ViewPager mPager;
     private TabsAdapter mTabsAdapter;
     private DrawerLayout mDrawerLayout;
@@ -132,47 +131,30 @@ public class MainActivity extends AppCompatActivity implements Observer{
         Custom FragmentPagerAdapter to handle the category tabs
      */
     public class TabsAdapter extends FragmentStatePagerAdapter {
-        //Fields
-        private final ArrayList<TabInfo> tabs = new ArrayList<>();
-
-        //Inner class representing TabInfo
-        final class TabInfo {
-            private final Class<?> clss;
-            private final Bundle args;
-
-            TabInfo(Class<?> _class, Bundle _args) {
-                clss = _class;
-                args = _args;
-            }
-        }
+        private final ArrayList<ArticleListFragment> fragments = new ArrayList<>();
 
         //  Constructor
         public TabsAdapter(FragmentManager fm) {
             super(fm);
         }
 
-        public void addTab(Class<?> clss, Bundle args) {
-            TabInfo info = new TabInfo(clss, args);
-            tabs.add(info);
-            notifyDataSetChanged();
+        public void addFragment(ArticleListFragment fragment){
+            this.fragments.add(fragment);
         }
 
         @Override
         public int getCount() {
-            return tabs.size();
+            //return tabs.size();
+           return fragments.size();
         }
 
         @Override
         public Fragment getItem(int position) {
-            TabInfo info = tabs.get(position);
-            mListFrag = (ArticleListFragment) Fragment.instantiate(
-                    MainActivity.this, info.clss.getName(), info.args);
-            return mListFrag;
+            return fragments.get(position);
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-           // return ArticleListFragment.CATEGORIES[position];
             return Constants.CATEGORIES[position];
         }
 
@@ -243,10 +225,6 @@ public class MainActivity extends AppCompatActivity implements Observer{
         this.networkClient = new NetworkClient();
         this.networkClient.addObserver(this);
         this.networkClient.deleteLocalCache();
-        if(Constants.FIRST_CALL_TO_UPDATE){
-            Constants.FIRST_CALL_TO_UPDATE = false;
-            networkClient.firstTimeSyncLocalAndRemoteData();
-        }
     }
 
     private void setLollipopTransitions() {
@@ -303,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements Observer{
     private void slidingTabStripConfig(Bundle savedInstanceState) {
         mPager = (ViewPager) findViewById(R.id.pager);
         mTabsAdapter = new TabsAdapter(getSupportFragmentManager());
-        addTabs(mTabsAdapter);
+        addFragments(mTabsAdapter);
         mPager.setAdapter(mTabsAdapter);
         mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -337,12 +315,15 @@ public class MainActivity extends AppCompatActivity implements Observer{
         }
     }
 
-    private void addTabs(TabsAdapter ta) {
-        //TODO : // CATEGORIES NOT BE CALLED FROM ARTICLELISTFRAGEMENT
-        for (String category :Constants.CATEGORIES) {
-            Bundle args = new Bundle();
-            args.putString(ArticleListFragment.ARTICLE_CATEGORY_KEY, category);
-            ta.addTab(ArticleListFragment.class, args);
+
+    /* Creates "Constants.CATEGORIES.length" number of fragments to be attached to the tabs adapter*/
+    private void addFragments(TabsAdapter ta){
+        for(String category :Constants.CATEGORIES){
+            ArticleListFragment fragment = new ArticleListFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString(Constants.ARTICLE_CATEGORY_KEY, category);
+            fragment.setArguments(bundle);
+            ta.addFragment(fragment);
         }
     }
 
