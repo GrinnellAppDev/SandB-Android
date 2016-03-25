@@ -1,5 +1,6 @@
 package edu.grinnell.sandb.Activities;
 
+
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -113,19 +114,16 @@ public class MainActivity extends AppCompatActivity implements Observer{
         }
     }
 
-
-    @Override
-    public void update(Observable observable, Object data) {
-        Snackbar.make(mCoordinatorLayout,Constants.SnackBarMessages.CONNECTED.toString(),
-                Snackbar.LENGTH_SHORT).show();
-    }
-
     @Override
     public void onSaveInstanceState(Bundle state) {
         state.putInt(SELECTED_TAB, mPager.getCurrentItem());
         super.onSaveInstanceState(state);
     }
 
+    @Override
+    public void update(Observable observable, Object data) {
+    // TODO : Implement Action to take upon observing data changepull Navigation drawer list items?
+    }
 
     /*
         Custom FragmentPagerAdapter to handle the category tabs
@@ -144,7 +142,6 @@ public class MainActivity extends AppCompatActivity implements Observer{
 
         @Override
         public int getCount() {
-            //return tabs.size();
            return fragments.size();
         }
 
@@ -158,8 +155,13 @@ public class MainActivity extends AppCompatActivity implements Observer{
             return Constants.CATEGORIES[position];
         }
 
+        @Override
+        public int getItemPosition(Object item){
+            return POSITION_NONE;
+        }
+
         /*
-            Refresh articles
+            Refresh articles TODO:Deprecate this method
          */
         public void refresh() {
             for (int i = 0; i < getCount(); i++) {
@@ -170,10 +172,12 @@ public class MainActivity extends AppCompatActivity implements Observer{
             }
         }
 
+        /* TODO :Deprecate this method */
         private String getFragmentTag(int pos) {
             return "android:switcher:" + R.id.pager + ":" + pos;
         }
 
+        /* TODO : Deprecate this method */
         public void setRefreshing(boolean refreshing) {
             List<Fragment> fragments = getSupportFragmentManager().getFragments();
             for (Fragment fragment : fragments) {
@@ -185,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements Observer{
 
 
     /*
-        Update all articles
+        Update all articles //TODO :Deprecate this method
      */
     public void updateArticles() {
         //TODO: Refactor updateArticles to use HttpClient service calls
@@ -217,14 +221,24 @@ public class MainActivity extends AppCompatActivity implements Observer{
         }
     }
 
+    /**
+     * Gets the base view for the main activity.
+     *
+     * This is useful when implementing SnackBar Messages to the base view from outside of the
+     * main activity.
+     * @return
+     */
+    public View getRootView(){
+        return mCoordinatorLayout;
+    }
+
 
 
     /* Private Methods */
-
     private void initializeNetworkClient(){
         this.networkClient = new NetworkClient();
         this.networkClient.addObserver(this);
-        this.networkClient.deleteLocalCache();
+        this.networkClient.deleteLocalCache();//TODO : Must we delete the cache upon start up?
     }
 
     private void setLollipopTransitions() {
@@ -312,17 +326,14 @@ public class MainActivity extends AppCompatActivity implements Observer{
             // start off at the 'All' page
             mPager.setCurrentItem(0, false);
             mDrawerList.setItemChecked(0, true);
+
         }
     }
-
 
     /* Creates "Constants.CATEGORIES.length" number of fragments to be attached to the tabs adapter*/
     private void addFragments(TabsAdapter ta){
         for(String category :Constants.CATEGORIES){
-            ArticleListFragment fragment = new ArticleListFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString(Constants.ARTICLE_CATEGORY_KEY, category);
-            fragment.setArguments(bundle);
+            ArticleListFragment fragment = ArticleListFragment.newInstance(networkClient,category);
             ta.addFragment(fragment);
         }
     }
