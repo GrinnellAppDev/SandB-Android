@@ -8,6 +8,8 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.orm.SugarRecord;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -44,8 +46,9 @@ import retrofit2.http.Query;
  * @see java.util.Collections
  * @see edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI
  * @see Observable
+ * @see Serializable
  */
-public class WordPressService extends Observable implements RemoteServiceAPI  {
+public class WordPressService extends Observable implements RemoteServiceAPI,Serializable {
 
     /* Class Fields */
     private Retrofit retrofit;

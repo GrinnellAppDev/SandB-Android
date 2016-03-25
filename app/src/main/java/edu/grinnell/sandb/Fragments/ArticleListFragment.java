@@ -1,6 +1,9 @@
 package edu.grinnell.sandb.Fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
@@ -38,22 +41,27 @@ public class ArticleListFragment extends Fragment implements Observer {
     private SwipeRefreshLayout pullToRefresh;
     private static final String TAG = "ArticleListFragment";
     private NetworkClient networkClient;
+    private CoordinatorLayout  mainActivityCoordinatorLayout;
+    private Bundle args;
 
+    public static ArticleListFragment newInstance(NetworkClient client,String category){
+        ArticleListFragment fragment = new ArticleListFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(Constants.KEY_CLIENT,client);
+        bundle.putString(Constants.ARTICLE_CATEGORY_KEY, category);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        networkClient = new NetworkClient();
-        networkClient.addObserver(this);
-        Bundle b = getArguments();
-
-        /* Set the category of this fragment */
-        mCategory = null;
-        if (b != null)
-            mCategory = Constants.titleToKey.get(b.getString(Constants.ARTICLE_CATEGORY_KEY));
+        args = getArguments();
+        initializeNetworkClient();
+        setCategory();
         populateListData();
-
         mActivity = (MainActivity) getActivity();
+        mainActivityCoordinatorLayout = (CoordinatorLayout) mActivity.getRootView();
         mAdapter = new ArticleRecyclerViewAdapter((MainActivity) getActivity(),
                 R.layout.articles_row, mData);
     }
@@ -88,6 +96,8 @@ public class ArticleListFragment extends Fragment implements Observer {
     @Override
     public void onActivityCreated(Bundle ofJoy) {
         super.onActivityCreated(ofJoy);
+        Snackbar.make(mainActivityCoordinatorLayout,
+                Constants.SnackBarMessages.CHECK_UPDATES.toString(), Snackbar.LENGTH_INDEFINITE).show();
     }
 
     @Override
@@ -118,15 +128,21 @@ public class ArticleListFragment extends Fragment implements Observer {
     @Override
     public void update(Observable observable, Object data) {
         SyncMessage message = (SyncMessage) data;
-        if(message != null){
+        if(message != null && mCategory.equals(Constants.CATEGORIES[0])){
             mData = (List<Article>)((SyncMessage) data).getMessageData();
-            mAdapter.notifyDataSetChanged();
+            Snackbar.make(mainActivityCoordinatorLayout,Constants.SnackBarMessages.FOUND_NEW.toString(),
+                    Snackbar.LENGTH_SHORT).show();
         }
+        else {
+            mData = networkClient.getArticles(mCategory);
+        }
+        mAdapter.updateData(mData);
 
     }
 
     /* Update the article list TODO : Deprecate this */
     public void update() {
+
         mData = loadDataFromCache(mCategory);
         mAdapter.notifyDataSetChanged();
     }
@@ -157,6 +173,23 @@ public class ArticleListFragment extends Fragment implements Observer {
     // Retrieve the articles for a given category from the SQLite database TODO:Deprecate this
     private List<Article> loadDataFromCache(String category) {
         return DatabaseUtil.getArticlesByCategory(category);
+    }
+
+    private void initializeNetworkClient() {
+        if(args != null){
+            networkClient = (NetworkClient) args.getSerializable(Constants.KEY_CLIENT);
+        }
+        else {
+            networkClient = new NetworkClient();
+            networkClient.addObserver(mActivity);
+        }
+        networkClient.addObserver(this);
+    }
+    private void setCategory() {
+        /* Set the category of this fragment */
+        mCategory = null;
+        if (args != null)
+            mCategory = Constants.titleToKey.get(args.getString(Constants.ARTICLE_CATEGORY_KEY));
     }
 
 }

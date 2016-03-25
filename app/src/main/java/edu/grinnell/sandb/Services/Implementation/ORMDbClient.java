@@ -1,5 +1,6 @@
 package edu.grinnell.sandb.Services.Implementation;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,12 +19,14 @@ import com.orm.query.Select;
  *
  * @author Albert Owusu-Asare
  * @version 1.1 Wed Mar 16 19:03:18 CDT 2016
+ * @see LocalCacheClient
+ * @see Serializable
  */
-public class ORMDbClient implements LocalCacheClient {
+public class ORMDbClient implements LocalCacheClient,Serializable {
     /* Sugar ORM order convention leaves a space before the specified order*/
     private static final String ASCENDING = " ASC";
     private static final String DESCENDING = " DSC";
-    private static final String ALL ="ALL";
+    private static final String ALL ="all";
     private static final int DEFAULT_NUM_ARTICLES_PER_PAGE = 50;
     private int numArticlesPerPage;
     public ORMDbClient(){

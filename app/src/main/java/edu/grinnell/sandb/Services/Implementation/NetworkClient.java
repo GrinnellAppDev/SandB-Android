@@ -2,6 +2,7 @@ package edu.grinnell.sandb.Services.Implementation;
 
 import android.util.Log;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -28,7 +29,7 @@ import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
  * @see Observer
  * @see SyncMessage
  */
-public class NetworkClient extends Observable implements Observer, AppNetworkClientAPI {
+public class NetworkClient extends Observable implements Observer, AppNetworkClientAPI, Serializable {
     private LocalCacheClient localClient;
     private RemoteServiceAPI remoteClient;
     private int numArticlesPerPage;
