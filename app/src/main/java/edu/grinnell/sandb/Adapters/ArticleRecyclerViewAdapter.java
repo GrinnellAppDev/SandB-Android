@@ -124,4 +124,12 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
             date = (TextView) itemView.findViewById(R.id.tv_date);
         }
     }
+
+    public void updateData(List<Article> newData) {
+        if(mData != null) {
+            mData.clear();
+            mData.addAll(newData);
+            notifyDataSetChanged();
+        }
+    }
 }

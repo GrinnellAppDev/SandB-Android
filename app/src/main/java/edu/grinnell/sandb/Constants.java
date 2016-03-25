@@ -19,6 +19,7 @@ public class Constants {
     public static final String JSON_API_URL =
             "http://www.thesandb.com/api/get_recent_posts?count=50/";
     public static final int DEFAULT_NUM_ARTICLES_PER_PAGE = 50;
+    public static String KEY_CLIENT = "Client"; // Key for bundling the client object in a fragment
 
     /* Numeric Constants */
     public static final int ZERO = 0;
@@ -48,7 +49,10 @@ public class Constants {
     /* Snack Bar Messages */
 
     public enum SnackBarMessages{
-        CONNECTED("Connection Established");
+        CONNECTED("Connection Established"),
+        CHECK_UPDATES("Checking for New Articles ..."),
+        FOUND_NEW("Found new articles.."),
+        NEW_STORIES("New Stories");
         private final String name;
 
         private SnackBarMessages(String s) {
