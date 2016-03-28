@@ -21,14 +21,13 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
 import com.astuetz.PagerSlidingTabStrip;
 import com.crashlytics.android.Crashlytics;
 import com.flurry.android.FlurryAgent;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import edu.grinnell.sandb.Services.ArticleFetchTask;
 import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.DialogSettings;
 import edu.grinnell.sandb.Fragments.ArticleListFragment;
@@ -49,14 +48,12 @@ import edu.grinnell.sandb.Util.VersionUtil;
 public class MainActivity extends AppCompatActivity implements Observer{
 
     //Fields
-    private static final String TAG = "MainActivity";
     private static final String SELECTED_TAB = "selected_tab";
     private ViewPager mPager;
     private TabsAdapter mTabsAdapter;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private CoordinatorLayout mCoordinatorLayout;
-    private boolean mUpdateInProgress;
     NetworkClient networkClient;
 
     @Override
@@ -159,67 +156,8 @@ public class MainActivity extends AppCompatActivity implements Observer{
         public int getItemPosition(Object item){
             return POSITION_NONE;
         }
-
-        /*
-            Refresh articles TODO:Deprecate this method
-         */
-        public void refresh() {
-            for (int i = 0; i < getCount(); i++) {
-                Fragment f = getSupportFragmentManager().findFragmentByTag(
-                        getFragmentTag(i));
-                if (f != null)
-                    ((ArticleListFragment) f).update();
-            }
-        }
-
-        /* TODO :Deprecate this method */
-        private String getFragmentTag(int pos) {
-            return "android:switcher:" + R.id.pager + ":" + pos;
-        }
-
-        /* TODO : Deprecate this method */
-        public void setRefreshing(boolean refreshing) {
-            List<Fragment> fragments = getSupportFragmentManager().getFragments();
-            for (Fragment fragment : fragments) {
-                if (fragment != null)
-                    ((ArticleListFragment) fragment).setRefreshing(refreshing);
-            }
-        }
     }
 
-
-    /*
-        Update all articles //TODO :Deprecate this method
-     */
-    public void updateArticles() {
-        //TODO: Refactor updateArticles to use HttpClient service calls
-        if (!mUpdateInProgress) {
-            String[] params = {Constants.JSON_API_URL};
-            ArticleFetchTask task = new ArticleFetchTask(getApplicationContext()) {
-
-                @Override
-                protected void onPreExecute() {
-                    super.onPreExecute();
-                    mTabsAdapter.setRefreshing(true);
-                    mUpdateInProgress = true;
-                }
-
-                @Override
-                protected void onPostExecute(Integer status) {
-                    super.onPostExecute(status);
-                    if (status != 0) {
-                        Snackbar.make(mCoordinatorLayout, "Error downloading articles", Snackbar.LENGTH_LONG).show();
-                    }
-                    // Clear the loading bar when the articles are loaded
-                    mUpdateInProgress = false;
-                    mTabsAdapter.setRefreshing(false);
-                    mTabsAdapter.refresh();
-                    Snackbar.make(mCoordinatorLayout, "Articles updated", Snackbar.LENGTH_SHORT).show();
-                }
-            };
-            task.execute(params);
-        }
-    }
 
     /**
      * Gets the base view for the main activity.

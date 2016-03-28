@@ -20,6 +20,7 @@ public class Constants {
             "http://www.thesandb.com/api/get_recent_posts?count=50/";
     public static final int DEFAULT_NUM_ARTICLES_PER_PAGE = 50;
     public static String KEY_CLIENT = "Client"; // Key for bundling the client object in a fragment
+    public static final int DEFAULT_HTTP_CODE = 200;
 
     /* Numeric Constants */
     public static final int ZERO = 0;
@@ -55,7 +56,7 @@ public class Constants {
         NEW_STORIES("New Stories");
         private final String name;
 
-        private SnackBarMessages(String s) {
+        SnackBarMessages(String s) {
             name = s;
         }
 
@@ -85,6 +86,28 @@ public class Constants {
         titleToKey.put("Opinion", "Opinion");
         titleToKey.put("Sports", "Sports");
         CATEGORIES = titleToKey.keySet().toArray(new String[titleToKey.size()]);
+    }
+
+    public enum ArticleCategories {
+        ALL("All"),
+        NEWS("News"),
+        ARTS("Arts"),
+        COMMUNITY("Community"),
+        FEATURES("Features"),
+        OPINION("Opinion"),
+        SPORTS("Sports");
+        private final String name;
+        ArticleCategories(String s) {
+            name = s;
+        }
+
+        public boolean equalsName(String otherName) {
+            return (otherName == null) ? false : name.equals(otherName);
+        }
+
+        public String toString() {
+            return this.name;
+        }
     }
 
 }

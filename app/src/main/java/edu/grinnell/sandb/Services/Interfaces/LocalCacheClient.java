@@ -81,4 +81,13 @@ public interface LocalCacheClient {
     void deleteAllEntries(String tableName);
 
     int getNumArticlesPerPage();
+
+    /**
+     * Returns a list of Articles posted from {@code date} and belonging to the category
+     * {@code category}
+     * @param category
+     * @param date
+     * @return the list of articles satisfying the query.
+     */
+    List<Article> getArticlesAfter(String category,String date);
 }

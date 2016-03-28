@@ -63,4 +63,8 @@ public class QueryResponse {
         sb.append("}");
         return sb.toString();
     }
+
+    public Article getFirstPost(){
+        return this.articles.get(0);
+    }
 }

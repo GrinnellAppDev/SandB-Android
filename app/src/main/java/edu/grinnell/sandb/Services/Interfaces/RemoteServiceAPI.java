@@ -24,8 +24,9 @@ public interface RemoteServiceAPI {
     /**
      * Fetches all the articles pushed to the remote database after a set date
      * @param date the date after which to get all articles. DateTime string is in iso8601 format
+     * @param category the category that
      */
-    void getAfter(String date);
+    void getAfter(String date,String category);
 
     /**
      * Fetches all the Articles from the remote server
@@ -66,6 +67,7 @@ public interface RemoteServiceAPI {
     /**
      * Makes sure that the local client is synced to the remote client
      * @param localFirst
+     * @param category the category that we are trying to sync data for
      */
-    void syncWithLocalCache(Article localFirst);
+    void syncWithLocalCache(Article localFirst,String category);
 }
