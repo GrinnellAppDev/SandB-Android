@@ -25,7 +25,7 @@ import com.orm.query.Select;
 public class ORMDbClient implements LocalCacheClient,Serializable {
     /* Sugar ORM order convention leaves a space before the specified order*/
     private static final String ASCENDING = " ASC";
-    private static final String DESCENDING = " DSC";
+    private static final String DESCENDING = " DESC";
     private static final String ALL ="all";
     private static final int DEFAULT_NUM_ARTICLES_PER_PAGE = 50;
     private int numArticlesPerPage;
@@ -52,9 +52,10 @@ public class ORMDbClient implements LocalCacheClient,Serializable {
 
     @Override
     public Article getFirst() {
-        List<Article> articles= Article.find(Article.class, null, null, null,
-                "pubDate"+ASCENDING, "1");
-        return !(articles == null) ? articles.get(0) : null;
+        //SELECT * FROM Table ORDER BY date(dateColumn) DESC Limit 1 datetime(datetimeColumn)
+        List<Article > articles =Select.from(Article.class).orderBy("datetime(pub_date)"+DESCENDING)
+                .limit("1").list();
+        return ((articles != null) && !articles.isEmpty()) ? articles.get(0) : null;
     }
 
     @Override
@@ -67,7 +68,7 @@ public class ORMDbClient implements LocalCacheClient,Serializable {
                 .where(Condition.prop("category").eq(categoryName));
         List<Article> articles = categoryQuery.list();
 
-        return !(articles == null) ? articles : new ArrayList();
+        return (articles != null) ? articles : new ArrayList();
     }
 
     @Override
@@ -88,7 +89,8 @@ public class ORMDbClient implements LocalCacheClient,Serializable {
 
     @Override
     public boolean isCacheEmpty() {
-        return isArticleCacheEmpty() || isCategoryCacheEmpty();
+        //return isArticleCacheEmpty() || isCategoryCacheEmpty();
+        return isArticleCacheEmpty();
     }
 
     @Override
@@ -109,11 +111,19 @@ public class ORMDbClient implements LocalCacheClient,Serializable {
         return numArticlesPerPage;
     }
 
+    @Override
+    public List<Article> getArticlesAfter(String category, String date) {
+        return null;
+    }
+
     /**
      * Checks if the article cache is empty
+     * SELECT COUNT(*) FROM sqlite_master WHERE type = ? AND name = ?", new String[] {"table", tableName}
+     * Note.executeQuery("VACUUM");
      */
     private boolean isArticleCacheEmpty(){
-        return (getFirst() == null);
+        return Article.count(Article.class,null,null) == Constants.ZERO;
+       // return (getFirst() == null);
     }
 
     /**
@@ -121,9 +131,7 @@ public class ORMDbClient implements LocalCacheClient,Serializable {
      * @return
      */
     private boolean isCategoryCacheEmpty(){
-        List<ArticleCategory> articles= Article.find(ArticleCategory.class, null, null, null,
-                "categoryName"+ASCENDING, "1");
-        return !(articles == null && articles.isEmpty());
+        return ArticleCategory.count(ArticleCategory.class,null,null) == Constants.ZERO;
     }
 
 }

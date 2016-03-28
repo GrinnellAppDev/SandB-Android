@@ -1,9 +1,7 @@
 package edu.grinnell.sandb.Fragments;
 
-import android.app.Activity;
+
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -24,10 +23,22 @@ import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Services.Implementation.NetworkClient;
 import edu.grinnell.sandb.Services.Implementation.SyncMessage;
-import edu.grinnell.sandb.Util.DatabaseUtil;
 
-/*
-    Custom Fragment to show the list of all Articles
+/**
+ *  Custom Fragment to show the list of all Articles.
+ *
+ *  <p> This class is responsible for defining and creating the views that hold the
+ *  respective articles. Each category of Articles will have a corresponding @code{ArticleListFragment}
+ *  instance.The respective @code{ArticleListFragment} instances will house the respective data
+ *  for each category. Each @code{ArticleListFragment} instance is also an observer. As a result
+ *  each @code{ArticleListFragment} is able to listen for any updates in the data source and
+ *  dynamically pull in new data when necessary</p>
+ *
+ *  @Author Prabir
+ *  @Author Albert Owusu-Asare
+ *  @see Fragment
+ *  @see Observer
+ *
  */
 public class ArticleListFragment extends Fragment implements Observer {
 
@@ -39,11 +50,13 @@ public class ArticleListFragment extends Fragment implements Observer {
     private ArticleRecyclerViewAdapter mAdapter;
     private List<Article> mData;
     private SwipeRefreshLayout pullToRefresh;
-    private static final String TAG = "ArticleListFragment";
     private NetworkClient networkClient;
-    private CoordinatorLayout  mainActivityCoordinatorLayout;
     private Bundle args;
+    private SwipeRefreshLayout.OnRefreshListener swipeRefreshListener;
 
+    /* This method provides a convenient means of instantiating a new object by handling the
+    bundling of the necessary parameters locally instead of having to do so externally.(Outside of
+    this class.) */
     public static ArticleListFragment newInstance(NetworkClient client,String category){
         ArticleListFragment fragment = new ArticleListFragment();
         Bundle bundle = new Bundle();
@@ -59,9 +72,8 @@ public class ArticleListFragment extends Fragment implements Observer {
         args = getArguments();
         initializeNetworkClient();
         setCategory();
-        populateListData();
+        mData= new ArrayList<>();
         mActivity = (MainActivity) getActivity();
-        mainActivityCoordinatorLayout = (CoordinatorLayout) mActivity.getRootView();
         mAdapter = new ArticleRecyclerViewAdapter((MainActivity) getActivity(),
                 R.layout.articles_row, mData);
     }
@@ -73,31 +85,30 @@ public class ArticleListFragment extends Fragment implements Observer {
         // Create new view and store inflated layout in a View.
         View rootView = inflater.inflate(R.layout.fragment_article_list,
                 container, false);
-
         // set up the recycler view
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv);
         StaggeredGridLayoutManager layoutManager =
                 new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
-
         // set up pull-to-refresh
         pullToRefresh = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefresh);
         pullToRefresh.setColorSchemeResources(R.color.gred,
                 R.color.accent, R.color.primary);
-        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        swipeRefreshListener =  new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                networkClient.getArticles(mCategory);
+               mData = networkClient.getArticles(mCategory);
+                Log.i("Refresh Listener", mCategory + " "+ mData.size());
+                mAdapter.updateData(mData);
             }
-        });
+        };
+        pullToRefresh.setOnRefreshListener(swipeRefreshListener);
         return rootView;
     }
 
     @Override
     public void onActivityCreated(Bundle ofJoy) {
         super.onActivityCreated(ofJoy);
-        Snackbar.make(mainActivityCoordinatorLayout,
-                Constants.SnackBarMessages.CHECK_UPDATES.toString(), Snackbar.LENGTH_INDEFINITE).show();
     }
 
     @Override
@@ -107,9 +118,10 @@ public class ArticleListFragment extends Fragment implements Observer {
 
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
-            // setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
+        triggerSwipeRefresh();
     }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -118,61 +130,31 @@ public class ArticleListFragment extends Fragment implements Observer {
             outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
         }
     }
-
-    //Configure pull-to-refresh
-    public void setRefreshing(boolean refreshing) {
-        pullToRefresh.setRefreshing(refreshing);
-    }
-
     /* This method is called whenever the observable updates its state */
     @Override
     public void update(Observable observable, Object data) {
         SyncMessage message = (SyncMessage) data;
-        if(message != null && mCategory.equals(Constants.CATEGORIES[0])){
-            mData = (List<Article>)((SyncMessage) data).getMessageData();
-            Snackbar.make(mainActivityCoordinatorLayout,Constants.SnackBarMessages.FOUND_NEW.toString(),
-                    Snackbar.LENGTH_SHORT).show();
+        if(message != null && message.getMessageData() != null) {
+            Log.i("Fragment Update",message.getCategory());
+            if (mCategory.equals(message.getCategory())){
+                mData = (List<Article>) ((SyncMessage) data).getMessageData();
+            } else {
+                mData = networkClient.getArticles(mCategory);
+            }
+            mAdapter.updateData(mData);
         }
-        else {
-            mData = networkClient.getArticles(mCategory);
+        if(pullToRefresh.isRefreshing()) {
+            pullToRefresh.setRefreshing(false);
         }
-        mAdapter.updateData(mData);
-
     }
-
-    /* Update the article list TODO : Deprecate this */
-    public void update() {
-
-        mData = loadDataFromCache(mCategory);
-        mAdapter.notifyDataSetChanged();
-    }
-
-    /* If no articles are available, notify the user  TODO : Deprecate this*/
-    public void setEmptyText(String text) {
-        //TextView empty = (TextView) mRecyclerView.getEmptyView();
-        //empty.setText(text);
-        // TODO: 2/7/16  Don't forget
-    }
-
 
     /* Private Helper methods */
 
-    private void populateListData() {
-        Log.i(TAG, "Loading data for the '" + mCategory + "' category..");
-        if(mCategory.equals("All") && Constants.FIRST_CALL_TO_UPDATE){
-            Constants.FIRST_CALL_TO_UPDATE = false;
-            networkClient.firstTimeSyncLocalAndRemoteData();
-        } else {
-            mData = networkClient.getArticles(mCategory);
-        }
-        if (mData == null) {
-            mData = new ArrayList<Article>();
-        }
-    }
-
-    // Retrieve the articles for a given category from the SQLite database TODO:Deprecate this
-    private List<Article> loadDataFromCache(String category) {
-        return DatabaseUtil.getArticlesByCategory(category);
+    private void setCategory() {
+        /* Set the category of this fragment */
+        mCategory = null;
+        if (args != null)
+            mCategory = Constants.titleToKey.get(args.getString(Constants.ARTICLE_CATEGORY_KEY));
     }
 
     private void initializeNetworkClient() {
@@ -185,11 +167,19 @@ public class ArticleListFragment extends Fragment implements Observer {
         }
         networkClient.addObserver(this);
     }
-    private void setCategory() {
-        /* Set the category of this fragment */
-        mCategory = null;
-        if (args != null)
-            mCategory = Constants.titleToKey.get(args.getString(Constants.ARTICLE_CATEGORY_KEY));
+    /*
+    This method programmatically triggers the swipe  functionality. This is useful in checking
+     for new data when the fragment loads initially. See swipeRefreshListener.onRefresh()
+      */
+    private void triggerSwipeRefresh() {
+        pullToRefresh.post(new Runnable() {
+            @Override
+            public void run() {
+                Log.i("OnViewCreated", mCategory);
+                pullToRefresh.setRefreshing(true);
+                swipeRefreshListener.onRefresh();
+            }
+        });
     }
 
 }

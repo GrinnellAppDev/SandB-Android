@@ -78,8 +78,25 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
     }
 
     @Override
-    public void  getAfter(String date) {
-        makeAsyncCall(restService.postsAfter(date));
+    public void  getAfter(final String date,final String category) {
+        Call<QueryResponse> call = restService.postsAfter(date);
+        call.enqueue(new Callback<QueryResponse>() {
+            @Override
+            public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                int code = response.code();
+                List<Article> articles = response.body().getPosts();
+                localCacheClient.saveArticles(articles);
+                SyncMessage message = new SyncMessage(
+                        code,category,localCacheClient.getArticlesAfter(category,date));
+                setChanged();
+                notifyObservers(message);
+            }
+
+            @Override
+            public void onFailure(Call<QueryResponse> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override
@@ -89,7 +106,7 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
 
     @Override
     public void getAll(int page, int count) {
-        makeAsyncCall(restService.posts(page,count));
+        makeAsyncCall(restService.posts(page,count),Constants.ArticleCategories.ALL.toString());
     }
 
     @Override
@@ -110,24 +127,29 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
     }
 
     @Override
-    public void syncWithLocalCache(Article localFirst) {
+    public void syncWithLocalCache(final Article localFirst, final String category) {
+        /* The local cache might not be updated yet due to an ongoing sync process in the background.
+           We return and use the results of the ongoing sync process*/
         if(localFirst == null) {
-            firstTimeSyncWithLocalCache();
             return;
         }
-        SyncMessage message;
-        Article remoteFirst = null;
-        if(localFirst.equals(remoteFirst)){
-                message = new SyncMessage(null);
 
-        } else {
-            this.getAfter(localFirst.getPubDate());
-            localCacheClient.saveArticles(articles);
-            message = new SyncMessage((localCacheClient.getAll()));
-        }
+        Call<QueryResponse> call = restService.posts(Constants.ONE,Constants.ONE);
+        call.enqueue(new Callback<QueryResponse>() {
+            @Override
+            public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                Article remoteFirst = response.body().getFirstPost();
+                if (!localFirst.equals(remoteFirst)) {
+                    getAfter(localFirst.getPubDate(),category);
+                }
+            }
 
-        notifyObservers(message);
-
+            @Override
+            public void onFailure(Call<QueryResponse> call, Throwable t) {
+                Log.e("Remote Service Failure:",category);
+                t.printStackTrace();
+            }
+        });
     }
 
     public void firstTimeSyncWithLocalCache() {
@@ -146,27 +168,25 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
                 .build();
     }
 
-    private void makeAsyncCall(Call<QueryResponse> call) {
+    private void makeAsyncCall(Call<QueryResponse> call, final String category) {
         call.enqueue(new Callback<QueryResponse>() {
             @Override
             public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
-                Log.d("Call back success", "makeAsyncCall()");
+                Log.d("makeAsyncCall success", "makeAsyncCall()");
                 SyncMessage message;
                 QueryResponse responseBody = response.body();
                 List<Article> posts = responseBody.getPosts();
                 articles.addAll(posts);
-                System.out.println(responseBody);
                 localCacheClient.saveArticles(posts);
                 setChanged();
-                Log.d("Observer change", "client ovserver : " +hasChanged());
-                message = new SyncMessage(localCacheClient.getAll());
+                message = new SyncMessage(response.code(),category,localCacheClient.getAll());
                 notifyObservers(message);
 
             }
             @Override
             public void onFailure(Call<QueryResponse> call, Throwable t) {
                 //TODO : Implement Failure response SnackBar?
-                Log.e("Call back failure", "MakeAsynCall");
+                Log.e("makeAsyncCall Failure", category);
                 t.printStackTrace();
             }
         });

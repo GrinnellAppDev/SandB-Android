@@ -28,6 +28,7 @@ import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
  * @see edu.grinnell.sandb.Services.Interfaces.LocalCacheClient
  * @see Observer
  * @see SyncMessage
+ * @see Serializable
  */
 public class NetworkClient extends Observable implements Observer, AppNetworkClientAPI, Serializable {
     private LocalCacheClient localClient;
@@ -54,19 +55,19 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
 
     @Override
     public List<Article> getArticles(String category) {
-       // updateLocalCache(); TODO :fix bug with remote pull
+        updateLocalCache(category);
         return localClient.getArticlesByCategory(category.toLowerCase());
     }
 
     @Override
     public List<Article> getNextPage(String category, int currentPageNumber, int lastArticleId) {
-        updateLocalCache();
+        updateLocalCache(category);
         return localClient.getNextPage(category, currentPageNumber, lastArticleId);
     }
 
     @Override
     public List<String> getCategories() {
-        updateLocalCache();
+       // updateLocalCache();
         return localClient.getCategories();
     }
 
@@ -88,19 +89,19 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
     /**
      *  Updates the local cache when necessary with data from the remote server.
      */
-    public void updateLocalCache() {
-        if(localClient.isCacheEmpty()) {
-            remoteClient.getAll(currentPage, numArticlesPerPage);
+    public void updateLocalCache(String category) {
+        if(category.equals(Constants.ArticleCategories.ALL.toString())
+                && Constants.FIRST_CALL_TO_UPDATE) {
+            Constants.FIRST_CALL_TO_UPDATE = false;
+            firstTimeSyncLocalAndRemoteData();
+        }else {
+            syncLocalAndRemoteData(category);
         }
-        syncLocalAndRemoteData(false);
     }
 
-    public void syncLocalAndRemoteData(boolean firstCall){
-        Article localFirst = null;
-        if(!firstCall) {
-             localFirst= this.localClient.getFirst();
-        }
-        remoteClient.syncWithLocalCache(localFirst);
+    public void syncLocalAndRemoteData(String category){
+        Article localFirst= this.localClient.getFirst();
+        remoteClient.syncWithLocalCache(localFirst,category);
     }
     @Override
     public void update(Observable observable, Object data) {
