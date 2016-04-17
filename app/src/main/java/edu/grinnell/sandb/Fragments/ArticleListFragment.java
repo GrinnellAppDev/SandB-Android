@@ -11,10 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import edu.grinnell.sandb.Activities.MainActivity;
 import edu.grinnell.sandb.Adapters.ArticleRecyclerViewAdapter;
@@ -26,14 +23,14 @@ import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
 import edu.grinnell.sandb.Util.DatabaseUtil;
 import edu.grinnell.sandb.Util.NetworkUtil;
 
+import static edu.grinnell.sandb.Constants.*;
+
 /*
     Custom Fragment to show the list of all Articles
  */
 public class ArticleListFragment extends Fragment {
     //Fields
     public static String ARTICLE_CATEGORY_KEY = "category";
-    public static final Map<String, String> titleToKey = new LinkedHashMap<String, String>(); // LinkedHashMap retains insertion ordering
-    public static final String[] CATEGORIES;
     public MainActivity mActivity;
     public String mCategory;
     public static final String UPDATE = "edu.grinnell.sandb.UPDATE";
@@ -50,18 +47,6 @@ public class ArticleListFragment extends Fragment {
     NetworkClient mNetworkClient;
     LocalCacheClient mLocalClient;
 
-    // Fill in the a map to correspond to section tabs for the article list
-    static {
-        titleToKey.put("All", null);
-        titleToKey.put("News", "News");
-        titleToKey.put("Arts", "Arts");
-        titleToKey.put("Community", "Community");
-        titleToKey.put("Features", "Features");
-        titleToKey.put("Opinion", "Opinion");
-        titleToKey.put("Sports", "Sports");
-        CATEGORIES = titleToKey.keySet().toArray(new String[titleToKey.size()]);
-    }
-
 
     //Methods
     @Override
@@ -72,7 +57,8 @@ public class ArticleListFragment extends Fragment {
 
         mCategory = null;
         if (b != null)
-            mCategory = titleToKey.get(b.getString(ARTICLE_CATEGORY_KEY));
+
+            mCategory = CATEGORY_TITLE_TO_KEY.get(b.getString(ARTICLE_CATEGORY_KEY));
 
         // Retrieve the articles for the selected category
         //mData = loadDataFromCache(mCategory);

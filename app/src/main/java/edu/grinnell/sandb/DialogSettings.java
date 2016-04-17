@@ -26,6 +26,11 @@ public class DialogSettings {
         this.context = context;
     }
 
+    /**
+     * This is a callback to override
+     */
+    public void onSettingsSaved() {}
+
     public void show() {
         // show the settings dialog for text size
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -44,6 +49,7 @@ public class DialogSettings {
             public void onClick(DialogInterface dialog, int which) {
                 prefs.setArticleFontSize(radioIdToSize(fontRadioGroup.getCheckedRadioButtonId()));
                 dialog.dismiss();
+                onSettingsSaved();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
