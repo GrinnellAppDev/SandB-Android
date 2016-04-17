@@ -154,18 +154,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    // Return to the article list if a swipe motion is made
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        // TouchEvent dispatcher.
-        if (ArticleDetailFragment.gestureDetector != null) {
-            if (ArticleDetailFragment.gestureDetector.onTouchEvent(ev))
-                // If the gestureDetector handles the event, a swipe has been
-                // executed and no more needs to be done.
-                return true;
-        }
-        return super.dispatchTouchEvent(ev);
-    }
 
     /*
      * Async task to download the comments for an article. Unfortunately most

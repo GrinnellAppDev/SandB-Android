@@ -52,9 +52,6 @@ import edu.grinnell.sandb.Preferences.MainPrefs;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Util.DatabaseUtil;
 import edu.grinnell.sandb.Util.UniversalLoaderUtility;
-
-@SuppressLint("ClickableViewAccessibility")
-@TargetApi(Build.VERSION_CODES.FROYO)
 /*
     Custom Fragment to show Articles in details
  */
@@ -62,13 +59,6 @@ public class ArticleDetailFragment extends Fragment {
     //Fields
     public final static String FEED_LINK = null;
     public final static String ARTICLE_LINK = null;
-
-    //These variables will govern the touch gesture to return user to the article list
-    private static int scrnHeight;
-    private static final int SWIPE_MIN_DISTANCE = 300;
-    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
-    public static GestureDetector gestureDetector;
-    View.OnTouchListener gestureListener;
 
     public static final String ARTICLE_ID_KEY = "article_id";
     private Article mArticle;
@@ -102,35 +92,6 @@ public class ArticleDetailFragment extends Fragment {
         setRetainInstance(true);
 
         mFontSize = new MainPrefs(getContext()).getArticleFontSize();
-
-        // Scale the touch gesture listener sensitivty for the screen size
-        DisplayMetrics metrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay()
-                .getMetrics(metrics);
-
-        scrnHeight = metrics.heightPixels - 100;
-
-        //Initialize Gesture listener
-        gestureListener = new View.OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-                return gestureDetector.onTouchEvent(event);
-            }
-        };
-
-        // Apply a gesture detector to return to the article list on a horizonal screen swipe
-        gestureDetector = new GestureDetector(getActivity(),
-                new GestureDetector.SimpleOnGestureListener() {
-                    @Override
-                    public boolean onFling(MotionEvent e1, MotionEvent e2,
-                                           float velocityX, float velocityY) {
-                        if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
-                                && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                            getActivity().onBackPressed();
-                            return true;
-                        } else
-                            return false;
-                    }
-                });
 
 
         //Find the article in the sqlite database using the ID key
@@ -265,8 +226,6 @@ public class ArticleDetailFragment extends Fragment {
             addSectionViews(body, i, section, url);
         }
 
-        body.setOnTouchListener(gestureListener);
-
         Log.i(TAG, mArticle.getTitle());
     }
 
@@ -340,7 +299,6 @@ public class ArticleDetailFragment extends Fragment {
             };
 
             //Configure image view actions
-            imgView.setOnTouchListener(gestureListener);
             imgView.setOnClickListener(imgClick);
             imgView.setOnLongClickListener(imgHold);
 

@@ -2,7 +2,7 @@ package edu.grinnell.sandb.Model;
 
 import com.orm.SugarRecord;
 
-public class Comment extends SugarRecord<Comment> {
+public class Comment extends SugarRecord {
 
 	protected int commentId;
 	protected String link;

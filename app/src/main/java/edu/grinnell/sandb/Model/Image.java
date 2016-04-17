@@ -3,7 +3,7 @@ package edu.grinnell.sandb.Model;
 import com.orm.SugarRecord;
 
 /* Class to store the article images and image titles in a db */
-public class Image extends SugarRecord<Image> {
+public class Image extends SugarRecord {
 
 	protected String articleTitle;
 	protected String url;

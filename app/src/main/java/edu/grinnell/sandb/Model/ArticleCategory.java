@@ -6,7 +6,7 @@ import com.orm.SugarRecord;
 /**
  * Created by albertowusu-asare on 3/8/16.
  */
-public class ArticleCategory extends SugarRecord<ArticleCategory> {
+public class ArticleCategory extends SugarRecord {
     String title;
     public ArticleCategory(String title){
         this.title = title;

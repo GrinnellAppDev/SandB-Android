@@ -47,8 +47,6 @@ public class ArticleListFragment extends Fragment {
     NetworkClient mNetworkClient;
     LocalCacheClient mLocalClient;
 
-
-    //Methods
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 import edu.grinnell.sandb.Activities.ArticleDetailActivity;
@@ -59,6 +61,7 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
         final Article a = mData.get(position);
         if (a != null) {
             holder.image.setVisibility(View.VISIBLE);
+            /*
             Image articleImage = DatabaseUtil.getArticleImage(a);
 
             if (articleImage != null) {
@@ -66,6 +69,14 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
             } else {
                 holder.image.setImageResource(R.drawable.sb);
             }
+            */
+
+            Picasso.with(mActivity)
+                    .load(a.getThumbnail())
+                    .placeholder(R.drawable.sb)
+                    .error(R.drawable.sb)
+                    .into(holder.image);
+            Log.d("RecyclerView", "onBindViewHolder: " + a.getThumbnail());
 
             holder.title.setText(Html.fromHtml(a.getTitle()));
             holder.title.setPadding(3, 3, 3, 3);

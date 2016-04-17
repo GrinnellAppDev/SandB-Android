@@ -7,100 +7,108 @@ import com.orm.dsl.Ignore;
 
 import java.util.List;
 
-public class Article extends SugarRecord<Article> {
-	@SerializedName("id")
+public class Article extends SugarRecord {
+    @SerializedName("id")
     protected int article_id;
-	protected String title;
-	@SerializedName("url")
-	protected String link;
-	@SerializedName("content")
-	protected String body; //TODO : change body to content
-	@SerializedName("date")
-	protected String pub_date;
-	@SerializedName("excerpt")
-	protected String description;
+    protected String title;
+    @SerializedName("url")
+    protected String link;
+    @SerializedName("content")
+    protected String body; //TODO : change body to content
+    @SerializedName("date")
+    protected String pub_date;
+    @SerializedName("excerpt")
+    protected String description;
+    @SerializedName("thumbnail")
+    protected String thumbnail;
 
-	@Ignore
-	protected List<ArticleCategory> categories;
-	@Ignore
-	protected ArticleAuthor author;
 
-	/*Deprecate */
-	protected String category; //TODO : deprecate this field if not needed
-	protected transient String comments;
-	protected String aut;
+    @Ignore
+    protected List<ArticleCategory> categories;
+    @Ignore
+    protected ArticleAuthor author;
+
+    /*Deprecate */
+    protected String category; //TODO : deprecate this field if not needed
+    protected transient String comments;
+    protected String aut;
 
 
     public Article() {
     }
 
     public Article(String articleTitle, String articleBody) {
-		title = articleTitle;
-		body = articleBody;
+        title = articleTitle;
+        body = articleBody;
 
-	}
+    }
 
 
-	public Article(int id,String url, String title,String content,String date,String excerpt,
-				   List<ArticleCategory> categories, ArticleAuthor author){
-		this.article_id = id;
-		this.link = url;
-		this.title = title;
-		this.body = content;
-		this.pub_date = date;
-		this.description = excerpt;
-		this.categories = categories;
-		this.author = author;
-	}
+    public Article(int id, String url, String title, String content, String date, String excerpt,
+                   List<ArticleCategory> categories, ArticleAuthor author, String thumbnailUrl) {
+        this.article_id = id;
+        this.link = url;
+        this.title = title;
+        this.body = content;
+        this.pub_date = date;
+        this.description = excerpt;
+        this.categories = categories;
+        this.author = author;
+        this.thumbnail = thumbnailUrl;
+    }
 
-	public Article(String articleTitle, String articleLink,
-			String publicationDate, String category, String description,
-			String articleBody, String commentsLink, String author) {
-		this(articleTitle, articleBody);
-		this.link = articleLink;
-		this.pub_date = publicationDate;
-		this.category = category;
-		this.description = description;
-		this.comments = commentsLink;
-		//this.author = author;
-	}
+    public Article(String articleTitle, String articleLink,
+                   String publicationDate, String category, String description,
+                   String articleBody, String commentsLink, String author, String thumbnailUrl) {
+        this(articleTitle, articleBody);
+        this.link = articleLink;
+        this.pub_date = publicationDate;
+        this.category = category;
+        this.description = description;
+        this.comments = commentsLink;
+        //this.author = author;
+        this.thumbnail = thumbnailUrl;
+    }
 
-	public int getArticle_id() {
-		return article_id;
-	}
+    public int getArticle_id() {
+        return article_id;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public String getLink() {
-		return link;
-	}
+    public String getLink() {
+        return link;
+    }
 
-	public String getComments() {
-		return comments;
-	}
+    public String getComments() {
+        return comments;
+    }
 
-	public String getCategory() {
-		return category;
-	}
+    public String getCategory() {
+        return category;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public String getBody() {
-		return body;
-	}
+    public String getBody() {
+        return body;
+    }
 
-	public String getPub_date() {
-		return pub_date;
-	}
+    public String getPub_date() {
+        return pub_date;
+    }
 
-	public String getAuthor() {
-		//return author;
-		return aut;
-	}
+    public String getAuthor() {
+        return aut;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
 
 
     public void setArticle_id(int article_id) {
@@ -136,27 +144,29 @@ public class Article extends SugarRecord<Article> {
     }
 
     public void setAuthor(String author) {
-      //  this.author = author;
-		this.aut = author;
+        //  this.author = author;
+        this.aut = author;
     }
 
-	@Override
-	public String toString(){
-		StringBuffer sb = new StringBuffer();
-		sb.append("{ ");
-		sb.append(" id: " + this.id);
-		sb.append("   url: " + this.link);
-		sb.append("   title: " + this.title);
-		sb.append("   content: " + this.body);
-		sb.append("   excerpt: " + this.description);
-		sb.append("   date: " + this.pub_date);
-		sb.append("   categories: " + this.categories);
-		sb.append("   author " + this.author);
-		sb.append("}\n");
-		return sb.toString();
-	}
+    public void setThumbnail(String thumbnailUrl) {
+        this.thumbnail = thumbnailUrl;
+    }
 
-
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("{ ");
+        sb.append(" id: " + this.article_id);
+        sb.append("   url: " + this.link);
+        sb.append("   title: " + this.title);
+        sb.append("   content: " + this.body);
+        sb.append("   excerpt: " + this.description);
+        sb.append("   date: " + this.pub_date);
+        sb.append("   categories: " + this.categories);
+        sb.append("   author " + this.author);
+        sb.append("}\n");
+        return sb.toString();
+    }
 
 
 }

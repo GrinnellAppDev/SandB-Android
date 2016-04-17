@@ -31,6 +31,7 @@ public class JSONUtil {
             newArticle.setCategory(thisPost.getJSONArray("categories").getJSONObject(0).getString("title"));
             newArticle.setPub_date(thisPost.getString("date"));
             newArticle.setLink(thisPost.getString("url"));
+            newArticle.setThumbnail(thisPost.getString("thumbnail"));
             articles.add(newArticle);
 
         }

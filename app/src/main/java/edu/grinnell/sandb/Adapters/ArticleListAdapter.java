@@ -20,6 +20,10 @@ import edu.grinnell.sandb.Util.UniversalLoaderUtility;
 /*
 	List Adapter to populate the article list
 */
+
+/**
+ * TODO : THIS IS NOT USED ANYMORE!!
+ */
 public class ArticleListAdapter extends ArrayAdapter<Article> {
 	private MainActivity mActivity;
 	private List<Article> mData;
