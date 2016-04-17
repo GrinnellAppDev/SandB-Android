@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "edu.grinnell.sandb"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 23
     }
 
