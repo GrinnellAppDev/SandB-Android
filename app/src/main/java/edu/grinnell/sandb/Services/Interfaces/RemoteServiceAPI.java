@@ -28,19 +28,15 @@ public interface RemoteServiceAPI {
      */
     void getAfter(String date,String category);
 
-    /**
-     * Fetches all the Articles from the remote server
-     * @return a list of all the articles .
-     */
-   void  getAll();
 
     /**
      * Fetches all the articles from the remote server given a page number and a count of the
      * number of articles to return
      * @param page the page number
      * @param count the count of Articles to return
+     * @param lastArticleDate
      */
-    void  getAll(int page, int count);
+    void  getAll(int page, int count,String lastArticleDate);
 
     /**
      * Fetches all the articles from the remote server specifying which article fields to pull data.
@@ -70,4 +66,15 @@ public interface RemoteServiceAPI {
      * @param category the category that we are trying to sync data for
      */
     void syncWithLocalCache(Article localFirst,String category);
+
+    /**
+     * Sets the number of articles per page for each query made to the remote database.
+     * <p> This is useful in determining how many articles to query for each page.</p>
+     * @param numArticlesPerPage, the number of articles to query per page.
+     */
+    void setNumArticlesPerPage(int numArticlesPerPage);
+
+    void getNextPage(String category, int page, int numArticlesPerPage);
+    void initialize();
+
 }

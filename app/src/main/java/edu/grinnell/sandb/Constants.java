@@ -18,7 +18,7 @@ public class Constants {
             "https://public-api.wordpress.com/rest/v1.1/sites/www.thesandb.com/";
     public static final String JSON_API_URL =
             "http://www.thesandb.com/api/get_recent_posts?count=50/";
-    public static final int DEFAULT_NUM_ARTICLES_PER_PAGE = 50;
+    public static final int DEFAULT_NUM_ARTICLES_PER_PAGE = 10;
     public static String KEY_CLIENT = "Client"; // Key for bundling the client object in a fragment
     public static final int DEFAULT_HTTP_CODE = 200;
 
@@ -26,6 +26,9 @@ public class Constants {
     public static final int ZERO = 0;
     public static final int ONE = 1;
     public static final int FIRST_PAGE = ONE;
+
+    /* HTTP Acces Codes */
+    public static final int OK = 200;
 
     /* Table Names */
 
@@ -78,13 +81,13 @@ public class Constants {
     public static final String[] CATEGORIES;
 
     static {
-        titleToKey.put("All", "All");
-        titleToKey.put("News", "News");
-        titleToKey.put("Arts", "Arts");
-        titleToKey.put("Community", "Community");
-        titleToKey.put("Features", "Features");
-        titleToKey.put("Opinion", "Opinion");
-        titleToKey.put("Sports", "Sports");
+        titleToKey.put("All", "all");
+        titleToKey.put("News", "news");
+        titleToKey.put("Arts", "arts");
+        titleToKey.put("Community", "community");
+        titleToKey.put("Features", "features");
+        titleToKey.put("Opinion", "opinion");
+        titleToKey.put("Sports", "sports");
         CATEGORIES = titleToKey.keySet().toArray(new String[titleToKey.size()]);
     }
 
@@ -109,5 +112,12 @@ public class Constants {
             return this.name;
         }
     }
+
+    public enum UpdateType {
+        REFRESH,
+        NEXT_PAGE,
+        INITIALIZE;
+    }
+
 
 }

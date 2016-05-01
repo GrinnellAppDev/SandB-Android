@@ -1,6 +1,5 @@
 package edu.grinnell.sandb.Services.Implementation;
 
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 
 import com.google.gson.ExclusionStrategy;
@@ -13,7 +12,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -22,6 +23,7 @@ import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.QueryResponse;
 import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
 import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
+import edu.grinnell.sandb.Util.StringUtility;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -57,10 +59,11 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
     private final List<Article> articles = Collections.synchronizedList(new ArrayList<Article>());
     private int numArticlesPerPage;
     private int currentPageNumber;
+    private Map<String,Boolean> completedMap;
 
 
     public WordPressService(){
-        this(new ORMDbClient());
+        this(new SugarDbClient());
     }
 
     public WordPressService(LocalCacheClient localCacheClient){
@@ -69,45 +72,47 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
         this.localCacheClient = localCacheClient;
         this.numArticlesPerPage = localCacheClient.getNumArticlesPerPage();
         this.currentPageNumber = Constants.FIRST_PAGE;
+        this.completedMap = new HashMap<>();
+    }
+
+
+    @Override
+    public void getAll(final int page,int count, final String lastArticleDate) {
+        Call<QueryResponse> call  =restService.posts(page, count);
+        call.enqueue(new Callback<QueryResponse>() {
+            @Override
+            public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                int responseCode = response.code();
+                List<Article> posts = response.body().getPosts();
+                int numPosts = posts.size();
+                localCacheClient.saveArticles(posts);
+                localCacheClient.updateNumEntriesAll(numPosts, lastArticleDate);
+                SyncMessage message;
+                setChanged();
+                message = new SyncMessage(responseCode,Constants.ArticleCategories.ALL.toString()
+                        ,page,lastArticleDate);
+                notifyObservers(message);
+            }
+            @Override
+            public void onFailure(Call<QueryResponse> call, Throwable t) {
+                Log.e("Get All failure", t.getMessage());
+            }
+        });
     }
 
 
     @Override
     public void getFirst() {
-        getAll(Constants.ONE, Constants.ONE);
+      //  getAll(Constants.ONE, Constants.ONE);
     }
 
     @Override
     public void  getAfter(final String date,final String category) {
-        Call<QueryResponse> call = restService.postsAfter(date);
-        call.enqueue(new Callback<QueryResponse>() {
-            @Override
-            public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
-                int code = response.code();
-                List<Article> articles = response.body().getPosts();
-                localCacheClient.saveArticles(articles);
-                SyncMessage message = new SyncMessage(
-                        code,category,localCacheClient.getArticlesAfter(category,date));
-                setChanged();
-                notifyObservers(message);
-            }
-
-            @Override
-            public void onFailure(Call<QueryResponse> call, Throwable t) {
-
-            }
-        });
+          Call<QueryResponse> call = restService.postsAfter(date);
+          makeAsyncCall(call, category, date);
     }
 
-    @Override
-    public void getAll() {
-        getAll(currentPageNumber, numArticlesPerPage);
-    }
 
-    @Override
-    public void getAll(int page, int count) {
-        makeAsyncCall(restService.posts(page,count),Constants.ArticleCategories.ALL.toString());
-    }
 
     @Override
     public void getAll(List<String> fields) {
@@ -134,27 +139,137 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
             return;
         }
 
-        Call<QueryResponse> call = restService.posts(Constants.ONE,Constants.ONE);
+        Call<QueryResponse> call = restService.posts(Constants.ONE, Constants.ONE);
         call.enqueue(new Callback<QueryResponse>() {
             @Override
             public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                int responseCode = response.code();
                 Article remoteFirst = response.body().getFirstPost();
                 if (!localFirst.equals(remoteFirst)) {
-                    getAfter(localFirst.getPubDate(),category);
+                    Log.i("Equality Test", "Local and remoteNotEqual");
+                    getAfter(localFirst.getPubDate(), category);
+                } else {
+                    Log.i(category + " Equality Test", "Local and remote Equal");
+                    //SyncMessage message = new SyncMessage(responseCode,category,currentPageNumber,null);
+                    setChanged();
+                    notifyObservers();
+
                 }
             }
 
             @Override
             public void onFailure(Call<QueryResponse> call, Throwable t) {
-                Log.e("Remote Service Failure:",category);
+                Log.e("Remote Service Failure:", category);
                 t.printStackTrace();
             }
         });
     }
 
-    public void firstTimeSyncWithLocalCache() {
-        this.getAll();
+    @Override
+    public void setNumArticlesPerPage(int numArticlesPerPage) {
+        this.numArticlesPerPage = numArticlesPerPage;
     }
+
+
+
+    public void getNextPage(final String category, int page, int numArticlesPerPage){
+        Log.i("getNextPage()","Next Page called "+category);
+        Call<QueryResponse> call = restService.posts(category, page, numArticlesPerPage);
+        call.enqueue(new Callback<QueryResponse>() {
+            @Override
+            public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                int responseCode = response.code();
+                List<Article> articles = response.body().getPosts();
+
+                SyncMessage message = new SyncMessage(responseCode, category, articles);
+                message.setUpdateType(Constants.UpdateType.NEXT_PAGE);
+                setChanged();
+                notifyObservers(message);
+            }
+
+            @Override
+            public void onFailure(Call<QueryResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    @Override
+    public void initialize() {
+        Call<QueryResponse> call = restService.posts(1,20);
+        call.enqueue(new Callback<QueryResponse>() {
+            @Override
+            public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                Log.i("Remote Client", "Response Recieved");
+                int responseCode = response.code();
+                List<Article> articles = response.body().getPosts();
+                //System.out.println(articles);
+                localCacheClient.saveArticles(articles);
+                SyncMessage message =
+                        new SyncMessage(Constants.UpdateType.INITIALIZE,200,1,"All",null,null);
+                setChanged();
+                notifyObservers(message);
+
+               // sendMessage();
+            }
+
+            @Override
+            public void onFailure(Call<QueryResponse> call, Throwable t) {
+
+            }
+        });
+
+        Log.i("Remote Client","Calling initialize in Remote Client");
+     /*   for(String category : Constants.CATEGORIES){
+           getNext(category,0,10);
+        }
+        */
+
+    }
+
+    public  void sendMessage(){
+        Log.i("Remote Client", "Sending message to network client");
+        //List<Article> articles = localCacheClient.getAll();
+        Log.i("Remote Client", "Message body" + articles.size());
+
+        SyncMessage message = new SyncMessage(articles);
+        setChanged();
+        notifyObservers(message);
+    }
+
+    public boolean isFetchAllCompleted(){
+        for(Boolean value :completedMap.values()){
+            if(value == false) return false;
+        }
+        return true;
+    }
+
+    public void getNext(final String category, final int pageNumber,final int numArticlesPerPage){
+        Call<QueryResponse> call = restService.posts(category, pageNumber, numArticlesPerPage);
+        call.enqueue(new Callback<QueryResponse>() {
+            @Override
+            public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                int responseCode = response.code();
+                List<Article> articles = response.body().getPosts();
+                localCacheClient.saveArticles(articles);
+                setPullCompleted(category);
+                if(isFetchAllCompleted()){
+                    Log.i("RemoteClient", "Last category updated");
+                    sendMessage();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<QueryResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void setPullCompleted(String category) {
+        this.completedMap.put(category, true);
+    }
+
 
     /* Private Helper methods */
     private Retrofit initializeRetrofit() {
@@ -168,28 +283,28 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
                 .build();
     }
 
-    private void makeAsyncCall(Call<QueryResponse> call, final String category) {
+    private void makeAsyncCall(Call<QueryResponse> call, final String category,
+                              final String lastArticleDate) {
         call.enqueue(new Callback<QueryResponse>() {
-            @Override
-            public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
-                Log.d("makeAsyncCall success", "makeAsyncCall()");
-                SyncMessage message;
-                QueryResponse responseBody = response.body();
-                List<Article> posts = responseBody.getPosts();
-                articles.addAll(posts);
-                localCacheClient.saveArticles(posts);
-                setChanged();
-                message = new SyncMessage(response.code(),category,localCacheClient.getAll());
-                notifyObservers(message);
-
-            }
-            @Override
-            public void onFailure(Call<QueryResponse> call, Throwable t) {
-                //TODO : Implement Failure response SnackBar?
-                Log.e("makeAsyncCall Failure", category);
-                t.printStackTrace();
-            }
-        });
+        @Override
+        public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+            Log.d("makeAsyncCall success", "makeAsyncCall()");
+            int responseCode = response.code();
+            SyncMessage message;
+            QueryResponse responseBody = response.body();
+            List<Article> posts = responseBody.getPosts();
+            localCacheClient.saveArticles(posts);
+            setChanged();
+            message = new SyncMessage(responseCode,category,Constants.ZERO,lastArticleDate);
+            notifyObservers(message);
+        }
+        @Override
+        public void onFailure(Call<QueryResponse> call, Throwable t) {
+            //TODO : Implement Failure response SnackBar?
+            Log.e("makeAsyncCall Failure", category);
+            t.printStackTrace();
+        }
+    });
     }
 
      /* Private Classes  and interfaces */
@@ -199,6 +314,10 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
 
         @GET("posts/")
          Call<QueryResponse> postsAfter(@Query("after") String dateTime);
+         @GET("posts/")
+        // https://public-api.wordpress.com/rest/v1.1/sites/www.thesandb.com/posts/?category=%22news%22&page=1&number=4
+         Call<QueryResponse> posts(@Query("category") String category,@Query("page") int pageNumber,
+                                   @Query("number") int count);
      }
 
     /*

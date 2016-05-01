@@ -1,10 +1,13 @@
 package edu.grinnell.sandb.Services.Implementation;
 
+import android.net.Network;
 import android.util.Log;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -13,6 +16,7 @@ import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Services.Interfaces.AppNetworkClientAPI;
 import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
 import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
+import edu.grinnell.sandb.Util.StringUtility;
 
 /**
  * Implements the AppNetworkClientAPI interface and handles the main data requests of the
@@ -35,9 +39,11 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
     private RemoteServiceAPI remoteClient;
     private int numArticlesPerPage;
     private int currentPage;
+    private boolean syncing;
+    private String latestSyncedArticleDate;
 
     public NetworkClient(){
-        this(new ORMDbClient());
+        this(new SugarDbClient());
     }
 
     public NetworkClient(LocalCacheClient localCacheClient){
@@ -48,21 +54,32 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
         this.currentPage = 0;
         this.numArticlesPerPage = Constants.DEFAULT_NUM_ARTICLES_PER_PAGE;
         this.localClient = localClient;
-        this.remoteClient = remoteClient;
+        this.remoteClient = remoteClient;;
+        this.syncing = false;
+        this.latestSyncedArticleDate = null;
         addRemoteServiceListeners();
     }
 
 
     @Override
     public List<Article> getArticles(String category) {
-        updateLocalCache(category);
-        return localClient.getArticlesByCategory(category.toLowerCase());
+        //updateLocalCache(category);
+        return localClient.getArticlesByCategory(category);
     }
 
+    /*
     @Override
-    public List<Article> getNextPage(String category, int currentPageNumber, int lastArticleId) {
+    public void getNextPage(String category,int currentPageNumber) {
+       // updateLocalCache(category);
+        //return localClient.getNextPage(category, currentPageNumber, lastVisibleArticleDate);
+        remoteClient.getNextPage(category,currentPageNumber,numArticlesPerPage);
+    }
+    */
+
+
+    public List<Article> getNextPage(String category, int currentPageNumber){
         updateLocalCache(category);
-        return localClient.getNextPage(category, currentPageNumber, lastArticleId);
+        return localClient.getArticlesByCategory(category);
     }
 
     @Override
@@ -71,9 +88,15 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
         return localClient.getCategories();
     }
 
+    public List<Article> getInitialArticles(String category){
+        return getNextPage(category, 0);
+    }
+
     @Override
     public void setNumArticlesPerPage(int number) {
         this.numArticlesPerPage = number;
+        this.localClient.setNumArticlesPerPage(numArticlesPerPage);
+        this.remoteClient.setNumArticlesPerPage(numArticlesPerPage);
     }
 
     @Override
@@ -84,6 +107,18 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
     @Override
     public void deleteLocalCache() {
         localClient.deleteAllEntries(Constants.TableNames.ARTICLE.toString());
+    }
+
+    @Override
+    public void initialize() {
+        remoteClient.initialize();
+    }
+
+    public List<Article> getLatestArticles(String category){
+        if(syncing){
+            updateLocalCache(category);
+        }
+        return localClient.getArticlesAfter(category.toLowerCase(), latestSyncedArticleDate);
     }
 
     /**
@@ -101,26 +136,55 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
 
     public void syncLocalAndRemoteData(String category){
         Article localFirst= this.localClient.getFirst();
-        remoteClient.syncWithLocalCache(localFirst,category);
+        remoteClient.syncWithLocalCache(localFirst, category);
     }
     @Override
     public void update(Observable observable, Object data) {
-        Log.d("Network Client", "Reached Update");
+        Log.i("Network Client", "Message Reached Update");
         SyncMessage message = (SyncMessage) data;
-        if(message != null){
+        if(message != null && message.updateType.equals(Constants.UpdateType.INITIALIZE)){
+            Log.i("Network Client", "Update Type :INITIALIZE, Remote Call ; SUCCESS");
             setChanged();
             notifyObservers(message);
         }
+        /*
+        if(message != null && message.getMessageData() != null) {
+            Log.i("Network Client", message.getCategory()+ " Message is not null");
+            Log.i("Network Client", "Sending message to the Main Activity");
+            setChanged();
+            Log.i("Network Client ", "Num observers: " + this.countObservers());
+            notifyObservers(message);
+        }
+        */
     }
 
+
+    public void firstTimeSyncLocalAndRemoteData(){
+        String currentTimeAsISO = StringUtility.dateToISO8601(new Date());
+        this.remoteClient.getAll(currentPage, numArticlesPerPage, currentTimeAsISO);
+    }
     private void addRemoteServiceListeners() {
         List<Observer> remoteServiceObservers = new ArrayList<>(1);
         remoteServiceObservers.add(this);
         this.remoteClient.addObservers(remoteServiceObservers);
     }
 
-    public void firstTimeSyncLocalAndRemoteData(){
-        this.remoteClient.getAll();
+    public void setSyncing(boolean syncing){
+        this.syncing = syncing;
+    }
+
+    private void topUpArticlesPerCategory(){
+       /* for(Map.Entry<String,Integer> entry : categoryMap){
+            String category = entry.getKey();
+            int mod;
+            if(category != "ALL" && ((mod = (entry.getValue() % numArticlesPerPage)) != 0)){
+                String date = localClient.getLastDate(category);
+                remoteClient.getAfter(category,date);
+
+            }
+        }
+        */
+
     }
 
 }

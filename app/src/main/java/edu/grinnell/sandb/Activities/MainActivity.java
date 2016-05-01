@@ -13,9 +13,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -26,6 +28,8 @@ import com.astuetz.PagerSlidingTabStrip;
 import com.crashlytics.android.Crashlytics;
 import com.flurry.android.FlurryAgent;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import edu.grinnell.sandb.Constants;
@@ -33,6 +37,7 @@ import edu.grinnell.sandb.DialogSettings;
 import edu.grinnell.sandb.Fragments.ArticleListFragment;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Services.Implementation.NetworkClient;
+import edu.grinnell.sandb.Services.Implementation.SyncMessage;
 import edu.grinnell.sandb.Util.VersionUtil;
 
 /**
@@ -54,13 +59,15 @@ public class MainActivity extends AppCompatActivity implements Observer{
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private CoordinatorLayout mCoordinatorLayout;
-    NetworkClient networkClient;
+    private NetworkClient networkClient;
+    private Map<Integer, Fragment> fragmentReferenceMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Crashlytics.start(this);
         setContentView(R.layout.activity_main);
+        fragmentReferenceMap = new HashMap<>();
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
         initializeNetworkClient();
         setLollipopTransitions();
@@ -119,7 +126,16 @@ public class MainActivity extends AppCompatActivity implements Observer{
 
     @Override
     public void update(Observable observable, Object data) {
-    // TODO : Implement Action to take upon observing data changepull Navigation drawer list items?
+        Log.i("Main Activity", "Message reached main activity");
+        SyncMessage message = (SyncMessage)data;
+        // Get current fragment
+        if(message !=null && message.getMessageData() != null) {
+            ArticleListFragment activeFragment = (ArticleListFragment) getActiveFragment();
+            // activeFragment.update();
+            // Ask fragment to update its list
+           // activeFragment.update(message.getMessageData());
+            //Log.i("Main Activity", "Message contents " + message.getMessageData().size());
+        }
     }
 
     /*
@@ -144,7 +160,9 @@ public class MainActivity extends AppCompatActivity implements Observer{
 
         @Override
         public Fragment getItem(int position) {
-            return fragments.get(position);
+            Fragment fragment = fragments.get(position);
+            fragmentReferenceMap.put(position,fragment);
+            return fragment;
         }
 
         @Override
@@ -155,6 +173,11 @@ public class MainActivity extends AppCompatActivity implements Observer{
         @Override
         public int getItemPosition(Object item){
             return POSITION_NONE;
+        }
+        @Override
+        public void destroyItem (ViewGroup container, int position, Object object) {
+            super.destroyItem(container, position, object);
+            fragmentReferenceMap.remove(position);
         }
     }
 
@@ -271,9 +294,18 @@ public class MainActivity extends AppCompatActivity implements Observer{
     /* Creates "Constants.CATEGORIES.length" number of fragments to be attached to the tabs adapter*/
     private void addFragments(TabsAdapter ta){
         for(String category :Constants.CATEGORIES){
-            ArticleListFragment fragment = ArticleListFragment.newInstance(networkClient,category);
+            ArticleListFragment fragment = ArticleListFragment.newInstance(category);
             ta.addFragment(fragment);
         }
+    }
+
+    public NetworkClient getNetworkClient(){
+        return this.networkClient;
+    }
+
+    public Fragment getActiveFragment(){
+        int index = mPager.getCurrentItem();
+        return fragmentReferenceMap.get(index);
     }
 
 }

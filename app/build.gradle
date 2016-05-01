@@ -39,6 +39,7 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.0.0-beta4'
     compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta4'
     compile 'com.google.code.gson:gson:2.6.1'
+    testCompile "org.mockito:mockito-core:1.+"
     testCompile 'junit:junit:4.12'
 
 

@@ -23,7 +23,6 @@ public class WordPressServiceTest {
 
     @Test
     public void testGetFirst(){
-        Article first = this.restClient.getFirst();
-        assertTrue("first is not null", (first != null));
+
     }
 }

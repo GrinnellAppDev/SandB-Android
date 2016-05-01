@@ -127,5 +127,16 @@ public class Article extends SugarRecord<Article> {
 		sb.append("}\n");
 		return sb.toString();
 	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof Article))
+			return false;
+		Article other = (Article) obj;
+		return pubDate == null ? other.getPubDate() == null : pubDate.equals(other.getPubDate());
+	}
 
 }

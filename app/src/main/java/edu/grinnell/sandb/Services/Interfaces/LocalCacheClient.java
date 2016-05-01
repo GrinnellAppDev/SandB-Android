@@ -57,12 +57,13 @@ public interface LocalCacheClient {
      * Returns the next page of results as specified by the set default value for the number of
      * articles in a page.
      *
-     * @param currentPageNumber the page that last accessed.
-     * @param lastArticleId the id of the last article belonging to the last accessed page.
      * @param categoryName the category to query from
+     * @param currentPageNumber the page that last accessed.
+     * @param lastVisibleArticleDate the date of the last visible Article. This is useful
+     *                               to query the local database for the next page
      * @return a list of Articles satisfying the query.
      */
-    List<Article> getNextPage(String categoryName, int currentPageNumber,int lastArticleId);
+    List<Article> getNextPage(String categoryName, int currentPageNumber,String lastVisibleArticleDate);
 
     /**
      * @return true if the cache is empty.
@@ -80,7 +81,6 @@ public interface LocalCacheClient {
      */
     void deleteAllEntries(String tableName);
 
-    int getNumArticlesPerPage();
 
     /**
      * Returns a list of Articles posted from {@code date} and belonging to the category
@@ -90,4 +90,36 @@ public interface LocalCacheClient {
      * @return the list of articles satisfying the query.
      */
     List<Article> getArticlesAfter(String category,String date);
+
+    /**
+     * Sets the number of articles per page.
+     * <p> This is useful in determining how many articles to query for each page.</p>
+     * @param numArticlesPerPage, the number of articles to query per page.
+     */
+    void setNumArticlesPerPage(int numArticlesPerPage);
+
+    /**
+     * @return the number of articles per page;
+     */
+    int getNumArticlesPerPage();
+
+    /**
+     * Updates the number of articles for all the categories
+     */
+
+    void updateCategorySizes();
+
+    /**
+     * Updates the number of articles of the specific category that exist in the database
+     */
+
+    void initialize();
+
+    void updateNumEntriesPerCategory(String category,int updatedArticlesSize);
+    void updateNumEntriesAll(int numRecentUpdates,String latestDateUpdated);
+
+
+
+
+
 }

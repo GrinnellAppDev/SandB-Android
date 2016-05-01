@@ -6,6 +6,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -127,9 +128,19 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
 
     public void updateData(List<Article> newData) {
         if(mData != null) {
+            Log.i("Tabs Adapter:", "Updating dataSet in Adapter");
             mData.clear();
             mData.addAll(newData);
             notifyDataSetChanged();
         }
+    }
+
+    public void addPage(List<Article> newPageData){
+        int curSize = getItemCount();
+        mData.addAll(newPageData);
+
+        // for efficiency purposes, only notify the adapter of what elements that got changed
+        // curSize will equal to the index of the first element inserted because the list is 0-indexed
+        notifyItemRangeInserted(curSize, mData.size() - 1);
     }
 }

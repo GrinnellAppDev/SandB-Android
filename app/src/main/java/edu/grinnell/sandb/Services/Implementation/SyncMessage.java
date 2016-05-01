@@ -2,7 +2,10 @@ package edu.grinnell.sandb.Services.Implementation;
 
 
 
+import java.util.List;
+
 import edu.grinnell.sandb.Constants;
+import edu.grinnell.sandb.Model.Article;
 
 /**
  * This class encapsulates a message that is passed from the various observables to their
@@ -15,20 +18,59 @@ import edu.grinnell.sandb.Constants;
  */
 public final class SyncMessage {
 
+    Constants.UpdateType updateType;
+    private int remoteHttpStatusCode;
+    int pageRequested;
+    private String categoryUpdated;
+    String lastSyncedArticleDate;
     private Object data;
-    private int httpStatusCode;
-    private String category;
 
-    public SyncMessage( Object data){
-        this(Constants.DEFAULT_HTTP_CODE,null, data);
-    }
-    public SyncMessage(int httpStatusCode, String category, Object data){
+
+    public SyncMessage(Constants.UpdateType updateType,int remoteHttpStatusCode,int pageRequested,
+                       String categoryUpdated, String lastSyncedArticleDate,Object data){
+        this.updateType = updateType;
+        this.remoteHttpStatusCode = remoteHttpStatusCode;
+        this.pageRequested = pageRequested;
+        this.categoryUpdated = categoryUpdated;
+        this.lastSyncedArticleDate = lastSyncedArticleDate;
         this.data = data;
-        this.httpStatusCode = httpStatusCode;
-        this.category =category;
     }
+
+
+    public SyncMessage(List<Article> data){
+        remoteHttpStatusCode  = 200;
+        categoryUpdated = "All";
+        pageRequested =0;
+        lastSyncedArticleDate = null;
+        this.data = data;
+    }
+
+    public SyncMessage(int httpStatusCode, String category, List<Article> data){
+        this(httpStatusCode,category,Constants.ZERO,null,data);
+    }
+    public SyncMessage(int httpStatusCode,String category, int pageRequested,
+                       String lastArticleVisibleDate){
+        this(httpStatusCode,category,pageRequested,lastArticleVisibleDate,null);
+
+
+    }
+    public SyncMessage(int httpStatusCode,String category, int pageRequested,
+                       String lastArticleVisibleDate,List<Article> data){
+        this.remoteHttpStatusCode  = httpStatusCode;
+        this.categoryUpdated =category;
+        this.pageRequested =pageRequested;
+        this.lastSyncedArticleDate = lastArticleVisibleDate;
+        this.data = data;
+    }
+
+    public void setMessageData(List<Article> data){ this.data = data;}
+    public void setUpdateType(Constants.UpdateType updateType){this.updateType = updateType;}
 
     public Object getMessageData(){return this.data;}
-    public int getHttpStatusCode(){return this.httpStatusCode;}
-    public String getCategory() {return this.category;}
+    public int getHttpStatusCode(){return this.remoteHttpStatusCode;}
+    public String getCategory() {return this.categoryUpdated;}
+    public int getPageRequested(){return this.pageRequested;}
+    public String getLastSyncedArticleDate(){return this.lastSyncedArticleDate;}
+    public Constants.UpdateType getUpdateType() { return this.updateType;}
+
 }

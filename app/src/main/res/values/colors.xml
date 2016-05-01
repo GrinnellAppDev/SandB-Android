@@ -24,6 +24,7 @@
 
     <!--Old Colors-->
     <color name="ggrey">#272727</color>
+    <color name="gray">#444440</color>
     <color name="gmedgrey">#404040</color>
     <color name="glightgrey">#575757</color>
     <color name="gllightgrey">#777177</color>

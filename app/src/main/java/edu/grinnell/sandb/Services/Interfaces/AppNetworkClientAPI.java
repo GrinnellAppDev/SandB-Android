@@ -23,10 +23,11 @@ public interface AppNetworkClientAPI {
      * Fetches all the articles according to a specific category by the page we are currently on.
      * @param category
      * @param currentPageNumber
-     * @param lastArticleId tells us from which article ID in the database to get the next page from.
+     * @param lastVisibleArticleDate the date of the last visible article. Useful in determining next
+     *                               page.
      * @return a list of Articles for the page
      */
-    List<Article> getNextPage(String category, int currentPageNumber,int lastArticleId);
+    List<Article> getNextPage(String category, int currentPageNumber);
 
     /**
      * @return all the categories articles can be classed into
@@ -49,5 +50,9 @@ public interface AppNetworkClientAPI {
      */
 
     void deleteLocalCache();
+
+    void initialize();
+
+
 
 }
