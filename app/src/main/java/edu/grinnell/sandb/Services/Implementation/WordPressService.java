@@ -229,6 +229,35 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
 
     }
 
+    @Override
+    public void getByCategory(String category, String lastArticleUpdated, Integer topUpNum) {
+       Log.i("WordPressService ","Getting posts before..");
+        Call<QueryResponse> call = restService.postsBefore(lastArticleUpdated,topUpNum,category);
+        call.enqueue(new Callback<QueryResponse>() {
+            @Override
+            public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                Log.i("WordPressServices ", "Response recieved in get before");
+                int responseCode = response.code();
+                List<RealmArticle> articles = response.body().getPosts();
+                //System.out.println(articles);
+                localCacheClient.saveArticles(articles);
+                /*SyncMessage message =
+                        new SyncMessage(Constants.UpdateType.INITIALIZE,200,1,"All",null,null);
+                setChanged();
+                notifyObservers(message);
+                */
+
+                // sendMessage();
+            }
+
+            @Override
+            public void onFailure(Call<QueryResponse> call, Throwable t) {
+
+            }
+        });
+
+    }
+
     public  void sendMessage(){
         Log.i("Remote Client", "Sending message to network client");
         //List<Article> articles = localCacheClient.getAll();
@@ -320,6 +349,9 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
         // https://public-api.wordpress.com/rest/v1.1/sites/www.thesandb.com/posts/?category=%22news%22&page=1&number=4
          Call<QueryResponse> posts(@Query("category") String category,@Query("page") int pageNumber,
                                    @Query("number") int count);
+         @GET("posts/")
+         Call<QueryResponse> postsBefore(@Query("before") String dateBefore,@Query("number") int count,
+                                   @Query("category") String category);
      }
 
     /*

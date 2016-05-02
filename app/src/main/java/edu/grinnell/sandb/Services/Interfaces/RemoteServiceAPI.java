@@ -78,5 +78,6 @@ public interface RemoteServiceAPI {
 
     void getNextPage(String category, int page, int numArticlesPerPage);
     void initialize();
+    void getByCategory(String category,String lastArticleUpdated,Integer topUpNum);
 
 }

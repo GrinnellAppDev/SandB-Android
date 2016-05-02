@@ -37,10 +37,12 @@ public class SplashActivity extends AppCompatActivity implements Observer {
         SyncMessage syncMessage = (SyncMessage) data;
         if(updateSuccessful(syncMessage)){
             Log.i("Splash Activity", "Update Type :INITIALIZE, Remote Call ; SUCCESS");
-            for(String category : Constants.CATEGORIES){
+           /* for(String category : Constants.CATEGORIES){
                 Log.i("Splash Activity", "Db Meta Data "+ category +" =" + networkClient.getDbMetaData().get(category.toLowerCase()).first);
             }
-
+            */
+            //
+            networkClient.topUpCategories();
 
             Intent intent = new Intent(this, MainActivity.class);
             //top up remaining

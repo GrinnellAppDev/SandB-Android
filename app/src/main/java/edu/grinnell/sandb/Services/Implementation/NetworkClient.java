@@ -7,6 +7,7 @@ import android.util.Pair;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -191,6 +192,22 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
             }
         }
         */
+
+    }
+
+    public void topUpCategories(){
+        Map<String, Pair<Integer, String>> dbMetaData = localClient.getDbMetaData();
+        for(String category : Constants.CATEGORIES){
+            if(!category.toLowerCase().equals("all")){
+                Pair<Integer, String> pair = dbMetaData.get(category.toLowerCase());
+                Integer numSoFar = pair.first;
+                Integer topUpNum = 10 - (numSoFar % 10);
+                String dateBefore = pair.second;
+                Log.i("Network Client", "Topping up " + category + "after " + dateBefore +  " by " + topUpNum);
+
+                remoteClient.getByCategory(category,dateBefore,topUpNum);
+            }
+        }
 
     }
 
