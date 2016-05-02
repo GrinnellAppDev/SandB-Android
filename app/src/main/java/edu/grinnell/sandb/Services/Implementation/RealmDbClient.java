@@ -2,6 +2,7 @@ package edu.grinnell.sandb.Services.Implementation;
 
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.grinnell.sandb.Model.Article;
@@ -14,6 +15,7 @@ import io.realm.Realm;
  */
 public class RealmDbClient implements LocalCacheClient {
     private Realm realm = Realm.getDefaultInstance();
+    private final String ALL ="all";
 
     @Override
     public void saveArticles(List<RealmArticle> articles) {
@@ -40,7 +42,13 @@ public class RealmDbClient implements LocalCacheClient {
 
     @Override
     public List<RealmArticle> getArticlesByCategory(String categoryName) {
-        return null;
+        Log.i("RealDBClient","Attempting to querry local db for " + categoryName);
+        if (categoryName == null || categoryName.equals(ALL)) {
+            return getAll();
+        }
+
+
+        return new ArrayList<>();
     }
 
     @Override
@@ -61,7 +69,7 @@ public class RealmDbClient implements LocalCacheClient {
 
     @Override
     public List<RealmArticle> getAll() {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override

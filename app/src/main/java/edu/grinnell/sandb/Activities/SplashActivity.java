@@ -11,6 +11,8 @@ import java.util.Observer;
 import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.Services.Implementation.NetworkClient;
 import edu.grinnell.sandb.Services.Implementation.SyncMessage;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /**
  * Created by albertowusu-asare on 4/21/16.
@@ -20,6 +22,8 @@ public class SplashActivity extends AppCompatActivity implements Observer {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        RealmConfiguration config = new RealmConfiguration.Builder(this).build();
+        Realm.setDefaultConfiguration(config);
         NetworkClient networkClient = new NetworkClient();
         networkClient.addObserver(this);
         Log.i("Splash Activity", "Calling initialize on network client");
