@@ -3,6 +3,11 @@ package edu.grinnell.sandb.Model;
 import com.google.gson.annotations.SerializedName;
 import com.orm.dsl.Ignore;
 
+import java.text.ParseException;
+import java.util.Date;
+
+import edu.grinnell.sandb.Util.ISO8601;
+import edu.grinnell.sandb.Util.StringUtility;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -17,6 +22,7 @@ public class RealmArticle extends RealmObject {
         protected String body; //TODO : change to content
         @SerializedName("date")
         protected String pubDate;
+        protected Date realmDate;
         @SerializedName("excerpt")
         protected String description;
         protected String category;
@@ -77,6 +83,8 @@ public class RealmArticle extends RealmObject {
             return description;
         }
 
+        public Date getRealmDate(){ return this.realmDate;}
+
         public String getBody() {
             return body;
         }
@@ -111,6 +119,14 @@ public class RealmArticle extends RealmObject {
 
         public void setBody(String body) {
             this.body = body;
+        }
+
+        public void setRealmDate(final String iso8601Date) {
+            try {
+                this.realmDate = ISO8601.toDate(iso8601Date);
+            } catch (ParseException e) {
+                this.realmDate = null;
+            }
         }
 
         public String toString(){

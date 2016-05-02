@@ -55,7 +55,7 @@ public interface AppNetworkClientAPI {
 
     void deleteLocalCache();
 
-    void initialize();
+    void initialDataFetch();
 
      Map<String, Pair<Integer, String>> getDbMetaData();
 

@@ -71,12 +71,10 @@ public class ArticleListFragment extends Fragment  {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         args = getArguments();
-       // initializeNetworkClient();
         setCategory();
-       // mData= new ArrayList<>();
         mActivity = (MainActivity) getActivity();
         networkClient = mActivity.getNetworkClient();
-        Log.i("Fragment" + mCategory, "Num observers :" +networkClient.countObservers());
+        Log.i("Fragment" + mCategory, "Num observers :" + networkClient.countObservers());
         mData = networkClient.getArticles(mCategory);
         mAdapter = new ArticleRecyclerViewAdapter((MainActivity) getActivity(),
                 R.layout.articles_row, mData);
@@ -108,9 +106,10 @@ public class ArticleListFragment extends Fragment  {
             @Override
             public void onRefresh() {
                 networkClient.setSyncing(true);
-                mData = networkClient.getLatestArticles(mCategory);
-                Log.i("Refresh Listener", mCategory + " "+ mData.size());
-                mAdapter.updateData(mData);
+                RealmArticle mostRecentArticle = mData.get(0);
+                List<RealmArticle> latestArticles
+                        = networkClient.getLatestArticles(mCategory,mostRecentArticle.getRealmDate());
+                mAdapter.updateData(latestArticles);
             }
         };
         pullToRefresh.setOnRefreshListener(swipeRefreshListener);
@@ -203,5 +202,13 @@ public class ArticleListFragment extends Fragment  {
             }
         });
     }
+
+    public void refreshList(List<RealmArticle> articles){
+        mAdapter.updateDataAbove(articles);
+        if(pullToRefresh.isRefreshing()) {
+            pullToRefresh.setRefreshing(false);
+        }
+    }
+
 
 }

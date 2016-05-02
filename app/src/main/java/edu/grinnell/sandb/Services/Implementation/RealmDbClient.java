@@ -40,9 +40,10 @@ public class RealmDbClient implements LocalCacheClient {
 
     @Override
     public void saveArticle(RealmArticle article) {
-        Log.i("RealDbClient:","Saving article" + article.getArticleID() +"...");
+        Log.i("RealDbClient:", "Saving article" + article.getArticleID() + "...");
         String categoryName = article.getAuthor().getName();
         article.setCategory(categoryName);
+        article.setRealmDate(article.getPubDate());
         updateDbMetaData(article);
         realm.beginTransaction();
         realm.copyToRealmOrUpdate(article);
@@ -136,8 +137,13 @@ public class RealmDbClient implements LocalCacheClient {
     }
 
     @Override
-    public List<RealmArticle> getArticlesAfter(String category, String date) {
-        return null;
+    public List<RealmArticle> getArticlesAfter(String category, Date date) {
+        RealmQuery<RealmArticle> query = realm.where(RealmArticle.class);
+        query.equalTo("category", category);
+        query.greaterThan("realmDate", date);
+        RealmResults<RealmArticle> result1 = query.findAll();
+        List<RealmArticle> articles = result1.subList(0,result1.size());
+        return (articles.size() ==0) ? new ArrayList<RealmArticle>() : articles;
     }
 
     @Override

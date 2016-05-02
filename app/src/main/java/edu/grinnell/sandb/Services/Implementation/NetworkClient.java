@@ -4,6 +4,8 @@ import android.net.Network;
 import android.util.Log;
 import android.util.Pair;
 
+import com.google.gson.internal.bind.util.ISO8601Utils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,6 +21,7 @@ import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.Services.Interfaces.AppNetworkClientAPI;
 import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
 import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
+import edu.grinnell.sandb.Util.ISO8601;
 import edu.grinnell.sandb.Util.StringUtility;
 
 /**
@@ -113,7 +116,7 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
     }
 
     @Override
-    public void initialize() {
+    public void initialDataFetch() {
         remoteClient.initialize();
     }
 
@@ -122,11 +125,12 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
         return localClient.getDbMetaData();
     }
 
-    public List<RealmArticle> getLatestArticles(String category){
+    public List<RealmArticle> getLatestArticles(String category,Date mostRecentArticleDate){
         if(syncing){
-            updateLocalCache(category);
+            remoteClient.getAfter(ISO8601.fromCalendar(mostRecentArticleDate),category);
+            //updateLocalCache(category);
         }
-        return localClient.getArticlesAfter(category.toLowerCase(), latestSyncedArticleDate);
+        return localClient.getArticlesAfter(category.toLowerCase(), mostRecentArticleDate);
     }
 
     /**
@@ -150,11 +154,19 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
     public void update(Observable observable, Object data) {
         Log.i("Network Client", "Message Reached Update");
         SyncMessage message = (SyncMessage) data;
-        if(message != null && message.updateType.equals(Constants.UpdateType.INITIALIZE)){
-            Log.i("Network Client", "Update Type :INITIALIZE, Remote Call ; SUCCESS");
-            setChanged();
-            notifyObservers(message);
+        if(message != null) {
+            if (message.updateType.equals(Constants.UpdateType.INITIALIZE)) {
+                Log.i("Network Client", "Update Type :INITIALIZE, Remote Call ; SUCCESS");
+                setChanged();
+                notifyObservers(message);
+            }
+            if(message.updateType.equals(Constants.UpdateType.REFRESH)){
+                Log.i("Network Client","Update type : REFRESH");
+                setChanged();
+                notifyObservers(message);
+            }
         }
+
         /*
         if(message != null && message.getMessageData() != null) {
             Log.i("Network Client", message.getCategory()+ " Message is not null");
@@ -205,7 +217,7 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
                 String dateBefore = pair.second;
                 Log.i("Network Client", "Topping up " + category + "after " + dateBefore +  " by " + topUpNum);
 
-                remoteClient.getByCategory(category,dateBefore,topUpNum);
+                remoteClient.getByCategory(category, dateBefore, topUpNum);
             }
         }
 

@@ -45,7 +45,7 @@ import retrofit2.http.Query;
  *
  * @author Albert Owusu-Asare
  * @version 1.1  Wed Mar 16 23:38:58 CDT 2016
- * @see retrofit2.Retrofit  r
+ * @see retrofit2.Retrofit
  * @see retrofit2.Call
  * @see java.util.Collections
  * @see edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI
@@ -110,10 +110,42 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
 
     @Override
     public void  getAfter(final String date,final String category) {
-          Call<QueryResponse> call = restService.postsAfter(date);
-          makeAsyncCall(call, category, date);
+        Log.i("WordPressService","Fetching most recent "+ category);
+        if(category.equals("all")) {
+            getAllAfter(date, category);
+        }
+        else {
+            getAfterByCategory(date,category);
+        }
+    }
+    private void getAfterByCategory(String date, String category){
+        Call<QueryResponse> call = restService.postsAfter(date,10,category);
+        refreshData(date,category,call);
     }
 
+    private void getAllAfter(final String date, final String category) {
+        Call<QueryResponse> call = restService.postsAfter(date);
+        refreshData(date, category, call);
+    }
+
+    private void refreshData(final String date, final String category, Call<QueryResponse> call) {
+        call.enqueue(new Callback<QueryResponse>() {
+            @Override
+            public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                List<RealmArticle> posts = response.body().getPosts();
+                localCacheClient.saveArticles(posts);
+                SyncMessage message;
+                message = new SyncMessage(Constants.UpdateType.REFRESH, 200, 1, category, date, posts);
+                setChanged();
+                notifyObservers(message);
+            }
+
+            @Override
+            public void onFailure(Call<QueryResponse> call, Throwable t) {
+                Log.e("Get All failure", t.getMessage());
+            }
+        });
+    }
 
 
     @Override
@@ -352,6 +384,9 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
          @GET("posts/")
          Call<QueryResponse> postsBefore(@Query("before") String dateBefore,@Query("number") int count,
                                    @Query("category") String category);
+         @GET("posts/")
+         Call<QueryResponse> postsAfter(@Query("after") String dateAfter,@Query("number") int count,
+                                         @Query("category") String category);
      }
 
     /*

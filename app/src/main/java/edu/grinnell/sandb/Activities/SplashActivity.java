@@ -15,37 +15,36 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
 /**
- * Created by albertowusu-asare on 4/21/16.
+ * Startup Activity for S&B. Initializations to both the remote and local databases
+ * are made in this class.
+ *
+ * @author  Albert Owusu-Asare
+ * @since 4/21/16.
+ * @see NetworkClient
+ * @see Observer
+ * @see Realm
  */
 public class SplashActivity extends AppCompatActivity implements Observer {
     NetworkClient networkClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        /* Realm model persistence config */
         RealmConfiguration config = new RealmConfiguration.Builder(this).build();
         Realm.setDefaultConfiguration(config);
         networkClient = new NetworkClient();
         networkClient.addObserver(this);
-        Log.i("Splash Activity", "Calling initialize on network client");
-        networkClient.initialize();
-
+        Log.i("Splash Activity", "Calling initialDataFetch on network client");
+        networkClient.initialDataFetch();
     }
 
     @Override
     public void update(Observable observable, Object data) {
-        Log.i("Splash Activity", "Update Type :INITIALIZE");
         SyncMessage syncMessage = (SyncMessage) data;
         if(updateSuccessful(syncMessage)){
             Log.i("Splash Activity", "Update Type :INITIALIZE, Remote Call ; SUCCESS");
-           /* for(String category : Constants.CATEGORIES){
-                Log.i("Splash Activity", "Db Meta Data "+ category +" =" + networkClient.getDbMetaData().get(category.toLowerCase()).first);
-            }
-            */
-            //
             networkClient.topUpCategories();
-
             Intent intent = new Intent(this, MainActivity.class);
-            //top up remaining
             startActivity(intent);
             finish();
         }

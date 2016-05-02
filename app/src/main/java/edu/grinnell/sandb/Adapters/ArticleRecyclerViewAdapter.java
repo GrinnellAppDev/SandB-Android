@@ -130,10 +130,22 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
     public void updateData(List<RealmArticle> newData) {
         if(mData != null) {
             Log.i("Tabs Adapter:", "Updating dataSet in Adapter");
-            mData.clear();
-            mData.addAll(newData);
+           // mData.clear();
+            newData.addAll(mData);
+            mData = newData;
+           // mData.addAll(newData);
             notifyDataSetChanged();
         }
+    }
+
+    public void updateDataAbove(List<RealmArticle> newData){
+        if(mData != null) {
+            Log.i("Tabs Adapter:", "Updating dataSet above  in Adapter");
+            newData.addAll(mData);
+            mData = newData;
+            notifyDataSetChanged();
+        }
+
     }
 
     public void addPage(List<RealmArticle> newPageData){

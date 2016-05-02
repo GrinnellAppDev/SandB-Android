@@ -29,12 +29,14 @@ import com.crashlytics.android.Crashlytics;
 import com.flurry.android.FlurryAgent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.DialogSettings;
 import edu.grinnell.sandb.Fragments.ArticleListFragment;
+import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Services.Implementation.NetworkClient;
 import edu.grinnell.sandb.Services.Implementation.SyncMessage;
@@ -42,8 +44,9 @@ import edu.grinnell.sandb.Util.VersionUtil;
 
 /**
  * Main Activity for the application. This activity is the host for the ArticleList fragments.
- * <p> The activity also listens for any updates from the initial remote call to fetch data
- * to the local cache. </p>
+ *
+ * <p> The class listens for any updates from remote client upon a call  to fetch remote
+ * data.</p>
  *
  * @see Observer
  * @see NetworkClient
@@ -127,7 +130,17 @@ public class MainActivity extends AppCompatActivity implements Observer{
     @Override
     public void update(Observable observable, Object data) {
         Log.i("Main Activity", "Message reached main activity");
+
         SyncMessage message = (SyncMessage)data;
+
+        if(message !=null){
+            ArticleListFragment activeFragment = (ArticleListFragment) getActiveFragment();
+            if(message.getUpdateType().equals(Constants.UpdateType.REFRESH)
+                    && activeFragment.mCategory.equals(message.getCategory())){
+                Log.i("Main Activity", "Active Fragment " + message.getCategory() + " Refreshing..");
+                activeFragment.refreshList((List< RealmArticle>) message.getMessageData());
+            }
+        }
         // Get current fragment
         if(message !=null && message.getMessageData() != null) {
             ArticleListFragment activeFragment = (ArticleListFragment) getActiveFragment();

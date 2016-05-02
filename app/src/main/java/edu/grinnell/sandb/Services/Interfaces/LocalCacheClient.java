@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import com.orm.SugarRecord;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -94,7 +95,7 @@ public interface LocalCacheClient {
      * @param date
      * @return the list of articles satisfying the query.
      */
-    List<RealmArticle> getArticlesAfter(String category,String date);
+    List<RealmArticle> getArticlesAfter(String category,Date date);
 
     /**
      * Sets the number of articles per page.

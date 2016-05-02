@@ -40,7 +40,7 @@ public class StringUtility {
 
 	public static Date iso8601StringToDate(String stringDate) {
 		Date result = null;
-		DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 		try {
 			 result= df1.parse(stringDate);
 

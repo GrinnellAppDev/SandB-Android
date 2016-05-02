@@ -106,6 +106,11 @@ public class SugarDbClient implements LocalCacheClient,Serializable {
     }
 
     @Override
+    public List<RealmArticle> getArticlesAfter(String category, Date date) {
+        return null;
+    }
+
+
     public List<RealmArticle> getArticlesAfter(String category, String date) {
         return null;
     }
