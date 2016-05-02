@@ -15,9 +15,9 @@ public class QueryResponse {
     private int countTotal;
     private int pages;
     @SerializedName("posts")
-    List<Article> articles;
+    List<RealmArticle> articles;
 
-    public QueryResponse(String status,int count,int countTotal,int pages, List<Article> posts) {
+    public QueryResponse(String status,int count,int countTotal,int pages, List<RealmArticle> posts) {
         this.status = status;
         this.articles = posts;
         this.count = count;
@@ -46,7 +46,7 @@ public class QueryResponse {
     /**
      * @return all the posts as queried from the call
      */
-    public List<Article> getPosts(){return this.articles;}
+    public List<RealmArticle> getPosts(){return this.articles;}
     @Override
     public String toString(){
         StringBuffer sb = new StringBuffer();
@@ -56,11 +56,15 @@ public class QueryResponse {
         sb.append("   countTotal: " + this.countTotal+ "\n");
         sb.append("   pages: " + this.pages+ "\n");
         sb.append("   posts: " + "[\n");
-        for(Article article : this.articles){
+        for(RealmArticle article : this.articles){
             sb.append("            "+article);
         }
         sb.append("          ]\n");
         sb.append("}");
         return sb.toString();
+    }
+
+    public RealmArticle getFirstPost(){
+        return this.articles.get(0);
     }
 }

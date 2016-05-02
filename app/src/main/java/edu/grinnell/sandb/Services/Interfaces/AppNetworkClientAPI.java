@@ -1,8 +1,13 @@
 package edu.grinnell.sandb.Services.Interfaces;
 
+import android.util.Pair;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.Model.RealmArticle;
 
 /**
  * A client API that describes the core networking functionality for the application.
@@ -17,7 +22,18 @@ public interface AppNetworkClientAPI {
      * Fetches all articles according to a specific category
      * returns the articles through the ArticlesCallback
      */
-    void getArticles(boolean isOnline, String category);
+
+    List<RealmArticle> getArticles(String category);
+
+    /**
+     * Fetches all the articles according to a specific category by the page we are currently on.
+     * @param category
+     * @param currentPageNumber
+     *                               page.
+     * @return a list of Articles for the page
+     */
+    List<RealmArticle> getNextPage(String category, int currentPageNumber);
+
 
     /**
      * @return all the categories articles can be classed into
@@ -34,5 +50,17 @@ public interface AppNetworkClientAPI {
      * @return the number of articles per page.
      */
     int getNumArticlesPerPage();
+
+    /**
+     * Clears the local Cahce
+     */
+
+    void deleteLocalCache();
+
+    void initialDataFetch();
+
+     Map<String, Pair<Integer, String>> getDbMetaData();
+
+
 
 }

@@ -152,21 +152,30 @@ public class Article extends SugarRecord {
         this.thumbnail = thumbnailUrl;
     }
 
-    @Override
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("{ ");
-        sb.append(" id: " + this.article_id);
-        sb.append("   url: " + this.link);
-        sb.append("   title: " + this.title);
-        sb.append("   content: " + this.body);
-        sb.append("   excerpt: " + this.description);
-        sb.append("   date: " + this.pub_date);
-        sb.append("   categories: " + this.categories);
-        sb.append("   author " + this.author);
-        sb.append("}\n");
-        return sb.toString();
-    }
-
+	public String toString(){
+		StringBuffer sb = new StringBuffer();
+		sb.append("{ ");
+		sb.append(" id: " + this.article_id);
+		sb.append("   url: " + this.link);
+		sb.append("   title: " + this.title);
+		sb.append("   content: " + this.body);
+		sb.append("   excerpt: " + this.description);
+		sb.append("   date: " + this.pub_date);
+		sb.append("   categories: " + this.categories);
+		sb.append("   author " + this.author);
+		sb.append("}\n");
+		return sb.toString();
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof Article))
+			return false;
+		Article other = (Article) obj;
+		return pub_date == null ? other.getPub_date() == null : pub_date.equals(other.getPub_date());
+	}
 
 }

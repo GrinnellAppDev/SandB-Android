@@ -1,16 +1,13 @@
 package edu.grinnell.sandb.Fragments;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -20,12 +17,10 @@ import android.transition.Transition;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -46,28 +41,25 @@ import edu.grinnell.sandb.Activities.ImagePagerActivity;
 import edu.grinnell.sandb.Activities.MainActivity;
 import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.DialogSettings;
-import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.Image;
+import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.Preferences.MainPrefs;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Util.DatabaseUtil;
 import edu.grinnell.sandb.Util.UniversalLoaderUtility;
+import io.realm.Realm;
+import io.realm.RealmResults;
+
 /*
     Custom Fragment to show Articles in details
  */
 public class ArticleDetailFragment extends Fragment {
-    //Fields
-    public final static String FEED_LINK = null;
-    public final static String ARTICLE_LINK = null;
 
-    public static final String ARTICLE_ID_KEY = "article_id";
-    private Article mArticle;
-    protected UniversalLoaderUtility mLoader;
     public static final String TAG = "ArticleDetailFragment";
-    private int mFontSize;
-
-    private PendingIntent mSendFeedLoaded;
-    ArticleDetailActivity activity = (ArticleDetailActivity) getActivity();
+    public static final String ARTICLE_ID_KEY = "article_id";
+    private RealmArticle article;
+    protected UniversalLoaderUtility universalLoaderUtility;
+    private int fontSize;
 
     //These variables will govern where a picture is saved if the user chooses to download it
     @SuppressLint("NewApi")
@@ -77,11 +69,7 @@ public class ArticleDetailFragment extends Fragment {
     File file = new File(path, fileName);
     DownloadManager mManager;
     ArrayList<Image> mImages;
-
-    //Constructor
-    public ArticleDetailFragment() {
-        super();
-    }
+    private long articleId;
 
 
     //Methods
@@ -91,19 +79,7 @@ public class ArticleDetailFragment extends Fragment {
         setHasOptionsMenu(true);
         setRetainInstance(true);
 
-        mFontSize = new MainPrefs(getContext()).getArticleFontSize();
-
-
-        //Find the article in the sqlite database using the ID key
-        activity = (ArticleDetailActivity) getActivity();
-        long id = activity.getIDKey();
-          /*
-        ArticleTable table = new ArticleTable(getActivity());
-		table.open();
-		Log.i(TAG, "Looking for article with id = " + id);
-		mArticle = table.findById(id);
-		*/
-        mArticle = DatabaseUtil.getArticle(id);
+        fontSize = new MainPrefs(getContext()).getArticleFontSize();
     }
 
 
@@ -116,7 +92,7 @@ public class ArticleDetailFragment extends Fragment {
                 container, false);
 
         // Navigate up if there is no article information..
-        if (mArticle == null) {
+        if (article == null) {
             Intent up = new Intent(getActivity(), MainActivity.class);
             up.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             NavUtils.navigateUpTo(getActivity(), up);
@@ -124,17 +100,23 @@ public class ArticleDetailFragment extends Fragment {
             // end the activity
             getActivity().finish();
         }
-        /*
-        // load the article only after the transition ends
-        if (VersionUtil.isLollipop()) {
-            setTransitionListener(rootView);
-        } else {
-            displayArticle(rootView);
-        }
-*/
+
         displayArticle(rootView);
 
         return rootView;
+    }
+
+    /**
+     * Set the article that is to be displayed by the fragment
+     */
+    public void setArticle(long articleId) {
+        this.articleId = articleId;
+        Log.d(TAG, "Article ID: " + articleId);
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<RealmArticle> results = realm.where(RealmArticle.class)
+                .equalTo("articleID", articleId)
+                .findAll();
+        article = results.first();
     }
 
 
@@ -175,15 +157,16 @@ public class ArticleDetailFragment extends Fragment {
     //Configuring the display of articles
     private void displayArticle(View rootView) {
         // add the author to the article
-        String author = mArticle.getAuthor();
+       /* String author = article.getAuthor();
         if (author != null && !author.equals("")) {
             ((TextView) rootView.findViewById(R.id.article_author)).setText("By: " + author);
         }
+        */
 
         SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
         String dateString;
         try {
-            Date articleDate = parserSDF.parse(mArticle.getPub_date());
+            Date articleDate = parserSDF.parse(article.getPubDate());
             dateString = DateFormat.getDateTimeInstance().format(articleDate);
         } catch (ParseException e) {
             Log.e(TAG, e.getMessage());
@@ -193,14 +176,14 @@ public class ArticleDetailFragment extends Fragment {
         ((TextView) rootView.findViewById(R.id.article_date)).setText(dateString);
 
         // add the title to the article
-        ((TextView) rootView.findViewById(R.id.article_title)).setText(Html.fromHtml(mArticle
+        ((TextView) rootView.findViewById(R.id.article_title)).setText(Html.fromHtml(article
                 .getTitle()));
 
         LinearLayout body = (LinearLayout) rootView
                 .findViewById(R.id.article_body_group);
-        mLoader = new UniversalLoaderUtility();
+        universalLoaderUtility = new UniversalLoaderUtility();
 
-        String bodyHTML = mArticle.getBody();
+        String bodyHTML = article.getBody();
 
         // make text more readable
         bodyHTML = bodyHTML.replaceAll("<br />", "<br><br>");
@@ -215,7 +198,7 @@ public class ArticleDetailFragment extends Fragment {
         //Split the article text around the images
         String[] sections = bodyHTML.split(imgtags);
 
-        mImages = (ArrayList) DatabaseUtil.getArticleImages(mArticle);
+        //mImages = (ArrayList) DatabaseUtil.getArticleImages(article);
 
         final int maxUrls = (mImages == null) ? 0 : mImages.size();
         LayoutInflater i = getActivity().getLayoutInflater();
@@ -226,7 +209,7 @@ public class ArticleDetailFragment extends Fragment {
             addSectionViews(body, i, section, url);
         }
 
-        Log.i(TAG, mArticle.getTitle());
+        Log.i(TAG, article.getTitle());
     }
 
 
@@ -244,7 +227,7 @@ public class ArticleDetailFragment extends Fragment {
                     String[] URLS = new String[mImages.size()];
                     String[] titles = new String[mImages.size()];
                     for (int i = 0; i < mImages.size(); i++) {
-                        URLS[i] = mLoader.getHiResImage(mImages.get(i).getURL());
+                        URLS[i] = universalLoaderUtility.getHiResImage(mImages.get(i).getURL());
                         titles[i] = mImages.get(i).getImgTitle();
                     }
                     Intent intent = new Intent(getActivity(),
@@ -282,7 +265,7 @@ public class ArticleDetailFragment extends Fragment {
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(
                                                 DialogInterface dialog, int id) {
-                                            new DownloadFile().execute(mLoader
+                                            new DownloadFile().execute(universalLoaderUtility
                                                     .getHiResImage(img));
                                             dialog.cancel();
                                         }
@@ -311,7 +294,7 @@ public class ArticleDetailFragment extends Fragment {
             imgView.setMaxHeight(scrnHeight);
 
             //Load the full resolution images using universal image loader
-            mLoader.loadHiResArticleImage(img, imgView, getActivity());
+            universalLoaderUtility.loadHiResArticleImage(img, imgView, getActivity());
             v.addView(imgView);
         }
 
@@ -319,10 +302,11 @@ public class ArticleDetailFragment extends Fragment {
             TextView tv = (TextView) li
                     .inflate(R.layout.text_section, v, false);
             tv.setText(Html.fromHtml(text));
-            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.FONT_SIZE_TO_SP[mFontSize]);
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.FONT_SIZE_TO_SP[fontSize]);
             v.addView(tv);
         }
     }
+
 
     /* Download the selected image to "downloads" on user request */
     private class DownloadFile extends AsyncTask<String, Integer, Drawable> {
@@ -355,7 +339,7 @@ public class ArticleDetailFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (mArticle == null) {
+        if (article == null) {
             // Navigate Up..
             Intent upIntent = new Intent(getActivity(),
                     MainActivity.class);
@@ -381,13 +365,13 @@ public class ArticleDetailFragment extends Fragment {
                 share();
                 break;
             case R.id.menu_comments:
-                activity.flip();
+                ((ArticleDetailActivity) getActivity()).flip();
                 break;
             case R.id.settings:
                 DialogSettings ds = new DialogSettings(getContext()) {
                     @Override
                     public void onSettingsSaved() {
-                        mFontSize = new MainPrefs(getContext()).getArticleFontSize();
+                        fontSize = new MainPrefs(getContext()).getArticleFontSize();
                         reloadArticle();
                     }
                 };
@@ -416,7 +400,7 @@ public class ArticleDetailFragment extends Fragment {
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
 
-        String shareBody = mArticle.getLink();
+        String shareBody = article.getLink();
         sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
                 "S&B Article Link");
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
@@ -427,7 +411,7 @@ public class ArticleDetailFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(ARTICLE_ID_KEY, mArticle.getArticle_id());
+        outState.putInt(ARTICLE_ID_KEY, article.getArticleID());
         super.onSaveInstanceState(outState);
     }
 }

@@ -1,14 +1,23 @@
 package edu.grinnell.sandb.Services.Implementation;
 
 import android.util.Log;
+import android.util.Pair;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
-import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.Constants;
+import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.Services.Interfaces.AppNetworkClientAPI;
-import edu.grinnell.sandb.Services.Interfaces.ArticlesCallback;
 import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
 import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
+import edu.grinnell.sandb.Util.ISO8601;
+import edu.grinnell.sandb.Util.StringUtility;
 
 /**
  * Implements the AppNetworkClientAPI interface and handles the main data requests of the
@@ -22,44 +31,74 @@ import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
  * @author Albert Owusu-Asare
  * @see edu.grinnell.sandb.Services.Interfaces.AppNetworkClientAPI
  * @see edu.grinnell.sandb.Services.Interfaces.LocalCacheClient
+ * @see Observer
+ * @see SyncMessage
+ * @see Serializable
  */
-public abstract class NetworkClient implements AppNetworkClientAPI, ArticlesCallback {
+public class NetworkClient extends Observable implements Observer, AppNetworkClientAPI, Serializable {
     private LocalCacheClient localClient;
     private RemoteServiceAPI remoteClient;
-    private static final int DEFAULT_NUM_ARTICLES_PER_PAGE = 50;
     private int numArticlesPerPage;
     private int currentPage;
-    private String category;
+    private boolean syncing;
+    private String latestSyncedArticleDate;
 
     public NetworkClient() {
-        this.currentPage = 0;
-        this.numArticlesPerPage = DEFAULT_NUM_ARTICLES_PER_PAGE;
-        this.localClient = new ORMDbClient(DEFAULT_NUM_ARTICLES_PER_PAGE);
-        this.remoteClient = new WordPressService(DEFAULT_NUM_ARTICLES_PER_PAGE);
-
+        this(new RealmDbClient());
     }
 
+    public NetworkClient(LocalCacheClient localCacheClient) {
+        this(localCacheClient, new WordPressService(localCacheClient));
+    }
+
+    public NetworkClient(LocalCacheClient localClient, RemoteServiceAPI remoteClient) {
+        this.currentPage = 0;
+        this.numArticlesPerPage = Constants.DEFAULT_NUM_ARTICLES_PER_PAGE;
+        this.localClient = localClient;
+        this.remoteClient = remoteClient;
+        ;
+        this.syncing = false;
+        this.latestSyncedArticleDate = null;
+        addRemoteServiceListeners();
+    }
+
+
     @Override
-    public void getArticles(boolean isOnline, String category) {
-        Log.d("NetworkClient", "getArticles()");
-        this.category = category;
-        // if there is an internet connection, then try to update
-        if (isOnline)
-            updateLocalCache();
-        // otherwise, just pull from the cache
-        else
-            onArticlesRetrieved(localClient.getArticlesByCategory(category));
+    public List<RealmArticle> getArticles(String category) {
+        //updateLocalCache(category);
+        return localClient.getArticlesByCategory(category);
+    }
+
+    /*
+    @Override
+    public void getNextPage(String category,int currentPageNumber) {
+       // updateLocalCache(category);
+        //return localClient.getNextPage(category, currentPageNumber, lastVisibleArticleDate);
+        remoteClient.getNextPage(category,currentPageNumber,numArticlesPerPage);
+    }
+    */
+
+
+    public List<RealmArticle> getNextPage(String category, int currentPageNumber) {
+        updateLocalCache(category);
+        return localClient.getArticlesByCategory(category);
     }
 
     @Override
     public List<String> getCategories() {
-        updateLocalCache();
+        // updateLocalCache();
         return localClient.getCategories();
+    }
+
+    public List<RealmArticle> getInitialArticles(String category) {
+        return getNextPage(category, 0);
     }
 
     @Override
     public void setNumArticlesPerPage(int number) {
         this.numArticlesPerPage = number;
+        this.localClient.setNumArticlesPerPage(numArticlesPerPage);
+        this.remoteClient.setNumArticlesPerPage(numArticlesPerPage);
     }
 
     @Override
@@ -67,69 +106,119 @@ public abstract class NetworkClient implements AppNetworkClientAPI, ArticlesCall
         return this.numArticlesPerPage;
     }
 
+    @Override
+    public void deleteLocalCache() {
+        localClient.deleteAllEntries(Constants.TableNames.ARTICLE.toString());
+    }
+
+    @Override
+    public void initialDataFetch() {
+        remoteClient.initialize();
+    }
+
+    @Override
+    public Map<String, Pair<Integer, String>> getDbMetaData() {
+        return localClient.getDbMetaData();
+    }
+
+    public List<RealmArticle> getLatestArticles(String category, Date mostRecentArticleDate) {
+        if (syncing) {
+            remoteClient.getAfter(ISO8601.fromCalendar(mostRecentArticleDate), category);
+            //updateLocalCache(category);
+        }
+        return localClient.getArticlesAfter(category.toLowerCase(), mostRecentArticleDate);
+    }
 
     /**
      * Updates the local cache when necessary with data from the remote server.
      */
-    public void updateLocalCache() {
-        Log.d("NetworkClient", "updateLocalCache()");
-
-        // callback to save the articles to cache
-        final ArticlesCallback saveToCacheCallback = new ArticlesCallback() {
-            @Override
-            public void onArticlesRetrieved(List<Article> articles) {
-                Log.d("NetworkClient", "Articles saved to local client.");
-                localClient.saveArticles(articles);
-                // notify that the articles have been saved
-                onLocalCacheUpdated();
-            }
-        };
-
-
-        if (localClient.isCacheEmpty()) {
-            Log.d("NetworkClient", "cache is empty");
-
-            // if there are no articles in the cache, get all articles
-            remoteClient.getAll(currentPage, numArticlesPerPage, saveToCacheCallback);
+    public void updateLocalCache(String category) {
+        if (category.equals(Constants.ArticleCategories.ALL.toString())
+                && Constants.FIRST_CALL_TO_UPDATE) {
+            Constants.FIRST_CALL_TO_UPDATE = false;
+            firstTimeSyncLocalAndRemoteData();
         } else {
+            syncLocalAndRemoteData(category);
+        }
+    }
 
-            // callback to check if cache is updated
-            ArticlesCallback checkCacheUpdatedCallback = new ArticlesCallback() {
-                @Override
-                public void onArticlesRetrieved(List<Article> articles) {
-                    Article localFirst = localClient.getFirst();
-                    // check to see if the the titles of the newest article
-                    // in the server is the same as the newest article in the cache
-                    if (!articles.get(0).getTitle().equals(localFirst.getTitle())) {
-                        // if the not the same, then the cache is outdated,
-                        // so update the cache to get the articles that haven't been cached
-                        remoteClient.getAfter(localFirst.getPub_date(), saveToCacheCallback);
-                    } else {
-                        // otherwise, notify that the cache has been updated
-                        onLocalCacheUpdated();
-                    }
-                }
-            };
+    public void syncLocalAndRemoteData(String category) {
+        RealmArticle localFirst = this.localClient.getFirst();
+        remoteClient.syncWithLocalCache(localFirst, category);
+    }
 
-            remoteClient.getFirst(checkCacheUpdatedCallback);
+    @Override
+    public void update(Observable observable, Object data) {
+        Log.i("Network Client", "Message Reached Update");
+        SyncMessage message = (SyncMessage) data;
+        if (message != null) {
+            if (message.updateType.equals(Constants.UpdateType.INITIALIZE)) {
+                Log.i("Network Client", "Update Type :INITIALIZE, Remote Call ; SUCCESS");
+                setChanged();
+                notifyObservers(message);
+            }
+            if (message.updateType.equals(Constants.UpdateType.REFRESH)) {
+                Log.i("Network Client", "Update type : REFRESH");
+                setChanged();
+                notifyObservers(message);
+            }
+        }
 
+        /*
+        if(message != null && message.getMessageData() != null) {
+            Log.i("Network Client", message.getCategory()+ " Message is not null");
+            Log.i("Network Client", "Sending message to the Main Activity");
+            setChanged();
+            Log.i("Network Client ", "Num observers: " + this.countObservers());
+            notifyObservers(message);
+        }
+        */
+    }
+
+
+    public void firstTimeSyncLocalAndRemoteData() {
+        String currentTimeAsISO = StringUtility.dateToISO8601(new Date());
+        this.remoteClient.getAll(currentPage, numArticlesPerPage, currentTimeAsISO);
+    }
+
+    private void addRemoteServiceListeners() {
+        List<Observer> remoteServiceObservers = new ArrayList<>(1);
+        remoteServiceObservers.add(this);
+        this.remoteClient.addObservers(remoteServiceObservers);
+    }
+
+    public void setSyncing(boolean syncing) {
+        this.syncing = syncing;
+    }
+
+    private void topUpArticlesPerCategory() {
+       /* for(Map.Entry<String,Integer> entry : categoryMap){
+            String category = entry.getKey();
+            int mod;
+            if(category != "ALL" && ((mod = (entry.getValue() % numArticlesPerPage)) != 0)){
+                String date = localClient.getLastDate(category);
+                remoteClient.getAfter(category,date);
+
+            }
+        }
+        */
+
+    }
+
+    public void topUpCategories() {
+        Map<String, Pair<Integer, String>> dbMetaData = localClient.getDbMetaData();
+        for (String category : Constants.CATEGORIES) {
+            if (!category.toLowerCase().equals("all")) {
+                Pair<Integer, String> pair = dbMetaData.get(category.toLowerCase());
+                Integer numSoFar = pair.first;
+                Integer topUpNum = 10 - (numSoFar % 10);
+                String dateBefore = pair.second;
+                Log.i("Network Client", "Topping up " + category + "after " + dateBefore + " by " + topUpNum);
+
+                remoteClient.getByCategory(category, dateBefore, topUpNum);
+            }
         }
 
     }
 
-    /**
-     * onArticlesRetrieved will be called after the cache has been updated
-     */
-    public void onLocalCacheUpdated() {
-        onArticlesRetrieved(localClient.getArticlesByCategory(category));
-    }
-
-
-    /**
-     * This will be overridden by the UI
-     *
-     * @param articles
-     */
-    @Override
-    public abstract void onArticlesRetrieved(List<Article> articles);
 }

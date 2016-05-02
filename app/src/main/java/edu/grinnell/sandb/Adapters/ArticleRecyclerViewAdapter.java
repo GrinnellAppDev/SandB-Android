@@ -12,44 +12,38 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
 import java.util.List;
 
 import edu.grinnell.sandb.Activities.ArticleDetailActivity;
 import edu.grinnell.sandb.Activities.MainActivity;
 import edu.grinnell.sandb.Fragments.ArticleDetailFragment;
-import edu.grinnell.sandb.Model.Article;
-import edu.grinnell.sandb.Model.Image;
+import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.R;
-import edu.grinnell.sandb.Util.DatabaseUtil;
 import edu.grinnell.sandb.Util.UniversalLoaderUtility;
 import edu.grinnell.sandb.Util.VersionUtil;
 
-/**
- * Created by prabir on 2/7/16.
- */
 public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecyclerViewAdapter.ViewHolder> {
-    private MainActivity mActivity;
-    private List<Article> mData;
-    protected UniversalLoaderUtility mLoader;
+    private MainActivity activity;
+    private List<RealmArticle> data;
+    protected UniversalLoaderUtility universalLoaderUtility;
 
-    public ArticleRecyclerViewAdapter(MainActivity a, List<Article> data) {
+
+    public ArticleRecyclerViewAdapter(MainActivity a, int layoutId, List<RealmArticle> data) {
         super();
-        mActivity = a;
-        mData = data;
-        mLoader = new UniversalLoaderUtility();
+        activity = a;
+        this.data = data;
+        universalLoaderUtility = new UniversalLoaderUtility();
     }
 
 
-    public void setData(List<Article>data) {
-        mData = data;
+    public void setData(List<RealmArticle>data) {
+        this.data = data;
         notifyDataSetChanged();
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater li = mActivity.getLayoutInflater();
+        LayoutInflater li = activity.getLayoutInflater();
         View view = li.inflate(R.layout.articles_row, parent, false);
         return new ViewHolder(view);
     }
@@ -58,52 +52,53 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
     public void onBindViewHolder(final ViewHolder holder, int position) {
     
         holder.image.setVisibility(View.VISIBLE);
-        final Article a = mData.get(position);
+        final RealmArticle a = data.get(position);
         if (a != null) {
             holder.image.setVisibility(View.VISIBLE);
+
             /*
             Image articleImage = DatabaseUtil.getArticleImage(a);
+            Image articleImage = null;//DatabaseUtil.getArticleImage(a);
 
             if (articleImage != null) {
-                mLoader.loadImage(articleImage.getURL(), holder.image, mActivity);
+                universalLoaderUtility.loadImage(articleImage.getURL(), holder.image, activity);
             } else {
                 holder.image.setImageResource(R.drawable.sb);
             }
             */
-
-            Picasso.with(mActivity)
-                    .load(a.getThumbnail())
+            // TODO: 5/2/16 bind image
+/*
+            Picasso.with(activity)
+                    .load(a.())
                     .placeholder(R.drawable.sb)
                     .error(R.drawable.sb)
                     .into(holder.image);
             Log.d("RecyclerView", "onBindViewHolder: " + a.getThumbnail());
-
+*/
             holder.title.setText(Html.fromHtml(a.getTitle()));
             holder.title.setPadding(3, 3, 3, 3);
             //holder.description.setText(Html.fromHtml(a.getDescription()));
             holder.category.setText(a.getCategory());
-            holder.date.setText(a.getPub_date());
+            holder.date.setText(a.getPubDate());
 
 
             // open the article when it is clicked
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent detailIntent = new Intent(mActivity,
+                    Intent detailIntent = new Intent(activity,
                             ArticleDetailActivity.class);
                     detailIntent.putExtra(ArticleDetailFragment.ARTICLE_ID_KEY,
-                            a.getId());
-                    detailIntent.putExtra(ArticleDetailActivity.COMMENTS_FEED,
-                            a.getComments());
+                            a.getArticleID());
 
                     if (VersionUtil.isLollipop()) {
                         Pair<View, String> p1 = new Pair<>((View) holder.title, "article_title");
-                        //mActivity.startActivity(detailIntent,
-                        //        ActivityOptionsCompat.makeSceneTransitionAnimation(mActivity, p1).toBundle());;
-                        mActivity.startActivity(detailIntent,
-                                ActivityOptionsCompat.makeSceneTransitionAnimation(mActivity).toBundle());
+                        //activity.startActivity(detailIntent,
+                        //        ActivityOptionsCompat.makeSceneTransitionAnimation(activity, p1).toBundle());;
+                        activity.startActivity(detailIntent,
+                                ActivityOptionsCompat.makeSceneTransitionAnimation(activity).toBundle());
                     } else {
-                        mActivity.startActivity(detailIntent);
+                        activity.startActivity(detailIntent);
                     }
                 }
             });
@@ -112,7 +107,7 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
 
     @Override
     public int getItemCount() {
-        return mData.size();
+        return data.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -139,5 +134,35 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
             //find the date text view
             date = (TextView) itemView.findViewById(R.id.tv_date);
         }
+    }
+
+    public void updateData(List<RealmArticle> newData) {
+        if(data != null) {
+            Log.i("Tabs Adapter:", "Updating dataSet in Adapter");
+           // data.clear();
+            newData.addAll(data);
+            data = newData;
+           // data.addAll(newData);
+            notifyDataSetChanged();
+        }
+    }
+
+    public void updateDataAbove(List<RealmArticle> newData){
+        if(data != null) {
+            Log.i("Tabs Adapter:", "Updating dataSet above  in Adapter");
+            newData.addAll(data);
+            data = newData;
+            notifyDataSetChanged();
+        }
+
+    }
+
+    public void addPage(List<RealmArticle> newPageData){
+        int curSize = getItemCount();
+        data.addAll(newPageData);
+
+        // for efficiency purposes, only notify the adapter of what elements that got changed
+        // curSize will equal to the index of the first element inserted because the list is 0-indexed
+        notifyItemRangeInserted(curSize, data.size() - 1);
     }
 }

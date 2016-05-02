@@ -7,12 +7,21 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.orm.SugarRecord;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
+
+import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.QueryResponse;
-import edu.grinnell.sandb.Services.Interfaces.ArticlesCallback;
+import edu.grinnell.sandb.Model.RealmArticle;
+import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
 import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,74 +34,301 @@ import retrofit2.http.Query;
 /**
  * This class is a retrofit implementation of the RemoteServiceAPI for data retrieval
  * from a remote server.
- *
+ * <p/>
  * <p> Most of the method calls perform an asynchronous fetching of data from some data end points
  * at a given Base URL. Retrofit abstracts the nifty gritty details of the http calls.
  * </p>
  *
- *
  * @author Albert Owusu-Asare
  * @version 1.1  Wed Mar 16 23:38:58 CDT 2016
- * @see retrofit2.Retrofit  r
+ * @see retrofit2.Retrofit
  * @see retrofit2.Call
  * @see java.util.Collections
  * @see edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI
+ * @see Observable
+ * @see Serializable
  */
-public class WordPressService implements RemoteServiceAPI {
-
-    /* Constants */
-    public static final String TAG = WordPressService.class.getSimpleName();
-    //private static final String PUBLIC_API = "https://public-api.wordpress.com";
-    private static final String PUBLIC_API = "http://www.thesandb.com";
-    private static final int ZERO = 0;
-    private static final int ONE = 1;
-    private static final int FIRST_PAGE = ONE;
+public class WordPressService extends Observable implements RemoteServiceAPI, Serializable {
 
     /* Class Fields */
     private Retrofit retrofit;
     private RestAPI restService;
+    private LocalCacheClient localCacheClient;
+    private final List<Article> articles = Collections.synchronizedList(new ArrayList<Article>());
     private int numArticlesPerPage;
     private int currentPageNumber;
-    private final List<Article> articles = Collections.synchronizedList(new ArrayList<Article>());
+    private Map<String, Boolean> completedMap;
 
-    public WordPressService(int numArticlesPerPage){
+
+    public WordPressService() {
+        this(new RealmDbClient());
+    }
+
+    public WordPressService(LocalCacheClient localCacheClient) {
         this.retrofit = initializeRetrofit();
         this.restService = this.retrofit.create(RestAPI.class);
-        this.numArticlesPerPage = numArticlesPerPage;
-        this.currentPageNumber = FIRST_PAGE;
+        this.localCacheClient = localCacheClient;
+        this.numArticlesPerPage = localCacheClient.getNumArticlesPerPage();
+        this.currentPageNumber = Constants.FIRST_PAGE;
+        this.completedMap = new HashMap<>();
+    }
+
+
+    @Override
+    public void getAll(final int page, int count, final String lastArticleDate) {
+        Call<QueryResponse> call = restService.posts(page, count);
+        call.enqueue(new Callback<QueryResponse>() {
+            @Override
+            public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                int responseCode = response.code();
+                List<RealmArticle> posts = response.body().getPosts();
+                int numPosts = posts.size();
+                localCacheClient.saveArticles(posts);
+                localCacheClient.updateNumEntriesAll(numPosts, lastArticleDate);
+                SyncMessage message;
+                setChanged();
+                message = new SyncMessage(responseCode, Constants.ArticleCategories.ALL.toString()
+                        , page, lastArticleDate);
+                notifyObservers(message);
+            }
+
+            @Override
+            public void onFailure(Call<QueryResponse> call, Throwable t) {
+                Log.e("Get All failure", t.getMessage());
+            }
+        });
+    }
+
+
+    @Override
+    public void getFirst() {
+        //  getAll(Constants.ONE, Constants.ONE);
     }
 
     @Override
-    public void getFirst(ArticlesCallback articlesCallback) {
-        getAll(ONE,ONE, articlesCallback);
+    public void getAfter(final String date, final String category) {
+        Log.i("WordPressService", "Fetching most recent " + category);
+        if (category.equals("all")) {
+            getAllAfter(date, category);
+        } else {
+            getAfterByCategory(date, category);
+        }
     }
 
-    @Override
-    public void getAfter(String date, ArticlesCallback articlesCallback) {
-        makeAsyncCall(restService.postsAfter(date), articlesCallback);
+    private void getAfterByCategory(String date, String category) {
+        Call<QueryResponse> call = restService.postsAfter(date, 10, category);
+        refreshData(date, category, call);
     }
 
-    @Override
-    public void getAll(ArticlesCallback articlesCallback) {
-        getAll(currentPageNumber,numArticlesPerPage, articlesCallback);
+    private void getAllAfter(final String date, final String category) {
+        Call<QueryResponse> call = restService.postsAfter(date);
+        refreshData(date, category, call);
     }
 
-    @Override
-    public void getAll(int page, int count, ArticlesCallback articlesCallback) {
-        Log.d(TAG, "getAll");
-        Call<QueryResponse> call = restService.posts(page,count);
-        makeAsyncCall(call, articlesCallback);
+    private void refreshData(final String date, final String category, Call<QueryResponse> call) {
+        call.enqueue(new Callback<QueryResponse>() {
+            @Override
+            public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                List<RealmArticle> posts = response.body().getPosts();
+                localCacheClient.saveArticles(posts);
+                SyncMessage message;
+                message = new SyncMessage(Constants.UpdateType.REFRESH, 200, 1, category, date, posts);
+                setChanged();
+                notifyObservers(message);
+            }
+
+            @Override
+            public void onFailure(Call<QueryResponse> call, Throwable t) {
+                Log.e("Get All failure", t.getMessage());
+            }
+        });
     }
+
 
     @Override
     public void getAll(List<String> fields) {
-        //TODO  Implementation get all with dynamic query parameters
+        return;
     }
 
-    public void isUpdated(Callback<QueryResponse> callback) {
-        Call<QueryResponse> call = restService.posts(1,1);
-        call.enqueue(callback);
+    @Override
+    public boolean isUpdated(RealmArticle localFirst) {
+        // return (localFirst == null) ? false : (localFirst.equals(this.getFirst()));
+        return true;
     }
+
+    @Override
+    public void addObservers(List<Observer> observers) {
+        for (Observer observer : observers)
+            addObserver(observer);
+    }
+
+    @Override
+    public void syncWithLocalCache(final RealmArticle localFirst, final String category) {
+        /* The local cache might not be updated yet due to an ongoing sync process in the background.
+           We return and use the results of the ongoing sync process*/
+        if (localFirst == null) {
+            return;
+        }
+
+        Call<QueryResponse> call = restService.posts(Constants.ONE, Constants.ONE);
+        call.enqueue(new Callback<QueryResponse>() {
+            @Override
+            public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                int responseCode = response.code();
+                RealmArticle remoteFirst = response.body().getFirstPost();
+                if (!localFirst.equals(remoteFirst)) {
+                    Log.i("Equality Test", "Local and remoteNotEqual");
+                    getAfter(localFirst.getPubDate(), category);
+                } else {
+                    Log.i(category + " Equality Test", "Local and remote Equal");
+                    //SyncMessage message = new SyncMessage(responseCode,category,currentPageNumber,null);
+                    setChanged();
+                    notifyObservers();
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<QueryResponse> call, Throwable t) {
+                Log.e("Remote Service Failure:", category);
+                t.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public void setNumArticlesPerPage(int numArticlesPerPage) {
+        this.numArticlesPerPage = numArticlesPerPage;
+    }
+
+
+    public void getNextPage(final String category, int page, int numArticlesPerPage) {
+        Log.i("getNextPage()", "Next Page called " + category);
+        Call<QueryResponse> call = restService.posts(category, page, numArticlesPerPage);
+        call.enqueue(new Callback<QueryResponse>() {
+            @Override
+            public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                int responseCode = response.code();
+                List<RealmArticle> articles = response.body().getPosts();
+
+                SyncMessage message = new SyncMessage(responseCode, category, articles);
+                message.setUpdateType(Constants.UpdateType.NEXT_PAGE);
+                setChanged();
+                notifyObservers(message);
+            }
+
+            @Override
+            public void onFailure(Call<QueryResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    @Override
+    public void initialize() {
+        Call<QueryResponse> call = restService.posts(1, 20);
+        call.enqueue(new Callback<QueryResponse>() {
+            @Override
+            public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                Log.i("Remote Client", "Response Recieved");
+                int responseCode = response.code();
+                List<RealmArticle> articles = response.body().getPosts();
+                //System.out.println(articles);
+                localCacheClient.saveArticles(articles);
+                SyncMessage message =
+                        new SyncMessage(Constants.UpdateType.INITIALIZE, 200, 1, "All", null, null);
+                setChanged();
+                notifyObservers(message);
+
+                // sendMessage();
+            }
+
+            @Override
+            public void onFailure(Call<QueryResponse> call, Throwable t) {
+
+            }
+        });
+
+        Log.i("Remote Client", "Calling initialize in Remote Client");
+     /*   for(String category : Constants.CATEGORIES){
+           getNext(category,0,10);
+        }
+        */
+
+    }
+
+    @Override
+    public void getByCategory(String category, String lastArticleUpdated, Integer topUpNum) {
+        Log.i("WordPressService ", "Getting posts before..");
+        Call<QueryResponse> call = restService.postsBefore(lastArticleUpdated, topUpNum, category);
+        call.enqueue(new Callback<QueryResponse>() {
+            @Override
+            public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                Log.i("WordPressServices ", "Response recieved in get before");
+                int responseCode = response.code();
+                List<RealmArticle> articles = response.body().getPosts();
+                //System.out.println(articles);
+                localCacheClient.saveArticles(articles);
+                /*SyncMessage message =
+                        new SyncMessage(Constants.UpdateType.INITIALIZE,200,1,"All",null,null);
+                setChanged();
+                notifyObservers(message);
+                */
+
+                // sendMessage();
+            }
+
+            @Override
+            public void onFailure(Call<QueryResponse> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    public void sendMessage() {
+        Log.i("Remote Client", "Sending message to network client");
+        //List<Article> articles = localCacheClient.getAll();
+        //  Log.i("Remote Client", "Message body" + articles.size());
+
+        //SyncMessage message = new SyncMessage(articles);
+        // setChanged();
+        //notifyObservers(message);
+    }
+
+    public boolean isFetchAllCompleted() {
+        for (Boolean value : completedMap.values()) {
+            if (value == false) return false;
+        }
+        return true;
+    }
+
+    public void getNext(final String category, final int pageNumber, final int numArticlesPerPage) {
+        Call<QueryResponse> call = restService.posts(category, pageNumber, numArticlesPerPage);
+        call.enqueue(new Callback<QueryResponse>() {
+            @Override
+            public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                int responseCode = response.code();
+                List<RealmArticle> articles = response.body().getPosts();
+                localCacheClient.saveArticles(articles);
+                setPullCompleted(category);
+                if (isFetchAllCompleted()) {
+                    Log.i("RemoteClient", "Last category updated");
+                    sendMessage();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<QueryResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void setPullCompleted(String category) {
+        this.completedMap.put(category, true);
+    }
+
 
     /* Private Helper methods */
     private Retrofit initializeRetrofit() {
@@ -100,42 +336,58 @@ public class WordPressService implements RemoteServiceAPI {
         Gson gson = new GsonBuilder()
                 .setExclusionStrategies(exclusionStrategy)
                 .create();
-         return new Retrofit.Builder()
-                .baseUrl(PUBLIC_API)
+        return new Retrofit.Builder()
+                .baseUrl(Constants.PUBLIC_API)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
     }
 
-    private void makeAsyncCall(Call<QueryResponse> call, final ArticlesCallback articlesCallback) {
+    private void makeAsyncCall(Call<QueryResponse> call, final String category,
+                               final String lastArticleDate) {
         call.enqueue(new Callback<QueryResponse>() {
             @Override
             public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
-                Log.e(TAG, "Response: " + response.code() + " | " + response.message() + "\nURL: " + call.request().url());
-
+                Log.d("makeAsyncCall success", "makeAsyncCall()");
+                int responseCode = response.code();
+                SyncMessage message;
                 QueryResponse responseBody = response.body();
-                List<Article> posts = responseBody.getPosts();
-                articles.clear();
-                articles.addAll(posts);
-                articlesCallback.onArticlesRetrieved(articles);
+                List<RealmArticle> posts = responseBody.getPosts();
+                localCacheClient.saveArticles(posts);
+                setChanged();
+                message = new SyncMessage(responseCode, category, Constants.ZERO, lastArticleDate);
+                notifyObservers(message);
             }
+
             @Override
             public void onFailure(Call<QueryResponse> call, Throwable t) {
                 //TODO : Implement Failure response SnackBar?
+                Log.e("makeAsyncCall Failure", category);
+                t.printStackTrace();
             }
         });
     }
 
-     /* Private Classes  and interfaces */
+    /* Private Classes  and interfaces */
     private interface RestAPI {
-          final String SNB_URL = "/rest/v1.1/sites/www.thesandb.com";
-        //@GET(SNB_URL + "/posts/")
-        @GET("/api/get_recent_posts/")
+        @GET("posts/")
         Call<QueryResponse> posts(@Query("page") int pageNumber, @Query("number") int count);
 
-        //@GET(SNB_URL + "/posts/")
-        @GET("/api/get_recent_posts/")
-         Call<QueryResponse> postsAfter(@Query("after") String dateTime);
-     }
+        @GET("posts/")
+        Call<QueryResponse> postsAfter(@Query("after") String dateTime);
+
+        @GET("posts/")
+            // https://public-api.wordpress.com/rest/v1.1/sites/www.thesandb.com/posts/?category=%22news%22&page=1&number=4
+        Call<QueryResponse> posts(@Query("category") String category, @Query("page") int pageNumber,
+                                  @Query("number") int count);
+
+        @GET("posts/")
+        Call<QueryResponse> postsBefore(@Query("before") String dateBefore, @Query("number") int count,
+                                        @Query("category") String category);
+
+        @GET("posts/")
+        Call<QueryResponse> postsAfter(@Query("after") String dateAfter, @Query("number") int count,
+                                       @Query("category") String category);
+    }
 
     /*
      * This class is useful in the deserialization process by the Gson Converter. It specifies
@@ -145,10 +397,11 @@ public class WordPressService implements RemoteServiceAPI {
      * conflicts with yet another "id" field which comes from the Sugar ORM extensions of the
      * Article class.
      */
-    private class SandBGsonExclusionStrategy implements ExclusionStrategy{
+    private class SandBGsonExclusionStrategy implements ExclusionStrategy {
         @Override
         public boolean shouldSkipField(FieldAttributes f) {
-            return (f.getDeclaringClass() == SugarRecord.class && f.getName().equals("id"));
+            return (f.getDeclaringClass() == SugarRecord.class && (f.getName().equals("id") ||
+                    f.getName().equals("categories")));
         }
 
         @Override

@@ -4,15 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.Explode;
-import android.transition.Fade;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -34,11 +30,10 @@ import edu.grinnell.sandb.Util.VersionUtil;
 /* This activity displays the text, images, and comments for a selected article */
 public class ArticleDetailActivity extends AppCompatActivity {
 
-    //Fields
-    public static final String DETAIL_ARGS = "detail_args";
-    public static final String COMMENTS_FEED = "Comments Feed";
     public static final String TAG = "ArticleDetailActivity";
-    private long mIDKey = 0;
+    public static final String COMMENTS_FEED = "Comments Feed";
+    private long articleId = 0;
+    private ArticleDetailFragment fragment;
     private String comments_feed = null;
     private ArrayList<Comment> mComments = null;
     private boolean mArticleSide = true;
@@ -70,9 +65,13 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        ArticleDetailFragment fragment = new ArticleDetailFragment();
-        mIDKey = intent.getLongExtra(ArticleDetailFragment.ARTICLE_ID_KEY, 0);
+        articleId = intent.getIntExtra(ArticleDetailFragment.ARTICLE_ID_KEY, 0);
+        Log.d(TAG, "Article ID: " + articleId);
         comments_feed = intent.getStringExtra(COMMENTS_FEED);
+
+        // init fragment
+        fragment = new ArticleDetailFragment();
+        fragment.setArticle(articleId);
 
 		/* Download the comments as soon as the article is opened */
         new ParseComments().execute(comments_feed);
@@ -86,8 +85,8 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
     }
 
-    public long getIDKey() {
-        return mIDKey;
+    public long getArticleId() {
+        return articleId;
     }
 
     public String getCommentsFeed() {

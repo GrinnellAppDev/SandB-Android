@@ -51,7 +51,7 @@ public class SandBServiceClient {
                 System.out.println(responseBody);
 
 
-                List<Article> articles = responseBody.getPosts();
+                //List<Article> articles = responseBody.getPosts();
                 System.out.println();
                 /*
                 cacheArticles(articles);
