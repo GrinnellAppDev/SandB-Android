@@ -4,9 +4,11 @@ import com.google.gson.annotations.SerializedName;
 import com.orm.dsl.Ignore;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-    public class RealmArticle extends RealmObject {
+public class RealmArticle extends RealmObject {
         @SerializedName("ID")
+        @PrimaryKey
         protected int articleID;
         protected String title;
         @SerializedName("URL")

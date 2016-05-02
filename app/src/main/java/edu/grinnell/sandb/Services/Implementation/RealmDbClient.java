@@ -9,6 +9,8 @@ import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
 import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 
 /**
  * Created by albertowusu-asare on 5/1/16.
@@ -31,7 +33,7 @@ public class RealmDbClient implements LocalCacheClient {
         String categoryName = article.getAuthor().getName();
         article.setCategory(categoryName);
         realm.beginTransaction();
-        realm.copyToRealm(article);
+        realm.copyToRealmOrUpdate(article);
         realm.commitTransaction();
     }
 
@@ -46,9 +48,13 @@ public class RealmDbClient implements LocalCacheClient {
         if (categoryName == null || categoryName.equals(ALL)) {
             return getAll();
         }
+        RealmQuery<RealmArticle> query = realm.where(RealmArticle.class);
+        query.equalTo("category", categoryName);
 
+        RealmResults<RealmArticle> result1 = query.findAll();
+        List<RealmArticle> articles = result1.subList(0,result1.size());
 
-        return new ArrayList<>();
+       return (articles.size() ==0) ? new ArrayList<RealmArticle>() : articles;
     }
 
     @Override
@@ -69,7 +75,10 @@ public class RealmDbClient implements LocalCacheClient {
 
     @Override
     public List<RealmArticle> getAll() {
-        return new ArrayList<>();
+        RealmQuery<RealmArticle> query = realm.where(RealmArticle.class);
+        RealmResults<RealmArticle> result1 = query.findAll();
+        List<RealmArticle> articles = result1.subList(0,10);
+        return (articles.size() ==0) ? new ArrayList<RealmArticle>() : articles;
     }
 
     @Override
