@@ -1,8 +1,11 @@
 package edu.grinnell.sandb.Services.Interfaces;
 
+import android.util.Pair;
+
 import com.orm.SugarRecord;
 
 import java.util.List;
+import java.util.Map;
 
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.RealmArticle;
@@ -119,6 +122,7 @@ public interface LocalCacheClient {
 
     void updateNumEntriesPerCategory(String category,int updatedArticlesSize);
     void updateNumEntriesAll(int numRecentUpdates,String latestDateUpdated);
+ Map<String, Pair<Integer, String>> getDbMetaData();
 
 
 

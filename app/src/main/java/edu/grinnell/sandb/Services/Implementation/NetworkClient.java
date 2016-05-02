@@ -2,6 +2,7 @@ package edu.grinnell.sandb.Services.Implementation;
 
 import android.net.Network;
 import android.util.Log;
+import android.util.Pair;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -113,6 +114,11 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
     @Override
     public void initialize() {
         remoteClient.initialize();
+    }
+
+    @Override
+    public Map<String, Pair<Integer, String>> getDbMetaData() {
+        return localClient.getDbMetaData();
     }
 
     public List<RealmArticle> getLatestArticles(String category){

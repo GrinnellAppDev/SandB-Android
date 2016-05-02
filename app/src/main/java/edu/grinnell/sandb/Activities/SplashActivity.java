@@ -18,13 +18,13 @@ import io.realm.RealmConfiguration;
  * Created by albertowusu-asare on 4/21/16.
  */
 public class SplashActivity extends AppCompatActivity implements Observer {
-
+    NetworkClient networkClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         RealmConfiguration config = new RealmConfiguration.Builder(this).build();
         Realm.setDefaultConfiguration(config);
-        NetworkClient networkClient = new NetworkClient();
+        networkClient = new NetworkClient();
         networkClient.addObserver(this);
         Log.i("Splash Activity", "Calling initialize on network client");
         networkClient.initialize();
@@ -37,6 +37,11 @@ public class SplashActivity extends AppCompatActivity implements Observer {
         SyncMessage syncMessage = (SyncMessage) data;
         if(updateSuccessful(syncMessage)){
             Log.i("Splash Activity", "Update Type :INITIALIZE, Remote Call ; SUCCESS");
+            for(String category : Constants.CATEGORIES){
+                Log.i("Splash Activity", "Db Meta Data "+ category +" =" + networkClient.getDbMetaData().get(category.toLowerCase()).first);
+            }
+
+
             Intent intent = new Intent(this, MainActivity.class);
             //top up remaining
             startActivity(intent);

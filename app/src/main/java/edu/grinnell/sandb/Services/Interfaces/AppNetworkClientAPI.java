@@ -1,6 +1,10 @@
 package edu.grinnell.sandb.Services.Interfaces;
 
+import android.util.Pair;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.RealmArticle;
@@ -52,6 +56,8 @@ public interface AppNetworkClientAPI {
     void deleteLocalCache();
 
     void initialize();
+
+     Map<String, Pair<Integer, String>> getDbMetaData();
 
 
 

@@ -139,6 +139,11 @@ public class SugarDbClient implements LocalCacheClient,Serializable {
     public void updateNumEntriesAll(int numRecentUpdates, String latestDateUpdated) {
 
     }
+
+    @Override
+    public Map<String, Pair<Integer, String>> getDbMetaData() {
+        return null;
+    }
 /*
 
     @Override
