@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Observer;
 
 import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.Model.RealmArticle;
+import io.realm.Realm;
 
 /**
  * Extracts the functionality of how we interact with the remote database.
@@ -52,7 +54,7 @@ public interface RemoteServiceAPI {
      * @param localFirst
      * @return
      */
-    boolean isUpdated(Article localFirst);
+    boolean isUpdated(RealmArticle localFirst);
 
     /**
      * Adds Observers to the remoteService to listen for any data changes
@@ -65,7 +67,7 @@ public interface RemoteServiceAPI {
      * @param localFirst
      * @param category the category that we are trying to sync data for
      */
-    void syncWithLocalCache(Article localFirst,String category);
+    void syncWithLocalCache(RealmArticle localFirst,String category);
 
     /**
      * Sets the number of articles per page for each query made to the remote database.

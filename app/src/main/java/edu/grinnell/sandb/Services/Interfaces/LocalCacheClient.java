@@ -5,6 +5,8 @@ import com.orm.SugarRecord;
 import java.util.List;
 
 import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.Model.RealmArticle;
+import io.realm.Realm;
 
 /**
  *
@@ -21,13 +23,13 @@ public interface LocalCacheClient {
      * @param articles the list of articles.
      * @return {@code true} if the persistence was successful.
      */
-    void saveArticles(List<Article> articles);
+    void saveArticles(List<RealmArticle> articles);
 
     /**
      * Persists an article object to the local cache.
      * @return {@code true} if the persistence was successful.
      */
-   void saveArticle(Article article);
+   void saveArticle(RealmArticle article);
 
     /**
      * Returns the Article that sits on top  of the local  cache.
@@ -37,7 +39,7 @@ public interface LocalCacheClient {
      * Article cache.</p>
      * @return
      */
-    Article getFirst();
+    RealmArticle getFirst();
 
     /**
      * Returns a list of the most recent articles belonging to a particular category.
@@ -47,7 +49,7 @@ public interface LocalCacheClient {
      * @param categoryName the category to query the local cache by.
      * @return the list of Articles of category : "category".
      */
-    List<Article> getArticlesByCategory(String categoryName);
+    List<RealmArticle> getArticlesByCategory(String categoryName);
 
     /**
      * @return a list of all the categories represented in the Articles cache.
@@ -73,7 +75,7 @@ public interface LocalCacheClient {
      * Returns all the articles
      * @return list of all the articles
      */
-    List<Article> getAll();
+    List<RealmArticle> getAll();
 
     /**
      * Drops the table referenced to by clazz in the SQLiteDb
@@ -89,7 +91,7 @@ public interface LocalCacheClient {
      * @param date
      * @return the list of articles satisfying the query.
      */
-    List<Article> getArticlesAfter(String category,String date);
+    List<RealmArticle> getArticlesAfter(String category,String date);
 
     /**
      * Sets the number of articles per page.

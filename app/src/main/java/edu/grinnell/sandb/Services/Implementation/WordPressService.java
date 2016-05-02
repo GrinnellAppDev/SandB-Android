@@ -21,9 +21,11 @@ import java.util.Observer;
 import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.QueryResponse;
+import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
 import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
 import edu.grinnell.sandb.Util.StringUtility;
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -63,7 +65,7 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
 
 
     public WordPressService(){
-        this(new SugarDbClient());
+        this(new RealmDbClient());
     }
 
     public WordPressService(LocalCacheClient localCacheClient){
@@ -83,7 +85,7 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
             @Override
             public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
                 int responseCode = response.code();
-                List<Article> posts = response.body().getPosts();
+                List<RealmArticle> posts = response.body().getPosts();
                 int numPosts = posts.size();
                 localCacheClient.saveArticles(posts);
                 localCacheClient.updateNumEntriesAll(numPosts, lastArticleDate);
@@ -120,7 +122,7 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
     }
 
     @Override
-    public boolean isUpdated(Article localFirst) {
+    public boolean isUpdated(RealmArticle localFirst) {
        // return (localFirst == null) ? false : (localFirst.equals(this.getFirst()));
         return true;
     }
@@ -132,7 +134,7 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
     }
 
     @Override
-    public void syncWithLocalCache(final Article localFirst, final String category) {
+    public void syncWithLocalCache(final RealmArticle localFirst, final String category) {
         /* The local cache might not be updated yet due to an ongoing sync process in the background.
            We return and use the results of the ongoing sync process*/
         if(localFirst == null) {
@@ -144,7 +146,7 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
             @Override
             public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
                 int responseCode = response.code();
-                Article remoteFirst = response.body().getFirstPost();
+                RealmArticle remoteFirst = response.body().getFirstPost();
                 if (!localFirst.equals(remoteFirst)) {
                     Log.i("Equality Test", "Local and remoteNotEqual");
                     getAfter(localFirst.getPubDate(), category);
@@ -179,7 +181,7 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
             @Override
             public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
                 int responseCode = response.code();
-                List<Article> articles = response.body().getPosts();
+                List<RealmArticle> articles = response.body().getPosts();
 
                 SyncMessage message = new SyncMessage(responseCode, category, articles);
                 message.setUpdateType(Constants.UpdateType.NEXT_PAGE);
@@ -202,7 +204,7 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
             public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
                 Log.i("Remote Client", "Response Recieved");
                 int responseCode = response.code();
-                List<Article> articles = response.body().getPosts();
+                List<RealmArticle> articles = response.body().getPosts();
                 //System.out.println(articles);
                 localCacheClient.saveArticles(articles);
                 SyncMessage message =
@@ -230,11 +232,11 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
     public  void sendMessage(){
         Log.i("Remote Client", "Sending message to network client");
         //List<Article> articles = localCacheClient.getAll();
-        Log.i("Remote Client", "Message body" + articles.size());
+      //  Log.i("Remote Client", "Message body" + articles.size());
 
-        SyncMessage message = new SyncMessage(articles);
-        setChanged();
-        notifyObservers(message);
+        //SyncMessage message = new SyncMessage(articles);
+       // setChanged();
+        //notifyObservers(message);
     }
 
     public boolean isFetchAllCompleted(){
@@ -250,7 +252,7 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
             @Override
             public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
                 int responseCode = response.code();
-                List<Article> articles = response.body().getPosts();
+                List<RealmArticle> articles = response.body().getPosts();
                 localCacheClient.saveArticles(articles);
                 setPullCompleted(category);
                 if(isFetchAllCompleted()){
@@ -292,7 +294,7 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
             int responseCode = response.code();
             SyncMessage message;
             QueryResponse responseBody = response.body();
-            List<Article> posts = responseBody.getPosts();
+            List<RealmArticle> posts = responseBody.getPosts();
             localCacheClient.saveArticles(posts);
             setChanged();
             message = new SyncMessage(responseCode,category,Constants.ZERO,lastArticleDate);

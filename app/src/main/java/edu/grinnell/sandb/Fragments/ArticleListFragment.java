@@ -20,6 +20,7 @@ import edu.grinnell.sandb.Activities.MainActivity;
 import edu.grinnell.sandb.Adapters.ArticleRecyclerViewAdapter;
 import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Services.Implementation.NetworkClient;
 import edu.grinnell.sandb.Services.Implementation.SyncMessage;
@@ -49,7 +50,7 @@ public class ArticleListFragment extends Fragment  {
     private int mActivatedPosition = ListView.INVALID_POSITION;
     private RecyclerView mRecyclerView;
     private ArticleRecyclerViewAdapter mAdapter;
-    private List<Article> mData;
+    private List<RealmArticle> mData;
     private SwipeRefreshLayout pullToRefresh;
     private NetworkClient networkClient;
     private Bundle args;
@@ -142,7 +143,7 @@ public class ArticleListFragment extends Fragment  {
     }
     /* This method is called whenever the observable updates its state */
 
-    public void update(List<Article> articles) {
+    public void update(List<RealmArticle> articles) {
         Log.i("Fragment " + this.mCategory, "Updating Fragment Data set");
         mAdapter.updateData(articles);
         /*

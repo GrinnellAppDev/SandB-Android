@@ -13,6 +13,7 @@ import java.util.List;
 import edu.grinnell.sandb.Activities.MainActivity;
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.Image;
+import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Util.DatabaseUtil;
 import edu.grinnell.sandb.Util.UniversalLoaderUtility;
@@ -20,12 +21,12 @@ import edu.grinnell.sandb.Util.UniversalLoaderUtility;
 /*
 	List Adapter to populate the article list
 */
-public class ArticleListAdapter extends ArrayAdapter<Article> {
+public class ArticleListAdapter extends ArrayAdapter<RealmArticle> {
 	private MainActivity mActivity;
-	private List<Article> mData;
+	private List<RealmArticle> mData;
 	protected UniversalLoaderUtility mLoader;
 
-	public ArticleListAdapter(MainActivity a, int layoutId, List<Article> data) {
+	public ArticleListAdapter(MainActivity a, int layoutId, List<RealmArticle> data) {
 		super(a, layoutId, data);
 		mActivity = a;
 		mData = data;
@@ -62,11 +63,11 @@ public class ArticleListAdapter extends ArrayAdapter<Article> {
 
 
 		holder.image.setVisibility(View.VISIBLE);
-		final Article a = mData.get(position);
+		final RealmArticle a = mData.get(position);
 				
 		if (a != null) {
 			holder.image.setVisibility(View.VISIBLE);
-            Image articleImage = DatabaseUtil.getArticleImage(a);
+            Image articleImage = null;//DatabaseUtil.getArticleImage(a);
 
             if (articleImage != null) {
                 mLoader.loadImage(articleImage.getURL(), holder.image, mActivity);

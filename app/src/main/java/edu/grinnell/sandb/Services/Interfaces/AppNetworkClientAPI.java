@@ -3,6 +3,7 @@ package edu.grinnell.sandb.Services.Interfaces;
 import java.util.List;
 
 import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.Model.RealmArticle;
 
 /**
  * A client API that describes the core networking functionality for the application.
@@ -17,17 +18,16 @@ public interface AppNetworkClientAPI {
      * Fetches all articles according to a specific category
      * @return
      */
-    List<Article> getArticles(String category);
+    List<RealmArticle> getArticles(String category);
 
     /**
      * Fetches all the articles according to a specific category by the page we are currently on.
      * @param category
      * @param currentPageNumber
-     * @param lastVisibleArticleDate the date of the last visible article. Useful in determining next
      *                               page.
      * @return a list of Articles for the page
      */
-    List<Article> getNextPage(String category, int currentPageNumber);
+    List<RealmArticle> getNextPage(String category, int currentPageNumber);
 
     /**
      * @return all the categories articles can be classed into

@@ -6,6 +6,7 @@ import java.util.List;
 
 import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.Model.RealmArticle;
 
 /**
  * This class encapsulates a message that is passed from the various observables to their
@@ -37,7 +38,7 @@ public final class SyncMessage {
     }
 
 
-    public SyncMessage(List<Article> data){
+    public SyncMessage(List<RealmArticle> data){
         remoteHttpStatusCode  = 200;
         categoryUpdated = "All";
         pageRequested =0;
@@ -45,7 +46,7 @@ public final class SyncMessage {
         this.data = data;
     }
 
-    public SyncMessage(int httpStatusCode, String category, List<Article> data){
+    public SyncMessage(int httpStatusCode, String category, List<RealmArticle> data){
         this(httpStatusCode,category,Constants.ZERO,null,data);
     }
     public SyncMessage(int httpStatusCode,String category, int pageRequested,
@@ -55,7 +56,7 @@ public final class SyncMessage {
 
     }
     public SyncMessage(int httpStatusCode,String category, int pageRequested,
-                       String lastArticleVisibleDate,List<Article> data){
+                       String lastArticleVisibleDate,List<RealmArticle> data){
         this.remoteHttpStatusCode  = httpStatusCode;
         this.categoryUpdated =category;
         this.pageRequested =pageRequested;
@@ -63,7 +64,7 @@ public final class SyncMessage {
         this.data = data;
     }
 
-    public void setMessageData(List<Article> data){ this.data = data;}
+    public void setMessageData(List<RealmArticle> data){ this.data = data;}
     public void setUpdateType(Constants.UpdateType updateType){this.updateType = updateType;}
 
     public Object getMessageData(){return this.data;}

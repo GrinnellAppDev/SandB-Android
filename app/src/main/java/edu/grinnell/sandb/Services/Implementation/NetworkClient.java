@@ -13,6 +13,7 @@ import java.util.Observer;
 
 import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.Services.Interfaces.AppNetworkClientAPI;
 import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
 import edu.grinnell.sandb.Services.Interfaces.RemoteServiceAPI;
@@ -43,7 +44,7 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
     private String latestSyncedArticleDate;
 
     public NetworkClient(){
-        this(new SugarDbClient());
+        this(new RealmDbClient());
     }
 
     public NetworkClient(LocalCacheClient localCacheClient){
@@ -62,7 +63,7 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
 
 
     @Override
-    public List<Article> getArticles(String category) {
+    public List<RealmArticle> getArticles(String category) {
         //updateLocalCache(category);
         return localClient.getArticlesByCategory(category);
     }
@@ -77,7 +78,7 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
     */
 
 
-    public List<Article> getNextPage(String category, int currentPageNumber){
+    public List<RealmArticle> getNextPage(String category, int currentPageNumber){
         updateLocalCache(category);
         return localClient.getArticlesByCategory(category);
     }
@@ -88,7 +89,7 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
         return localClient.getCategories();
     }
 
-    public List<Article> getInitialArticles(String category){
+    public List<RealmArticle> getInitialArticles(String category){
         return getNextPage(category, 0);
     }
 
@@ -114,7 +115,7 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
         remoteClient.initialize();
     }
 
-    public List<Article> getLatestArticles(String category){
+    public List<RealmArticle> getLatestArticles(String category){
         if(syncing){
             updateLocalCache(category);
         }
@@ -135,7 +136,7 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
     }
 
     public void syncLocalAndRemoteData(String category){
-        Article localFirst= this.localClient.getFirst();
+        RealmArticle localFirst= this.localClient.getFirst();
         remoteClient.syncWithLocalCache(localFirst, category);
     }
     @Override

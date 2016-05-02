@@ -20,6 +20,7 @@ import edu.grinnell.sandb.Activities.MainActivity;
 import edu.grinnell.sandb.Fragments.ArticleDetailFragment;
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.Image;
+import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Util.DatabaseUtil;
 import edu.grinnell.sandb.Util.UniversalLoaderUtility;
@@ -30,10 +31,10 @@ import edu.grinnell.sandb.Util.VersionUtil;
  */
 public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecyclerViewAdapter.ViewHolder> {
     private MainActivity mActivity;
-    private List<Article> mData;
+    private List<RealmArticle> mData;
     protected UniversalLoaderUtility mLoader;
 
-    public ArticleRecyclerViewAdapter(MainActivity a, int layoutId, List<Article> data) {
+    public ArticleRecyclerViewAdapter(MainActivity a, int layoutId, List<RealmArticle> data) {
         super();
         mActivity = a;
         mData = data;
@@ -52,10 +53,10 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
     public void onBindViewHolder(final ViewHolder holder, int position) {
 
         holder.image.setVisibility(View.VISIBLE);
-        final Article a = mData.get(position);
+        final RealmArticle a = mData.get(position);
         if (a != null) {
             holder.image.setVisibility(View.VISIBLE);
-            Image articleImage = DatabaseUtil.getArticleImage(a);
+            Image articleImage = null;//DatabaseUtil.getArticleImage(a);
 
             if (articleImage != null) {
                 mLoader.loadImage(articleImage.getURL(), holder.image, mActivity);
@@ -77,7 +78,7 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
                     Intent detailIntent = new Intent(mActivity,
                             ArticleDetailActivity.class);
                     detailIntent.putExtra(ArticleDetailFragment.ARTICLE_ID_KEY,
-                            a.getId());
+                            a.getArticleID());
                   //  detailIntent.putExtra(ArticleDetailActivity.COMMENTS_FEED,
                     //        a.getComments());
 
@@ -126,7 +127,7 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
         }
     }
 
-    public void updateData(List<Article> newData) {
+    public void updateData(List<RealmArticle> newData) {
         if(mData != null) {
             Log.i("Tabs Adapter:", "Updating dataSet in Adapter");
             mData.clear();
@@ -135,7 +136,7 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
         }
     }
 
-    public void addPage(List<Article> newPageData){
+    public void addPage(List<RealmArticle> newPageData){
         int curSize = getItemCount();
         mData.addAll(newPageData);
 

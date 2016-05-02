@@ -13,6 +13,7 @@ import java.util.Set;
 import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.ArticleCategory;
+import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
 import edu.grinnell.sandb.Util.StringUtility;
 
@@ -59,6 +60,86 @@ public class SugarDbClient implements LocalCacheClient,Serializable {
         }
     }
 
+    @Override
+    public void saveArticles(List<RealmArticle> articles) {
+
+    }
+
+    @Override
+    public void saveArticle(RealmArticle article) {
+
+    }
+
+    @Override
+    public RealmArticle getFirst() {
+        return null;
+    }
+
+    @Override
+    public List<RealmArticle> getArticlesByCategory(String categoryName) {
+        return null;
+    }
+
+    @Override
+    public List<String> getCategories() {
+        return null;
+    }
+
+    @Override
+    public List<Article> getNextPage(String categoryName, int currentPageNumber, String lastVisibleArticleDate) {
+        return null;
+    }
+
+    @Override
+    public boolean isCacheEmpty() {
+        return false;
+    }
+
+    @Override
+    public List<RealmArticle> getAll() {
+        return null;
+    }
+
+    @Override
+    public void deleteAllEntries(String tableName) {
+
+    }
+
+    @Override
+    public List<RealmArticle> getArticlesAfter(String category, String date) {
+        return null;
+    }
+
+    @Override
+    public void setNumArticlesPerPage(int numArticlesPerPage) {
+
+    }
+
+    @Override
+    public int getNumArticlesPerPage() {
+        return 0;
+    }
+
+    @Override
+    public void updateCategorySizes() {
+
+    }
+
+    @Override
+    public void initialize() {
+
+    }
+
+    @Override
+    public void updateNumEntriesPerCategory(String category, int updatedArticlesSize) {
+
+    }
+
+    @Override
+    public void updateNumEntriesAll(int numRecentUpdates, String latestDateUpdated) {
+
+    }
+/*
 
     @Override
     public void saveArticles(List<Article> articles) {
@@ -211,6 +292,7 @@ public class SugarDbClient implements LocalCacheClient,Serializable {
      * SELECT COUNT(*) FROM sqlite_master WHERE type = ? AND name = ?", new String[] {"table", tableName}
      * Note.executeQuery("VACUUM");
      */
+    /*
     private boolean isArticleCacheEmpty(){
         return Article.count(Article.class,null,null) == Constants.ZERO;
        // return (getFirst() == null);
@@ -220,9 +302,11 @@ public class SugarDbClient implements LocalCacheClient,Serializable {
      * Checks if the category cache is empty
      * @return
      */
+    /*
     private boolean isCategoryCacheEmpty(){
         return ArticleCategory.count(ArticleCategory.class,null,null) == Constants.ZERO;
     }
+    */
 
 
 
