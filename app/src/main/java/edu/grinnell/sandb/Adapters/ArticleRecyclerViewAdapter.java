@@ -12,6 +12,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import edu.grinnell.sandb.Activities.ArticleDetailActivity;
@@ -19,6 +23,7 @@ import edu.grinnell.sandb.Activities.MainActivity;
 import edu.grinnell.sandb.Fragments.ArticleDetailFragment;
 import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.R;
+import edu.grinnell.sandb.Util.ISO8601;
 import edu.grinnell.sandb.Util.UniversalLoaderUtility;
 import edu.grinnell.sandb.Util.VersionUtil;
 
@@ -26,6 +31,9 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
     private MainActivity activity;
     private List<RealmArticle> data;
     protected UniversalLoaderUtility universalLoaderUtility;
+    private SimpleDateFormat dateFormat;
+    private int imgThumbWidth;
+    private int imgThumbHeight;
 
 
     public ArticleRecyclerViewAdapter(MainActivity a, int layoutId, List<RealmArticle> data) {
@@ -33,10 +41,13 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
         activity = a;
         this.data = data;
         universalLoaderUtility = new UniversalLoaderUtility();
+        dateFormat = new SimpleDateFormat("d MMMM, yyyy");
+        imgThumbWidth = Math.round(activity.getResources().getDimension(R.dimen.article_image_thumb_width));
+        imgThumbHeight = Math.round(activity.getResources().getDimension(R.dimen.article_image_thumb_height));
     }
 
 
-    public void setData(List<RealmArticle>data) {
+    public void setData(List<RealmArticle> data) {
         this.data = data;
         notifyDataSetChanged();
     }
@@ -50,36 +61,39 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-    
+
         holder.image.setVisibility(View.VISIBLE);
         final RealmArticle a = data.get(position);
         if (a != null) {
             holder.image.setVisibility(View.VISIBLE);
 
-            /*
-            Image articleImage = DatabaseUtil.getArticleImage(a);
-            Image articleImage = null;//DatabaseUtil.getArticleImage(a);
+            String imgUrl = a.getFeaturedImgUrl();
 
-            if (articleImage != null) {
-               universalLoaderUtility.loadImage(articleImage.getURL(), holder.image, activity);
+            if (imgUrl != null && !imgUrl.isEmpty()) {
+                holder.image.setVisibility(View.VISIBLE);
+                Picasso.with(activity)
+                        .load(a.getFeaturedImgUrl())
+                        .placeholder(R.drawable.sb)
+                        .error(R.drawable.sb)
+                        .resize(imgThumbWidth, imgThumbHeight)
+                        .centerCrop()
+                        .into(holder.image);
             } else {
-                holder.image.setImageResource(R.drawable.sb);
+                holder.image.setVisibility(View.GONE);
             }
-            */
-            // TODO: 5/2/16 bind image
-/*
-            Picasso.with(activity)
-                    .load(a.())
-                    .placeholder(R.drawable.sb)
-                    .error(R.drawable.sb)
-                    .into(holder.image);
-            Log.d("RecyclerView", "onBindViewHolder: " + a.getThumbnail());
-*/
+
             holder.title.setText(Html.fromHtml(a.getTitle()));
             holder.title.setPadding(3, 3, 3, 3);
-            //holder.description.setText(Html.fromHtml(a.getDescription()));
             holder.category.setText(a.getCategory());
-            holder.date.setText(a.getPubDate());
+            try {
+                holder.date.setVisibility(View.VISIBLE);
+                Date date = ISO8601.toDate(a.getPubDate());
+                holder.date.setText(dateFormat.format(date));
+
+            } catch (Exception e) {
+                holder.date.setVisibility(View.INVISIBLE);
+                e.printStackTrace();
+            }
 
 
             // open the article when it is clicked
@@ -137,18 +151,18 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
     }
 
     public void updateData(List<RealmArticle> newData) {
-        if(data != null) {
+        if (data != null) {
             Log.i("Tabs Adapter:", "Updating dataSet in Adapter");
-           // data.clear();
+            // data.clear();
             newData.addAll(data);
             data = newData;
-           // data.addAll(newData);
+            // data.addAll(newData);
             notifyDataSetChanged();
         }
     }
 
-    public void updateDataAbove(List<RealmArticle> newData){
-        if(data != null) {
+    public void updateDataAbove(List<RealmArticle> newData) {
+        if (data != null) {
             Log.i("Tabs Adapter:", "Updating dataSet above  in Adapter");
             newData.addAll(data);
             data = newData;
@@ -157,7 +171,7 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
 
     }
 
-    public void addPage(List<RealmArticle> newPageData){
+    public void addPage(List<RealmArticle> newPageData) {
         int curSize = getItemCount();
         data.addAll(newPageData);
 

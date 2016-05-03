@@ -15,10 +15,10 @@
 
         <ImageView
             android:id="@+id/articleThumb"
-            android:layout_width="84dp"
-            android:layout_height="84dp"
+            android:layout_width="@dimen/article_image_thumb_width"
+            android:layout_height="@dimen/article_image_thumb_height"
             android:layout_alignParentEnd="true"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="8dp"
             android:contentDescription="article thumb"
             android:scaleType="centerCrop"
             android:src="@drawable/sb" />
@@ -28,12 +28,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toStartOf="@id/articleThumb"
+            android:layout_marginBottom="8dp"
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="2"
             android:text="The Title Text Goes Here"
             android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:transitionName="article_title"
             app:typeface="roboto_slab_regular" />
 
@@ -42,8 +43,8 @@
             android:id="@+id/tv_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginStart="12dp"
+            android:layout_below="@id/titleText"
+            android:layout_marginStart="8dp"
             android:layout_toEndOf="@id/category"
             android:layout_toStartOf="@id/articleThumb"
             android:text="Publicatioin Date"
@@ -54,7 +55,7 @@
             android:id="@+id/category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_below="@id/titleText"
             android:background="@color/accent_dark"
             android:elevation="4dp"
             android:paddingBottom="1dp"
@@ -64,7 +65,7 @@
             android:text="CATEGORY"
             android:textAllCaps="true"
             android:textColor="@color/white"
-            android:textSize="12sp"
+            android:textSize="10sp"
             android:textStyle="normal" />
 
 
