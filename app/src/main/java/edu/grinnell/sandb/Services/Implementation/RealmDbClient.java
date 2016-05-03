@@ -3,6 +3,7 @@ package edu.grinnell.sandb.Services.Implementation;
 import android.util.Log;
 import android.util.Pair;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
+import edu.grinnell.sandb.Util.ISO8601;
 import edu.grinnell.sandb.Util.StringUtility;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -65,11 +67,17 @@ public class RealmDbClient implements LocalCacheClient {
         }
         RealmQuery<RealmArticle> query = realm.where(RealmArticle.class);
         query.equalTo("category", categoryName);
-
         /* Sort to get most recent articles first */
         RealmResults<RealmArticle> result1 = query.findAll().sort("realmDate",Sort.DESCENDING);
+
         int [] pageIndexes = getPageIndexes(pageNum,result1.size());
+
+        // fetch more data from remote
+        Log.i("RealmDbClient", "From "+ pageIndexes[0] +"to " + pageIndexes[1]);
+        Log.i("RealDbClient", "Getting page" + pageNum + "of "+ categoryName +" Size " + result1.size());
+          /* Same page indexes denotes no more pages. See Java Sublist */
         List<RealmArticle> articles = result1.subList(pageIndexes[0],pageIndexes[1]);
+        articles = realm.copyFromRealm(articles);
         Log.i("RealmDBClient", "Number of " + categoryName + "articles currently = " +
                 this.dbMetaData.get(categoryName).first);
 
@@ -108,7 +116,7 @@ public class RealmDbClient implements LocalCacheClient {
     public List<RealmArticle> getAll(int pageNum) {
         RealmQuery<RealmArticle> query = realm.where(RealmArticle.class);
         RealmResults<RealmArticle> result1 = query.findAll().sort("realmDate", Sort.DESCENDING);
-        int [] pageIndexes = getPageIndexes(pageNum, result1.size());
+        int[] pageIndexes = getPageIndexes(pageNum, result1.size());
         List<RealmArticle> articles = result1.subList(pageIndexes[0], pageIndexes[1]);
         articles = realm.copyFromRealm(articles);
         return (articles.size() ==0) ? new ArrayList<RealmArticle>() : articles;
@@ -175,7 +183,24 @@ public class RealmDbClient implements LocalCacheClient {
         String category = article.getCategory();
         Pair<Integer, String> data = dbMetaData.get(category);
         Integer numArticles = data.first;
-        Pair<Integer, String> newData = new Pair(numArticles +1, article.getPubDate());
+        String pairDate = data.second;
+
+        Date previousDate;
+
+        try {
+             previousDate = ISO8601.toDate(pairDate);
+        } catch (ParseException e) {
+            previousDate = new Date();
+        }
+
+        Date articleDate = article.getRealmDate();
+        // Incoming date less recent than previous data
+        if(articleDate.compareTo(previousDate) <= 0){
+            pairDate =  ISO8601.fromCalendar(articleDate);
+        }
+
+
+        Pair<Integer, String> newData = new Pair(numArticles +1, pairDate);
         dbMetaData.put(category,newData);
     }
 

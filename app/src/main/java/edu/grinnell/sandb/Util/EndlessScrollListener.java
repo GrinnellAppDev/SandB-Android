@@ -66,7 +66,7 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
 
         int lastVisibleItemPosition = 0;
         int totalItemCount = mLayoutManager.getItemCount();
-        Log.i("Endless Scroll", "Total items " +totalItemCount);
+       // Log.i("Endless Scroll", "Total items " +totalItemCount);
 
         if (mLayoutManager instanceof StaggeredGridLayoutManager) {
             int[] lastVisibleItemPositions = ((StaggeredGridLayoutManager) mLayoutManager).findLastVisibleItemPositions(null);
@@ -101,7 +101,6 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
         // the visibleThreshold and need to reload more data.
         // If we do need to reload some more data, we execute onLoadMore to fetch the data.
         // threshold should reflect how many total columns there are too
-        Log.i("Endless Scroll", " "+ loading +" "+ lastVisibleItemPosition +" "+visibleThreshold);
         if (!loading && (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
             currentPage++;
             Log.i("Endless Scroll", "Scrolling down list");

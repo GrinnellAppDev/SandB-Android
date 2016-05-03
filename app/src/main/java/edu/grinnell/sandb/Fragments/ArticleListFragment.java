@@ -97,7 +97,7 @@ public class ArticleListFragment extends Fragment  {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
                 Log.i("Fragment "+ mCategory,"Request to load more" + page);
-                List<RealmArticle> newData = networkClient.getArticles(mCategory,page);
+                List<RealmArticle> newData = networkClient.getNextPage(mCategory,page);
                 mAdapter.updateDataBelow(newData);
                 currentPage = page;
             }
@@ -150,6 +150,10 @@ public class ArticleListFragment extends Fragment  {
         if(pullToRefresh.isRefreshing()) {
             pullToRefresh.setRefreshing(false);
         }
+    }
+
+    public void updateNextPageData(List<RealmArticle> articles){
+        mAdapter.updateDataBelow(articles);
     }
 
     /* Private Helper methods */

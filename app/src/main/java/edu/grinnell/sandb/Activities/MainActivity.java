@@ -140,6 +140,12 @@ public class MainActivity extends AppCompatActivity implements Observer{
                 Log.i("Main Activity", "Active Fragment " + message.getCategory() + " Refreshing..");
                 activeFragment.refreshList((List< RealmArticle>) message.getMessageData());
             }
+            if(message.getUpdateType().equals(Constants.UpdateType.NEXT_PAGE)
+                    && activeFragment.mCategory.equals(message.getCategory())){
+                Log.i("Main Activity", "Active Fragment " + message.getCategory() + " Next Page.."
+                        +message.getCategory());
+                activeFragment.updateNextPageData((List<RealmArticle>) message.getMessageData());
+            }
         }
     }
 

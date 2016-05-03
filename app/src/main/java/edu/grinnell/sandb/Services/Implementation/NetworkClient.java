@@ -70,7 +70,9 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
     @Override
     public List<RealmArticle> getArticles(String category, int pageNum) {
         //updateLocalCache(category);
-        return localClient.getArticlesByCategory(category,pageNum);
+        List<RealmArticle> articles = localClient.getArticlesByCategory(category,pageNum);
+
+        return articles;
     }
 
     /*
@@ -83,11 +85,17 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
     */
 
 
-    public List<RealmArticle> getNextPage(String category, int currentPageNumber){
-        Map<String, Pair<Integer,String>> dbMetaData =localClient.getDbMetaData();
-        //String date dbMetaData.get(category);
-        updateLocalCache(category);
-        return localClient.getArticlesByCategory(category,currentPageNumber);
+    public List<RealmArticle> getNextPage(String category, int pageNumber){
+        Log.i("Network Client","Fetching  Page " + pageNumber + "for "+ category);
+        List<RealmArticle> articles = localClient.getArticlesByCategory(category,pageNumber);
+        if(articles.isEmpty()) {
+            Map<String, Pair<Integer, String>> dbMetaData = localClient.getDbMetaData();
+            Pair<Integer, String> pair = dbMetaData.get(category);
+            int numberToFetch = pair.first % Constants.DEFAULT_NUM_ARTICLES_PER_PAGE;
+            String latestArticleInCategory = pair.second;
+            remoteClient.getNextPage(pageNumber,Constants.DEFAULT_NUM_ARTICLES_PER_PAGE,category,numberToFetch);
+        }
+        return  articles;
     }
 
     @Override
@@ -164,6 +172,11 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
             }
             if(message.updateType.equals(Constants.UpdateType.REFRESH)){
                 Log.i("Network Client","Update type : REFRESH");
+                setChanged();
+                notifyObservers(message);
+            }
+            if(message.updateType.equals(Constants.UpdateType.NEXT_PAGE)){
+                Log.i("Network Client","Update type : NEXT_PAGE for "+ message.getCategory());
                 setChanged();
                 notifyObservers(message);
             }

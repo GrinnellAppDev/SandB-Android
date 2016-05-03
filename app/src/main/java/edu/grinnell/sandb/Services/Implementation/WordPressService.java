@@ -110,7 +110,7 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
 
     @Override
     public void  getAfter(final String date,final String category) {
-        Log.i("WordPressService","Fetching most recent "+ category);
+        Log.i("WordPressService", "Fetching most recent " + category);
         if(category.equals("all")) {
             getAllAfter(date, category);
         }
@@ -205,25 +205,29 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
 
 
 
-    public void getNextPage(final String category, int page, int numArticlesPerPage){
-        Log.i("getNextPage()","Next Page called "+category);
-        Call<QueryResponse> call = restService.posts(category, page, numArticlesPerPage);
+    @Override
+    public void getNextPage(final int page, int offset, final String category, int number){
+        Log.i("Remote Client","Getting page "+ 2 +" for " + category);
+        Call<QueryResponse> call = restService.postsNextPage(page,offset,category,number);
         call.enqueue(new Callback<QueryResponse>() {
             @Override
             public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                Log.i("Remote Client", "Response Recieved get next page for "+ category);
                 int responseCode = response.code();
                 List<RealmArticle> articles = response.body().getPosts();
-
-                SyncMessage message = new SyncMessage(responseCode, category, articles);
-                message.setUpdateType(Constants.UpdateType.NEXT_PAGE);
+                localCacheClient.saveArticles(articles);
+                SyncMessage message =
+                        new SyncMessage(Constants.UpdateType.NEXT_PAGE,200,page,category,null,articles);
                 setChanged();
                 notifyObservers(message);
             }
+
             @Override
             public void onFailure(Call<QueryResponse> call, Throwable t) {
-
+                Log.i("Remote Client", "NOT SUCCESSFUL get next page for "+ category);
             }
         });
+
     }
 
     @Override
@@ -385,6 +389,10 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
          @GET("posts/")
          Call<QueryResponse> postsAfter(@Query("after") String dateAfter,@Query("number") int count,
                                          @Query("category") String category);
+         @GET("posts/")
+         Call<QueryResponse> postsNextPage(@Query("page") int page,@Query("offset") int offset,
+                                        @Query("category") String category, @Query("number") int number);
+
      }
 
     /*
