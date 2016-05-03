@@ -56,10 +56,13 @@ public class ArticleListFragment extends Fragment  {
     private Bundle args;
     private SwipeRefreshLayout.OnRefreshListener swipeRefreshListener;
     private int currentPage = 1;
+    private static final String TAG = MainActivity.class.getName();
 
-    /* This method provides a convenient means of instantiating a new object by handling the
+    /*
+    Provides a convenient means of instantiating a new object by handling the
     bundling of the necessary parameters locally instead of having to do so externally.(Outside of
-    this class.) */
+    this class.)
+     */
     public static ArticleListFragment newInstance(String category){
         ArticleListFragment fragment = new ArticleListFragment();
         Bundle bundle = new Bundle();
@@ -75,7 +78,6 @@ public class ArticleListFragment extends Fragment  {
         setCategory();
         mActivity = (MainActivity) getActivity();
         networkClient = mActivity.getNetworkClient();
-        Log.i("Fragment" + mCategory, "Num observers :" + networkClient.countObservers());
         mData = networkClient.getArticles(mCategory,currentPage);
         mAdapter = new ArticleRecyclerViewAdapter((MainActivity) getActivity(),
                 R.layout.articles_row, mData);
@@ -88,6 +90,7 @@ public class ArticleListFragment extends Fragment  {
         // Create new view and store inflated layout in a View.
         View rootView = inflater.inflate(R.layout.fragment_article_list,
                 container, false);
+
         // set up the recycler view
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv);
         StaggeredGridLayoutManager layoutManager =
@@ -96,12 +99,13 @@ public class ArticleListFragment extends Fragment  {
         mRecyclerView.addOnScrollListener(new EndlessScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                Log.i("Fragment "+ mCategory,"Request to load more" + page);
+                Log.i(TAG,mCategory + ":Request to load page" + page);
                 List<RealmArticle> newData = networkClient.getNextPage(mCategory,page);
                 mAdapter.updateDataBelow(newData);
                 currentPage = page;
             }
         });
+
         // set up pull-to-refresh
         pullToRefresh = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefresh);
         pullToRefresh.setColorSchemeResources(R.color.gred,
@@ -133,7 +137,6 @@ public class ArticleListFragment extends Fragment  {
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
         }
-       // triggerSwipeRefresh();
     }
 
 
@@ -145,6 +148,12 @@ public class ArticleListFragment extends Fragment  {
         }
     }
 
+    /**
+     * Updates the top of the data list with new data.
+     *
+     * <p> Turns off the refreshing spinning wheel</p>
+     * @param articles the new data to add to existing data.
+     */
     public void refreshList(List<RealmArticle> articles){
         mAdapter.updateDataAbove(articles);
         if(pullToRefresh.isRefreshing()) {
@@ -152,18 +161,29 @@ public class ArticleListFragment extends Fragment  {
         }
     }
 
+    /**
+     * Updates the bottom of the data list with new data.
+     *
+     * <p>This method will usually be called by the underlying activity whenevever new data for the
+     * next page arrives at the activity</p>
+     * @param articles
+     */
     public void updateNextPageData(List<RealmArticle> articles){
         mAdapter.updateDataBelow(articles);
     }
 
-    /* Private Helper methods */
+    /**
+     * @return the category that this fragment belongs to
+     */
+    public String getCategory(){
+        return mCategory;
+    }
+
+    /* Private helper methods */
     private void setCategory() {
         /* Set the category of this fragment */
         mCategory = null;
         if (args != null)
             mCategory = Constants.titleToKey.get(args.getString(Constants.ARTICLE_CATEGORY_KEY));
     }
-
-
-
 }

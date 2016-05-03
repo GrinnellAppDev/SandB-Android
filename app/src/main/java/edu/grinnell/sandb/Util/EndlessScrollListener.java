@@ -108,7 +108,6 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
             loading = true;
         }
 
-
     }
 
     // Defines the process for actually loading more data based on page

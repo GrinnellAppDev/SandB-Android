@@ -26,7 +26,7 @@ import io.realm.Sort;
  * Created by albertowusu-asare on 5/1/16.
  */
 public class RealmDbClient implements LocalCacheClient {
-    private Realm realm = Realm.getDefaultInstance();
+    private Realm realm;
     private Map<String, Pair<Integer, String>> dbMetaData = new HashMap<>();
     private final String ALL ="all";
 
@@ -37,9 +37,11 @@ public class RealmDbClient implements LocalCacheClient {
     @Override
     public void saveArticles(List<RealmArticle> articles) {
         Log.i("RealmDbClient:", "In save Articles...");
+       realm =  Realm.getDefaultInstance();
         for(RealmArticle article : articles){
             saveArticle(article);
         }
+        realm.close();
     }
 
     @Override
@@ -61,6 +63,7 @@ public class RealmDbClient implements LocalCacheClient {
 
     @Override
     public List<RealmArticle> getArticlesByCategory(String categoryName,int pageNum) {
+        realm =  Realm.getDefaultInstance();
         Log.i("RealDBClient", "Attempting to querry local db for " + categoryName);
         if (categoryName == null || categoryName.equals(ALL)) {
             return getAll(pageNum);
@@ -80,7 +83,7 @@ public class RealmDbClient implements LocalCacheClient {
         articles = realm.copyFromRealm(articles);
         Log.i("RealmDBClient", "Number of " + categoryName + "articles currently = " +
                 this.dbMetaData.get(categoryName).first);
-
+        realm.close();
        return (articles.size() ==0) ? new ArrayList<RealmArticle>() : articles;
     }
 
@@ -114,11 +117,13 @@ public class RealmDbClient implements LocalCacheClient {
 
     @Override
     public List<RealmArticle> getAll(int pageNum) {
+        realm =  Realm.getDefaultInstance();
         RealmQuery<RealmArticle> query = realm.where(RealmArticle.class);
         RealmResults<RealmArticle> result1 = query.findAll().sort("realmDate", Sort.DESCENDING);
         int[] pageIndexes = getPageIndexes(pageNum, result1.size());
         List<RealmArticle> articles = result1.subList(pageIndexes[0], pageIndexes[1]);
         articles = realm.copyFromRealm(articles);
+        realm.close();
         return (articles.size() ==0) ? new ArrayList<RealmArticle>() : articles;
     }
 
@@ -164,6 +169,7 @@ public class RealmDbClient implements LocalCacheClient {
 
     @Override
     public List<RealmArticle> getArticlesAfter(String category, Date date) {
+        realm =  Realm.getDefaultInstance();
         RealmQuery<RealmArticle> query = realm.where(RealmArticle.class);
         query.equalTo("category", category);
         query.greaterThan("realmDate", date);
@@ -171,6 +177,7 @@ public class RealmDbClient implements LocalCacheClient {
 
 
         List<RealmArticle> articles = result1.subList(0,result1.size());
+        realm.close();
         return (articles.size() ==0) ? new ArrayList<RealmArticle>() : articles;
     }
 

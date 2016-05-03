@@ -45,8 +45,8 @@ import edu.grinnell.sandb.Util.VersionUtil;
 /**
  * Main Activity for the application. This activity is the host for the ArticleList fragments.
  *
- * <p> The class listens for any updates from remote client upon a call  to fetch remote
- * data.</p>
+ * <p> The class listens for any data updates from the remote client and passes the data to the
+ * currently active fragment </p>
  *
  * @see Observer
  * @see NetworkClient
@@ -55,20 +55,23 @@ import edu.grinnell.sandb.Util.VersionUtil;
  */
 public class MainActivity extends AppCompatActivity implements Observer{
 
-    //Fields
-    private static final String SELECTED_TAB = "selected_tab";
     private ViewPager mPager;
     private TabsAdapter mTabsAdapter;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private CoordinatorLayout mCoordinatorLayout;
     private NetworkClient networkClient;
+    /* Associates the position of the tabs visited to Fragments. Helps identify the currently
+    active fragment */
     private Map<Integer, Fragment> fragmentReferenceMap;
+    private String FLURRY_AGENT_KEY;
+    private static final String TAG = MainActivity.class.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Crashlytics.start(this);
+        FLURRY_AGENT_KEY = getResources().getString(R.string.FlurryKey);
         setContentView(R.layout.activity_main);
         fragmentReferenceMap = new HashMap<>();
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
@@ -82,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements Observer{
     @Override
     protected void onStart() {
         super.onStart();
-        FlurryAgent.onStartSession(this, "B3PJX5MJNYMNSB9XQS3P");
+        FlurryAgent.onStartSession(this, FLURRY_AGENT_KEY);
     }
 
     @Override
@@ -123,26 +126,29 @@ public class MainActivity extends AppCompatActivity implements Observer{
 
     @Override
     public void onSaveInstanceState(Bundle state) {
-        state.putInt(SELECTED_TAB, mPager.getCurrentItem());
+        state.putInt(Constants.SELECTED_TAB, mPager.getCurrentItem());
         super.onSaveInstanceState(state);
     }
 
+    /* Call back method called whenever observable changes state */
     @Override
     public void update(Observable observable, Object data) {
-        Log.i("Main Activity", "Message reached main activity");
-
+        Log.i(TAG, "Call back message received");
         SyncMessage message = (SyncMessage)data;
-
         if(message !=null){
             ArticleListFragment activeFragment = (ArticleListFragment) getActiveFragment();
-            if(message.getUpdateType().equals(Constants.UpdateType.REFRESH)
-                    && activeFragment.mCategory.equals(message.getCategory())){
-                Log.i("Main Activity", "Active Fragment " + message.getCategory() + " Refreshing..");
+            String activeFragmentCategory = activeFragment.getCategory();
+            Constants.UpdateType updateType = message.getUpdateType();
+            String messageCategory = message.getCategory();
+
+            if(updateType.equals(Constants.UpdateType.REFRESH)
+                    && activeFragmentCategory.equals(messageCategory)){
+                Log.i(TAG, "Active Fragment " + message.getCategory() + " Refreshing..");
                 activeFragment.refreshList((List< RealmArticle>) message.getMessageData());
             }
-            if(message.getUpdateType().equals(Constants.UpdateType.NEXT_PAGE)
-                    && activeFragment.mCategory.equals(message.getCategory())){
-                Log.i("Main Activity", "Active Fragment " + message.getCategory() + " Next Page.."
+            if(updateType.equals(Constants.UpdateType.NEXT_PAGE)
+                    && activeFragmentCategory.equals(messageCategory)){
+                Log.i(TAG, "Active Fragment " + message.getCategory() + " Next Page.."
                         +message.getCategory());
                 activeFragment.updateNextPageData((List<RealmArticle>) message.getMessageData());
             }
@@ -155,7 +161,6 @@ public class MainActivity extends AppCompatActivity implements Observer{
     public class TabsAdapter extends FragmentStatePagerAdapter {
         private final ArrayList<ArticleListFragment> fragments = new ArrayList<>();
 
-        //  Constructor
         public TabsAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -172,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements Observer{
         @Override
         public Fragment getItem(int position) {
             Fragment fragment = fragments.get(position);
-            fragmentReferenceMap.put(position,fragment);
+            fragmentReferenceMap.put(position, fragment);
             return fragment;
         }
 
@@ -192,25 +197,27 @@ public class MainActivity extends AppCompatActivity implements Observer{
         }
     }
 
+    /**
+     * @return the networkClient operating within the activity.
+     */
+    public NetworkClient getNetworkClient(){
+        return this.networkClient;
+    }
 
     /**
-     * Gets the base view for the main activity.
-     *
-     * This is useful when implementing SnackBar Messages to the base view from outside of the
-     * main activity.
-     * @return
+     * @return the fragment attached to this activity at the moment when call is made.
      */
-    public View getRootView(){
-        return mCoordinatorLayout;
+    public Fragment getActiveFragment(){
+        int index = mPager.getCurrentItem();
+        return fragmentReferenceMap.get(index);
     }
 
 
+    /* Private Methods  */
 
-    /* Private Methods */
     private void initializeNetworkClient(){
         this.networkClient = new NetworkClient();
         this.networkClient.addObserver(this);
-        this.networkClient.deleteLocalCache();//TODO : Must we delete the cache upon start up?
     }
 
     private void setLollipopTransitions() {
@@ -238,7 +245,6 @@ public class MainActivity extends AppCompatActivity implements Observer{
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mDrawerList.setAdapter(new ArrayAdapter<>(this,
                 R.layout.drawer_list_item, Constants.CATEGORIES));
-        // R.layout.drawer_list_item, ArticleListFragment.CATEGORIES));
         mDrawerList.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -258,7 +264,6 @@ public class MainActivity extends AppCompatActivity implements Observer{
                         mPager.setCurrentItem(position, true);
                     }
                 });
-
             }
         });
     }
@@ -291,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements Observer{
 
         if (savedInstanceState != null) {
             // if resuming to a page from before
-            int pos = savedInstanceState.getInt(SELECTED_TAB);
+            int pos = savedInstanceState.getInt(Constants.SELECTED_TAB);
             mPager.setCurrentItem(pos, false);
             mDrawerList.setItemChecked(pos, true);
         } else {
@@ -302,21 +307,11 @@ public class MainActivity extends AppCompatActivity implements Observer{
         }
     }
 
-    /* Creates "Constants.CATEGORIES.length" number of fragments to be attached to the tabs adapter*/
+    /*Creates "Constants.CATEGORIES.length" number of fragments to be attached to the tabs adapter*/
     private void addFragments(TabsAdapter ta){
         for(String category :Constants.CATEGORIES){
             ArticleListFragment fragment = ArticleListFragment.newInstance(category);
             ta.addFragment(fragment);
         }
     }
-
-    public NetworkClient getNetworkClient(){
-        return this.networkClient;
-    }
-
-    public Fragment getActiveFragment(){
-        int index = mPager.getCurrentItem();
-        return fragmentReferenceMap.get(index);
-    }
-
 }

@@ -31,7 +31,6 @@ public class Constants {
     public static final int OK = 200;
 
     /* Table Names */
-
     public enum TableNames{
         ARTICLE("Article"),
         CATEGORY("Category");
@@ -51,7 +50,6 @@ public class Constants {
     }
 
     /* Snack Bar Messages */
-
     public enum SnackBarMessages{
         CONNECTED("Connection Established"),
         CHECK_UPDATES("Checking for New Articles ..."),
@@ -74,6 +72,7 @@ public class Constants {
 
     /* Application state constants */
     public static boolean FIRST_CALL_TO_UPDATE = true;
+    public static final String SELECTED_TAB = "selected_tab";
 
     /* Article Category constants */
     public static String ARTICLE_CATEGORY_KEY = "category";

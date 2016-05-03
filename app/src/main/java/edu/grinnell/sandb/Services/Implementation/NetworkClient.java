@@ -231,7 +231,6 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
                 Integer topUpNum = 10 - (numSoFar % 10);
                 String dateBefore = pair.second;
                 Log.i("Network Client", "Topping up " +numSoFar +" " + category + "after " + dateBefore +  " by " + topUpNum);
-
                 remoteClient.getByCategory(category, dateBefore, topUpNum);
             }
         }
