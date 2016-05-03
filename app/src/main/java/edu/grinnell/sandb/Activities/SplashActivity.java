@@ -34,7 +34,6 @@ public class SplashActivity extends AppCompatActivity implements Observer {
         Realm.setDefaultConfiguration(config);
         networkClient = new NetworkClient();
         networkClient.addObserver(this);
-        Log.i("Splash Activity", "Calling initialDataFetch on network client");
         networkClient.initialDataFetch();
     }
 
@@ -44,10 +43,11 @@ public class SplashActivity extends AppCompatActivity implements Observer {
         if(updateSuccessful(syncMessage)){
             Log.i("Splash Activity", "Update Type :INITIALIZE, Remote Call ; SUCCESS");
             networkClient.topUpCategories();
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
+
         }
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     /* Private Helper methods */
