@@ -23,6 +23,7 @@ import edu.grinnell.sandb.Fragments.ArticleDetailFragment;
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.Image;
 import edu.grinnell.sandb.Model.RealmArticle;
+import edu.grinnell.sandb.Model.RealmImage;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Util.DatabaseUtil;
 import edu.grinnell.sandb.Util.UniversalLoaderUtility;
@@ -59,9 +60,10 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
         if (a != null) {
             holder.image.setVisibility(View.VISIBLE);
             Image articleImage = null;//DatabaseUtil.getArticleImage(a);
+            RealmImage articleThumbnail = a.getArticleThumbnail();
 
-            if (articleImage != null) {
-                mLoader.loadImage(articleImage.getURL(), holder.image, mActivity);
+            if (articleThumbnail != null) {
+                mLoader.loadImage(articleThumbnail.getUrl(), holder.image, mActivity);
             } else {
                 holder.image.setImageResource(R.drawable.sb);
             }

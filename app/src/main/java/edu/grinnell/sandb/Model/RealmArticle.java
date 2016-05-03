@@ -26,6 +26,8 @@ public class RealmArticle extends RealmObject {
         @SerializedName("excerpt")
         protected String description;
         protected String category;
+        @SerializedName("post_thumbnail")
+        protected RealmImage articleThumbnail;
         //@Ignore
         //protected transient List<ArticleCategory> categories;
         @Ignore
@@ -92,6 +94,8 @@ public class RealmArticle extends RealmObject {
         public String getPubDate() {
             return pubDate;
         }
+
+        public RealmImage getArticleThumbnail(){return this.articleThumbnail;}
 
         public void setArticleID(int articleID) {
             this.articleID = articleID;

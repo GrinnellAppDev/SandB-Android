@@ -32,7 +32,10 @@ public class ScarletAndBlackApplication extends SugarApp {
         
         ImageLoader.getInstance().init(configb.build());
         // The realm file will be located in Context.getFilesDir() with name "default.realm"
-        RealmConfiguration config = new RealmConfiguration.Builder(this).build();
+        RealmConfiguration config = new RealmConfiguration.Builder(this).
+                deleteRealmIfMigrationNeeded().build();
+                //TODO : Check that deleteRealm is the right thing to do
         Realm.setDefaultConfiguration(config);
+
     }
 }
