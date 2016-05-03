@@ -52,8 +52,9 @@ public interface LocalCacheClient {
      * This value may differ per implementation.
      * @param categoryName the category to query the local cache by.
      * @return the list of Articles of category : "category".
+     * //TODO params
      */
-    List<RealmArticle> getArticlesByCategory(String categoryName);
+    List<RealmArticle> getArticlesByCategory(String categoryName, int pageNum);
 
     /**
      * @return a list of all the categories represented in the Articles cache.
@@ -79,7 +80,7 @@ public interface LocalCacheClient {
      * Returns all the articles
      * @return list of all the articles
      */
-    List<RealmArticle> getAll();
+    List<RealmArticle> getAll(int pageNum);
 
     /**
      * Drops the table referenced to by clazz in the SQLiteDb

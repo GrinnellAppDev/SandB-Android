@@ -68,9 +68,9 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
 
 
     @Override
-    public List<RealmArticle> getArticles(String category) {
+    public List<RealmArticle> getArticles(String category, int pageNum) {
         //updateLocalCache(category);
-        return localClient.getArticlesByCategory(category);
+        return localClient.getArticlesByCategory(category,pageNum);
     }
 
     /*
@@ -84,8 +84,10 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
 
 
     public List<RealmArticle> getNextPage(String category, int currentPageNumber){
+        Map<String, Pair<Integer,String>> dbMetaData =localClient.getDbMetaData();
+        //String date dbMetaData.get(category);
         updateLocalCache(category);
-        return localClient.getArticlesByCategory(category);
+        return localClient.getArticlesByCategory(category,currentPageNumber);
     }
 
     @Override
@@ -215,7 +217,7 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
                 Integer numSoFar = pair.first;
                 Integer topUpNum = 10 - (numSoFar % 10);
                 String dateBefore = pair.second;
-                Log.i("Network Client", "Topping up " + category + "after " + dateBefore +  " by " + topUpNum);
+                Log.i("Network Client", "Topping up " +numSoFar +" " + category + "after " + dateBefore +  " by " + topUpNum);
 
                 remoteClient.getByCategory(category, dateBefore, topUpNum);
             }

@@ -187,7 +187,6 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
                     //SyncMessage message = new SyncMessage(responseCode,category,currentPageNumber,null);
                     setChanged();
                     notifyObservers();
-
                 }
             }
 
@@ -220,7 +219,6 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
                 setChanged();
                 notifyObservers(message);
             }
-
             @Override
             public void onFailure(Call<QueryResponse> call, Throwable t) {
 

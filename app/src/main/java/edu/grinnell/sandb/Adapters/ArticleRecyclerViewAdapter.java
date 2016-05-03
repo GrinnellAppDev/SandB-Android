@@ -13,7 +13,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.AbstractList;
 import java.util.List;
+import java.util.ListIterator;
 
 import edu.grinnell.sandb.Activities.ArticleDetailActivity;
 import edu.grinnell.sandb.Activities.MainActivity;
@@ -37,7 +39,7 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
     public ArticleRecyclerViewAdapter(MainActivity a, int layoutId, List<RealmArticle> data) {
         super();
         mActivity = a;
-        mData = data;
+        mData = (AbstractList<RealmArticle>) data;
         mLoader = new UniversalLoaderUtility();
     }
 
@@ -132,7 +134,7 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
             Log.i("Tabs Adapter:", "Updating dataSet in Adapter");
            // mData.clear();
             newData.addAll(mData);
-            mData = newData;
+            mData = (AbstractList<RealmArticle>) newData;
            // mData.addAll(newData);
             notifyDataSetChanged();
         }
@@ -142,8 +144,19 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
         if(mData != null) {
             Log.i("Tabs Adapter:", "Updating dataSet above  in Adapter");
             newData.addAll(mData);
-            mData = newData;
+            mData =  newData;
             notifyDataSetChanged();
+        }
+
+    }
+
+    public void updateDataBelow(List<RealmArticle> newData){
+        if(mData != null) {
+            Log.i("Tabs Adapter:", "Updating dataSet above  in Adapter");
+            int curSize = getItemCount();
+            mData.addAll(newData);
+          //  notifyDataSetChanged();
+            notifyItemRangeInserted(curSize, mData.size() - 1);
         }
 
     }

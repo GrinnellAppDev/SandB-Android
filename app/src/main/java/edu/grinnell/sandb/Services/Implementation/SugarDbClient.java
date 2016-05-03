@@ -76,6 +76,11 @@ public class SugarDbClient implements LocalCacheClient,Serializable {
     }
 
     @Override
+    public List<RealmArticle> getArticlesByCategory(String categoryName, int pageNum) {
+        return null;
+    }
+
+
     public List<RealmArticle> getArticlesByCategory(String categoryName) {
         return null;
     }
@@ -96,6 +101,11 @@ public class SugarDbClient implements LocalCacheClient,Serializable {
     }
 
     @Override
+    public List<RealmArticle> getAll(int pageNum) {
+        return null;
+    }
+
+
     public List<RealmArticle> getAll() {
         return null;
     }

@@ -21,8 +21,9 @@ public interface AppNetworkClientAPI {
     /**
      * Fetches all articles according to a specific category
      * @return
+     * //TODO : params
      */
-    List<RealmArticle> getArticles(String category);
+    List<RealmArticle> getArticles(String category,int pageNum);
 
     /**
      * Fetches all the articles according to a specific category by the page we are currently on.

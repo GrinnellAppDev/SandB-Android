@@ -141,14 +141,6 @@ public class MainActivity extends AppCompatActivity implements Observer{
                 activeFragment.refreshList((List< RealmArticle>) message.getMessageData());
             }
         }
-        // Get current fragment
-        if(message !=null && message.getMessageData() != null) {
-            ArticleListFragment activeFragment = (ArticleListFragment) getActiveFragment();
-            // activeFragment.update();
-            // Ask fragment to update its list
-           // activeFragment.update(message.getMessageData());
-            //Log.i("Main Activity", "Message contents " + message.getMessageData().size());
-        }
     }
 
     /*

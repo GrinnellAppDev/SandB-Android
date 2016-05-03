@@ -55,6 +55,7 @@ public class ArticleListFragment extends Fragment  {
     private NetworkClient networkClient;
     private Bundle args;
     private SwipeRefreshLayout.OnRefreshListener swipeRefreshListener;
+    private int currentPage = 1;
 
     /* This method provides a convenient means of instantiating a new object by handling the
     bundling of the necessary parameters locally instead of having to do so externally.(Outside of
@@ -75,7 +76,7 @@ public class ArticleListFragment extends Fragment  {
         mActivity = (MainActivity) getActivity();
         networkClient = mActivity.getNetworkClient();
         Log.i("Fragment" + mCategory, "Num observers :" + networkClient.countObservers());
-        mData = networkClient.getArticles(mCategory);
+        mData = networkClient.getArticles(mCategory,currentPage);
         mAdapter = new ArticleRecyclerViewAdapter((MainActivity) getActivity(),
                 R.layout.articles_row, mData);
     }
@@ -95,7 +96,10 @@ public class ArticleListFragment extends Fragment  {
         mRecyclerView.addOnScrollListener(new EndlessScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                networkClient.getNextPage(mCategory, page);
+                Log.i("Fragment "+ mCategory,"Request to load more" + page);
+                List<RealmArticle> newData = networkClient.getArticles(mCategory,page);
+                mAdapter.updateDataBelow(newData);
+                currentPage = page;
             }
         });
         // set up pull-to-refresh
@@ -109,7 +113,7 @@ public class ArticleListFragment extends Fragment  {
                 RealmArticle mostRecentArticle = mData.get(0);
                 List<RealmArticle> latestArticles
                         = networkClient.getLatestArticles(mCategory,mostRecentArticle.getRealmDate());
-                mAdapter.updateData(latestArticles);
+                mAdapter.updateDataAbove(latestArticles);
             }
         };
         pullToRefresh.setOnRefreshListener(swipeRefreshListener);
@@ -140,34 +144,12 @@ public class ArticleListFragment extends Fragment  {
             outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
         }
     }
-    /* This method is called whenever the observable updates its state */
 
-    public void update(List<RealmArticle> articles) {
-        Log.i("Fragment " + this.mCategory, "Updating Fragment Data set");
-        mAdapter.updateData(articles);
-        /*
-        Log.i("Fragment Update", mCategory);
-        networkClient.setSyncing(false);
-        SyncMessage message = (SyncMessage) data;
-        if(message != null) {
-
-            if (message.getCategory() != null) {
-                Log.i("Fragment Update", "inside if " + mCategory);
-                mData = networkClient.getLatestArticles(mCategory);
-                mAdapter.updateData(mData);
-            }
-            if ((message.getUpdateType() == Constants.UpdateType.NEXT_PAGE)
-                    && mCategory.equals(message.getCategory())) {
-                List<Article> newPage = message.getMessageData();
-                Log.i("NextPage "+mCategory,""+newPage.size());
-                mAdapter.addPage(newPage);
-            }
-        }
+    public void refreshList(List<RealmArticle> articles){
+        mAdapter.updateDataAbove(articles);
         if(pullToRefresh.isRefreshing()) {
             pullToRefresh.setRefreshing(false);
         }
-        */
-
     }
 
     /* Private Helper methods */
@@ -178,37 +160,6 @@ public class ArticleListFragment extends Fragment  {
             mCategory = Constants.titleToKey.get(args.getString(Constants.ARTICLE_CATEGORY_KEY));
     }
 
-    private void initializeNetworkClient() {
-        if(args != null){
-            networkClient = (NetworkClient) args.getSerializable(Constants.KEY_CLIENT);
-        }
-        else {
-            networkClient = new NetworkClient();
-            networkClient.addObserver(mActivity);
-        }
-
-    }
-    /*
-    This method programmatically triggers the swipe  functionality. This is useful in checking
-     for new data when the fragment loads initially. See swipeRefreshListener.onRefresh()
-      */
-    private void triggerSwipeRefresh() {
-        pullToRefresh.post(new Runnable() {
-            @Override
-            public void run() {
-                Log.i("OnViewCreated", mCategory);
-                pullToRefresh.setRefreshing(true);
-                swipeRefreshListener.onRefresh();
-            }
-        });
-    }
-
-    public void refreshList(List<RealmArticle> articles){
-        mAdapter.updateDataAbove(articles);
-        if(pullToRefresh.isRefreshing()) {
-            pullToRefresh.setRefreshing(false);
-        }
-    }
 
 
 }
