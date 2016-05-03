@@ -44,7 +44,7 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater li = activity.getLayoutInflater();
-        View view = li.inflate(R.layout.articles_row, parent, false);
+        View view = li.inflate(R.layout.articles_row_small, parent, false);
         return new ViewHolder(view);
     }
 
@@ -61,7 +61,7 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
             Image articleImage = null;//DatabaseUtil.getArticleImage(a);
 
             if (articleImage != null) {
-                universalLoaderUtility.loadImage(articleImage.getURL(), holder.image, activity);
+               universalLoaderUtility.loadImage(articleImage.getURL(), holder.image, activity);
             } else {
                 holder.image.setImageResource(R.drawable.sb);
             }

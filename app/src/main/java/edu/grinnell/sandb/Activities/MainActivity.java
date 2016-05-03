@@ -162,7 +162,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
     private void initializeNetworkClient() {
         this.networkClient = new NetworkClient();
         this.networkClient.addObserver(this);
-        this.networkClient.deleteLocalCache();//TODO : Must we delete the cache upon start up?
     }
 
     private void setLollipopTransitions() {
