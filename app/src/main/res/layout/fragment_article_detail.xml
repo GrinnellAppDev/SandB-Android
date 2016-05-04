@@ -1,31 +1,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/article_title"
-        style="?android:attr/textAppearanceLarge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:fontFamily="sans-serif-condensed"
-        android:gravity="center"
-        android:paddingBottom="@dimen/pad3"
-        android:paddingLeft="@dimen/pad7"
-        android:paddingRight="@dimen/pad7"
-        android:paddingTop="@dimen/pad7"
-        android:textAlignment="center"
-        android:textColor="@color/gmdarkred"
-        android:textIsSelectable="true"
-        android:transitionName="article_title" />
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="@dimen/pad1"
-        android:background="@android:color/darker_gray" />
-
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/article_nested_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -34,53 +15,96 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TableLayout
-                android:layout_width="fill_parent"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:stretchColumns="1">
+                android:minHeight="?attr/actionBarSize">
 
-                <TableRow
-                    android:layout_width="wrap_content"
+                <ImageView
+                    android:id="@+id/feature_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:maxHeight="200dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="7dp"
-                    android:padding="5dip">
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <com.devspark.robototextview.widget.RobotoTextView
+                        android:id="@+id/article_title"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight=".9"
+                        android:gravity="center"
+                        android:text="The Title of the Article Goes Here"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textIsSelectable="true"
+                        android:textSize="20sp"
+                        android:transitionName="article_title"
+                        app:typeface="roboto_slab_regular" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="64dp"
+                    android:layout_height="3dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/primary" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:padding="8sp">
 
                     <TextView
                         android:id="@+id/article_author"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
-                        android:gravity="right"
-                        android:paddingLeft="10dip"
-                        android:textColor="@android:color/black"
+                        android:maxLines="1"
+                        android:text="Author Name"
                         android:textIsSelectable="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="8sp"
+                        android:paddingRight="8sp"
+                        android:text="•" />
 
                     <TextView
                         android:id="@+id/article_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
-                        android:gravity="right"
-                        android:paddingRight="25dip"
-                        android:textColor="@android:color/black"
+                        android:maxLines="1"
+                        android:text="Date"
                         android:textIsSelectable="true" />
-                </TableRow>
-            </TableLayout>
+                </LinearLayout>
 
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="1dip"
-                android:layout_marginBottom="17dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="15dp"
-                android:background="@android:color/darker_gray" />
 
-            <LinearLayout
-                android:id="@+id/article_body_group"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"></LinearLayout>
+                <LinearLayout
+                    android:id="@+id/article_body_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="28dp"
+                    android:orientation="vertical"></LinearLayout>
+            </LinearLayout>
         </LinearLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 </LinearLayout>

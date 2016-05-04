@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
@@ -32,6 +33,8 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
     public static final String TAG = "ArticleDetailActivity";
     public static final String COMMENTS_FEED = "Comments Feed";
+    public static final int SCROLL_THRESHOLD = 30;
+
     private long articleId = 0;
     private ArticleDetailFragment fragment;
     private String comments_feed = null;
@@ -69,9 +72,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         Log.d(TAG, "Article ID: " + articleId);
         comments_feed = intent.getStringExtra(COMMENTS_FEED);
 
-        // init fragment
-        fragment = new ArticleDetailFragment();
-        fragment.setArticle(articleId);
+        initializeFragment();
 
 		/* Download the comments as soon as the article is opened */
         new ParseComments().execute(comments_feed);
@@ -82,6 +83,31 @@ public class ArticleDetailActivity extends AppCompatActivity {
 		 */
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.article_detail_container, fragment).commit();
+
+    }
+
+    private void initializeFragment() {
+        fragment = new ArticleDetailFragment();
+        fragment.setArticle(articleId);
+        fragment.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                int dx = scrollX - oldScrollX;
+                if (dx > 0) { // scroll up
+                    hideToolbar();
+                } else if (dx < 0 && dx < SCROLL_THRESHOLD) {
+                    showToolbar();
+                }
+            }
+        });
+    }
+
+    private void showToolbar() {
+        Log.d(TAG, "SHOW TOOLBAR");
+    }
+
+    private void hideToolbar() {
+        Log.d(TAG, "HIDE TOOLBAR");
 
     }
 

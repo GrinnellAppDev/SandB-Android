@@ -74,8 +74,7 @@ public class ArticleListFragment extends Fragment {
         networkClient = activity.getNetworkClient();
         Log.i("Fragment" + category, "Num observers :" + networkClient.countObservers());
         data = networkClient.getArticles(category);
-        adapter = new ArticleRecyclerViewAdapter(activity,
-                R.layout.articles_row, data);
+        adapter = new ArticleRecyclerViewAdapter(activity, data);
     }
 
     @Override

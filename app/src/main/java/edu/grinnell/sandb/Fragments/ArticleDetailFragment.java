@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
+import android.support.v4.widget.NestedScrollView;
 import android.text.Html;
 import android.transition.Transition;
 import android.util.DisplayMetrics;
@@ -29,8 +30,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,7 +47,7 @@ import edu.grinnell.sandb.Model.Image;
 import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.Preferences.MainPrefs;
 import edu.grinnell.sandb.R;
-import edu.grinnell.sandb.Util.DatabaseUtil;
+import edu.grinnell.sandb.Util.ISO8601;
 import edu.grinnell.sandb.Util.UniversalLoaderUtility;
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -60,6 +62,7 @@ public class ArticleDetailFragment extends Fragment {
     private RealmArticle article;
     protected UniversalLoaderUtility universalLoaderUtility;
     private int fontSize;
+    private NestedScrollView.OnScrollChangeListener scrollChangeListener;
 
     //These variables will govern where a picture is saved if the user chooses to download it
     @SuppressLint("NewApi")
@@ -69,7 +72,6 @@ public class ArticleDetailFragment extends Fragment {
     File file = new File(path, fileName);
     DownloadManager mManager;
     ArrayList<Image> mImages;
-    private long articleId;
 
 
     //Methods
@@ -101,6 +103,9 @@ public class ArticleDetailFragment extends Fragment {
             getActivity().finish();
         }
 
+        NestedScrollView scrollView = (NestedScrollView) rootView.findViewById(R.id.article_nested_scroll_view);
+        scrollView.setOnScrollChangeListener(scrollChangeListener);
+
         displayArticle(rootView);
 
         return rootView;
@@ -110,13 +115,20 @@ public class ArticleDetailFragment extends Fragment {
      * Set the article that is to be displayed by the fragment
      */
     public void setArticle(long articleId) {
-        this.articleId = articleId;
         Log.d(TAG, "Article ID: " + articleId);
         Realm realm = Realm.getDefaultInstance();
         RealmResults<RealmArticle> results = realm.where(RealmArticle.class)
                 .equalTo("articleID", articleId)
                 .findAll();
         article = results.first();
+    }
+
+    /**
+     * Set the scroll change listener to be used by the scroll view
+     * @param listener
+     */
+    public void setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener listener) {
+        scrollChangeListener = listener;
     }
 
 
@@ -157,17 +169,12 @@ public class ArticleDetailFragment extends Fragment {
     //Configuring the display of articles
     private void displayArticle(View rootView) {
         // add the author to the article
-       /* String author = article.getAuthor();
-        if (author != null && !author.equals("")) {
-            ((TextView) rootView.findViewById(R.id.article_author)).setText("By: " + author);
-        }
-        */
 
-        SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
         String dateString;
         try {
-            Date articleDate = parserSDF.parse(article.getPubDate());
-            dateString = DateFormat.getDateTimeInstance().format(articleDate);
+            Date articleDate = ISO8601.toDate(article.getPubDate());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMMM, yyyy");
+            dateString = dateFormat.format(articleDate);
         } catch (ParseException e) {
             Log.e(TAG, e.getMessage());
             dateString = "";
@@ -179,11 +186,28 @@ public class ArticleDetailFragment extends Fragment {
         ((TextView) rootView.findViewById(R.id.article_title)).setText(Html.fromHtml(article
                 .getTitle()));
 
+        // load the feature image
+        String featureImgUrl = article.getFeaturedImgUrl();
+        ImageView featureImageView = (ImageView) rootView.findViewById(R.id.feature_image);
+        if (featureImgUrl != null && !featureImgUrl.isEmpty()) {
+            featureImageView.setVisibility(View.VISIBLE);
+            Picasso.with(getContext())
+                    .load(featureImgUrl)
+                    .centerCrop()
+                    .fit()
+                    .error(R.drawable.sb)
+                    .noPlaceholder()
+                    .into(featureImageView);
+        } else {
+            featureImageView.setVisibility(View.GONE);
+        }
+
         LinearLayout body = (LinearLayout) rootView
                 .findViewById(R.id.article_body_group);
         universalLoaderUtility = new UniversalLoaderUtility();
 
         String bodyHTML = article.getBody();
+        Log.d(TAG, "Body: " + bodyHTML);
 
         // make text more readable
         bodyHTML = bodyHTML.replaceAll("<br />", "<br><br>");
@@ -201,12 +225,12 @@ public class ArticleDetailFragment extends Fragment {
         //mImages = (ArrayList) DatabaseUtil.getArticleImages(article);
 
         final int maxUrls = (mImages == null) ? 0 : mImages.size();
-        LayoutInflater i = getActivity().getLayoutInflater();
+        LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        int cnt = 0;
+        int i = 0;
         for (String section : sections) {
-            String url = (cnt < maxUrls) ? mImages.get(cnt++).getURL() : null;
-            addSectionViews(body, i, section, url);
+            String url = (i < maxUrls) ? mImages.get(i++).getURL() : null;
+            addSectionViews(body, inflater, section, url);
         }
 
         Log.i(TAG, article.getTitle());

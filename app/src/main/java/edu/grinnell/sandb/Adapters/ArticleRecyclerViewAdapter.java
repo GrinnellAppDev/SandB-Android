@@ -24,23 +24,20 @@ import edu.grinnell.sandb.Fragments.ArticleDetailFragment;
 import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Util.ISO8601;
-import edu.grinnell.sandb.Util.UniversalLoaderUtility;
 import edu.grinnell.sandb.Util.VersionUtil;
 
 public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecyclerViewAdapter.ViewHolder> {
     private MainActivity activity;
     private List<RealmArticle> data;
-    protected UniversalLoaderUtility universalLoaderUtility;
     private SimpleDateFormat dateFormat;
     private int imgThumbWidth;
     private int imgThumbHeight;
 
 
-    public ArticleRecyclerViewAdapter(MainActivity a, int layoutId, List<RealmArticle> data) {
+    public ArticleRecyclerViewAdapter(MainActivity a, List<RealmArticle> data) {
         super();
         activity = a;
         this.data = data;
-        universalLoaderUtility = new UniversalLoaderUtility();
         dateFormat = new SimpleDateFormat("d MMMM, yyyy");
         imgThumbWidth = Math.round(activity.getResources().getDimension(R.dimen.article_image_thumb_width));
         imgThumbHeight = Math.round(activity.getResources().getDimension(R.dimen.article_image_thumb_height));
