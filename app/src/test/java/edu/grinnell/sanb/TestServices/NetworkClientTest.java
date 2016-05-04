@@ -18,6 +18,7 @@ import java.util.Random;
 import edu.grinnell.sanb.TestUtils;
 import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.Model.Article;
+import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.Services.Implementation.NetworkClient;
 import edu.grinnell.sandb.Services.Implementation.WordPressService;
 import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
@@ -66,7 +67,7 @@ public class NetworkClientTest {
         doReturn(localClientQueryResults).when(mockLocalClient)
                 .getArticlesByCategory(category.toLowerCase());
         doReturn(mockLocalClient.getArticlesByCategory(category.toLowerCase())).when(client).getArticles(category.toLowerCase());
-        List<Article> results = client.getArticles(category);
+        List<RealmArticle> results = client.getArticles(category);
         verify(client, times(1)).updateLocalCache(category);
         verify(mockLocalClient,times(1)).getArticlesByCategory(category.toLowerCase());
     }

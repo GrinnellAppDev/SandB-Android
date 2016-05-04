@@ -1,8 +1,14 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/article_detail_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ArticleDetailActivity" />
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_main"
@@ -13,11 +19,4 @@
         app:subtitleTextColor="@color/white"
         app:title="@string/app_name"
         app:titleTextColor="@color/white" />
-
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/article_detail_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".ArticleDetailActivity" />
-</LinearLayout>
+</RelativeLayout>

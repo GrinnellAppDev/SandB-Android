@@ -11,6 +11,10 @@ import android.transition.Slide;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.Toast;
 
 import com.flurry.android.FlurryAgent;
@@ -22,6 +26,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.Fragments.ArticleDetailFragment;
 import edu.grinnell.sandb.Fragments.CommentListFragment;
 import edu.grinnell.sandb.Model.Comment;
@@ -33,7 +38,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
     public static final String TAG = "ArticleDetailActivity";
     public static final String COMMENTS_FEED = "Comments Feed";
-    public static final int SCROLL_THRESHOLD = 30;
+    public static final int SCROLL_THRESHOLD = 10;
 
     private long articleId = 0;
     private ArticleDetailFragment fragment;
@@ -41,6 +46,8 @@ public class ArticleDetailActivity extends AppCompatActivity {
     private ArrayList<Comment> mComments = null;
     private boolean mArticleSide = true;
     private boolean mCommentsParsed = false;
+    private Toolbar toolbar;
+    private boolean isToolbarShown;
 
     @Override
     public void onCreate(Bundle ofJoy) {
@@ -56,7 +63,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_article_detail);
 
         // Setup toolbar and back navigation
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
+        toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,24 +99,47 @@ public class ArticleDetailActivity extends AppCompatActivity {
         fragment.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                int dx = scrollX - oldScrollX;
-                if (dx > 0) { // scroll up
-                    hideToolbar();
-                } else if (dx < 0 && dx < SCROLL_THRESHOLD) {
+                int dy = scrollY - oldScrollY;
+                Log.d(TAG, "" + dy + " " + isToolbarShown);
+                if (dy < 0 && !isToolbarShown) {
                     showToolbar();
+                } else if (dy > 0 && dy > SCROLL_THRESHOLD && isToolbarShown) {
+                    hideToolbar();
                 }
             }
         });
+
+        showToolbar();
     }
 
-    private void showToolbar() {
+    public void showToolbar() {
         Log.d(TAG, "SHOW TOOLBAR");
+        Animation showAnimation = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0,
+                Animation.RELATIVE_TO_SELF, 0,
+                Animation.RELATIVE_TO_SELF, -1,
+                Animation.RELATIVE_TO_SELF, 0);
+        showAnimation.setDuration(Constants.TOOLBAR_ANIMATION_DURATION);
+        showAnimation.setInterpolator(new DecelerateInterpolator());
+        toolbar.startAnimation(showAnimation);
+        getSupportActionBar().show();
+        isToolbarShown = true;
     }
 
-    private void hideToolbar() {
+    public void hideToolbar() {
         Log.d(TAG, "HIDE TOOLBAR");
-
+        Animation hideAnimation = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0,
+                Animation.RELATIVE_TO_SELF, 0,
+                Animation.RELATIVE_TO_SELF, 0,
+                Animation.RELATIVE_TO_SELF, -1);
+        hideAnimation.setDuration(Constants.TOOLBAR_ANIMATION_DURATION);
+        hideAnimation.setInterpolator(new AccelerateInterpolator());
+        toolbar.startAnimation(hideAnimation);
+        getSupportActionBar().hide();
+        isToolbarShown = false;
     }
+
 
     public long getArticleId() {
         return articleId;
@@ -199,7 +229,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         @Override
         protected List<Comment> doInBackground(String... arg0) {
 /*
-			mAppContext = getApplicationContext();
+            mAppContext = getApplicationContext();
 
 			// mTable = new CommentTable(mAppContext);
 

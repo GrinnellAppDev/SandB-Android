@@ -51,6 +51,9 @@ public class Constants {
         }
     }
 
+    /* Animation constants */
+    public static final int TOOLBAR_ANIMATION_DURATION = 200;
+
     /* Snack Bar Messages */
 
     public enum SnackBarMessages {

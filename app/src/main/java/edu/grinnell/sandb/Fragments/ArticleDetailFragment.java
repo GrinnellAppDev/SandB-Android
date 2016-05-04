@@ -125,10 +125,20 @@ public class ArticleDetailFragment extends Fragment {
 
     /**
      * Set the scroll change listener to be used by the scroll view
+     *
      * @param listener
      */
     public void setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener listener) {
         scrollChangeListener = listener;
+    }
+
+    /**
+     * Check to see if the current article has an associated feature image
+     * @return
+     */
+    public boolean hasFeatureImage() {
+        String url = article.getFeaturedImgUrl();
+        return url != null && !url.isEmpty();
     }
 
 

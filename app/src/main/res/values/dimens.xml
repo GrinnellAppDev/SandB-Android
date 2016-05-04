@@ -10,5 +10,6 @@
 
     <dimen name="article_image_thumb_width">64dp</dimen>
     <dimen name="article_image_thumb_height">64dp</dimen>
+    <dimen name="actionBarSize">?attr/actionBarSize</dimen>
 
 </resources>
