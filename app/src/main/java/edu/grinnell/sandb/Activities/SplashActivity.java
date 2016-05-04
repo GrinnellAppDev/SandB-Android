@@ -11,6 +11,7 @@ import java.util.Observer;
 import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.Services.Implementation.NetworkClient;
 import edu.grinnell.sandb.Services.Implementation.SyncMessage;
+import edu.grinnell.sandb.Util.NetworkUtil;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -18,29 +19,36 @@ import io.realm.RealmConfiguration;
  * Startup Activity for S&B. Initializations to both the remote and local databases
  * are made in this class.
  *
- * @author  Albert Owusu-Asare
- * @since 4/21/16.
+ * @author Albert Owusu-Asare
  * @see NetworkClient
  * @see Observer
  * @see Realm
+ * @since 4/21/16.
  */
 public class SplashActivity extends AppCompatActivity implements Observer {
     NetworkClient networkClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         /* Realm model persistence config */
         RealmConfiguration config = new RealmConfiguration.Builder(this).build();
         Realm.setDefaultConfiguration(config);
-        networkClient = new NetworkClient();
-        networkClient.addObserver(this);
-        networkClient.initialDataFetch();
+        if (NetworkUtil.isNetworkEnabled(this)) {
+            networkClient = new NetworkClient();
+            networkClient.addObserver(this);
+            networkClient.initialDataFetch();
+        } else {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     @Override
     public void update(Observable observable, Object data) {
         SyncMessage syncMessage = (SyncMessage) data;
-        if(updateSuccessful(syncMessage)){
+        if (updateSuccessful(syncMessage)) {
             Log.i("Splash Activity", "Update Type :INITIALIZE, Remote Call ; SUCCESS");
             networkClient.topUpCategories();
 
@@ -51,7 +59,7 @@ public class SplashActivity extends AppCompatActivity implements Observer {
     }
 
     /* Private Helper methods */
-    private boolean updateSuccessful(SyncMessage message){
+    private boolean updateSuccessful(SyncMessage message) {
         return message.getUpdateType().equals(Constants.UpdateType.INITIALIZE) &&
                 message.getHttpStatusCode() == Constants.OK;
     }

@@ -41,7 +41,6 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
     private int numArticlesPerPage;
     private int currentPage;
     private boolean syncing;
-    private String latestSyncedArticleDate;
 
     public NetworkClient() {
         this(new RealmDbClient());
@@ -58,7 +57,6 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
         this.remoteClient = remoteClient;
         ;
         this.syncing = false;
-        this.latestSyncedArticleDate = null;
         addRemoteServiceListeners();
     }
 
@@ -68,16 +66,6 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
         //updateLocalCache(category);
         return localClient.getArticlesByCategory(category);
     }
-
-    /*
-    @Override
-    public void getNextPage(String category,int currentPageNumber) {
-       // updateLocalCache(category);
-        //return localClient.getNextPage(category, currentPageNumber, lastVisibleArticleDate);
-        remoteClient.getNextPage(category,currentPageNumber,numArticlesPerPage);
-    }
-    */
-
 
     public List<RealmArticle> getNextPage(String category, int currentPageNumber) {
         updateLocalCache(category);

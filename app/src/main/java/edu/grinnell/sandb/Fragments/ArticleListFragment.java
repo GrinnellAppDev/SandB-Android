@@ -200,19 +200,7 @@ public class ArticleListFragment extends Fragment {
 
     }
 
-    /*
-    This method programmatically triggers the swipe  functionality. This is useful in checking
-     for new data when the fragment loads initially. See swipeRefreshListener.onRefresh()
-      */
-    private void triggerSwipeRefresh() {
-        pullToRefresh.post(new Runnable() {
-            @Override
-            public void run() {
-                Log.i("OnViewCreated", category);
-                pullToRefresh.setRefreshing(true);
-                swipeRefreshListener.onRefresh();
-            }
-        });
+    public void setRefreshing(boolean refreshing) {
+        pullToRefresh.setRefreshing(refreshing);
     }
-
 }

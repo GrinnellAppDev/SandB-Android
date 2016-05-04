@@ -100,6 +100,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
             case R.id.settings:
                 new DialogSettings(MainActivity.this).show();
                 return true;
+            case android.R.id.home:
+                openNavigationDrawer();
+                return true;
             default:
                 return false;
         }
@@ -132,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
             // activeFragment.update(message.getMessageData());
             //Log.i("Main Activity", "Message contents " + message.getMessageData().size());
         }
+        articleListFragment.setRefreshing(false);
     }
 
     public NetworkClient getNetworkClient() {
@@ -156,6 +160,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
         ft.commit();
 
         drawerListView.setItemChecked(category, true);
+    }
+
+    public void openNavigationDrawer() {
+        drawerLayout.openDrawer(GravityCompat.START);
     }
 
 

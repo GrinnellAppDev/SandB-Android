@@ -9,8 +9,8 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -27,22 +27,27 @@
     <RadioGroup
         android:id="@+id/fontRadioGroup"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp">
+
         <RadioButton
             android:id="@+id/fontRadio0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Tiny" />
+
         <RadioButton
             android:id="@+id/fontRadio1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Small" />
+
         <RadioButton
             android:id="@+id/fontRadio2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Medium" />
+
         <RadioButton
             android:id="@+id/fontRadio3"
             android:layout_width="wrap_content"

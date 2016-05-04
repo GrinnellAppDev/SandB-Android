@@ -32,6 +32,8 @@ import edu.grinnell.sandb.Fragments.CommentListFragment;
 import edu.grinnell.sandb.Model.Comment;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Util.VersionUtil;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /* This activity displays the text, images, and comments for a selected article */
 public class ArticleDetailActivity extends AppCompatActivity {
@@ -52,6 +54,8 @@ public class ArticleDetailActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle ofJoy) {
         super.onCreate(ofJoy);
+
+        Realm.setDefaultConfiguration(new RealmConfiguration.Builder(this).build());
 
         // set transition things for lollipop
         if (VersionUtil.isLollipop()) {
@@ -100,7 +104,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 int dy = scrollY - oldScrollY;
-                Log.d(TAG, "" + dy + " " + isToolbarShown);
                 if (dy < 0 && !isToolbarShown) {
                     showToolbar();
                 } else if (dy > 0 && dy > SCROLL_THRESHOLD && isToolbarShown) {

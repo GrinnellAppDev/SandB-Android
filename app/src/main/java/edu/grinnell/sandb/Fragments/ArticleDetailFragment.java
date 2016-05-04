@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -50,6 +51,7 @@ import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Util.ISO8601;
 import edu.grinnell.sandb.Util.UniversalLoaderUtility;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 
 /*
@@ -337,6 +339,8 @@ public class ArticleDetailFragment extends Fragment {
                     .inflate(R.layout.text_section, v, false);
             tv.setText(Html.fromHtml(text));
             tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.FONT_SIZE_TO_SP[fontSize]);
+            tv.setLineSpacing(0, 1.3f);
+            tv.setTypeface(Typeface.SERIF);
             v.addView(tv);
         }
     }
