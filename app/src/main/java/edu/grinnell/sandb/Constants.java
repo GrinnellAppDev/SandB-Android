@@ -32,8 +32,12 @@ public class Constants {
     public static final int OK = 200;
 
     /* Table Names */
+<<<<<<< HEAD
 
     public enum TableNames {
+=======
+    public enum TableNames{
+>>>>>>> httpClientIntegrationRealm
         ARTICLE("Article"),
         CATEGORY("Category");
         private final String name;
@@ -55,8 +59,12 @@ public class Constants {
     public static final int TOOLBAR_ANIMATION_DURATION = 200;
 
     /* Snack Bar Messages */
+<<<<<<< HEAD
 
     public enum SnackBarMessages {
+=======
+    public enum SnackBarMessages{
+>>>>>>> httpClientIntegrationRealm
         CONNECTED("Connection Established"),
         CHECK_UPDATES("Checking for New Articles ..."),
         FOUND_NEW("Found new articles.."),
@@ -78,6 +86,7 @@ public class Constants {
 
     /* Application state constants */
     public static boolean FIRST_CALL_TO_UPDATE = true;
+    public static final String SELECTED_TAB = "selected_tab";
 
     /* Article Category constants */
     public static String ARTICLE_CATEGORY_KEY = "category";
@@ -122,6 +131,14 @@ public class Constants {
         REFRESH,
         NEXT_PAGE,
         INITIALIZE
+    }
+
+    public final class ArticleTableColumnNames {
+        public static final String CATEGORY ="category";
+        public static final String REALM_DATE ="realmDate";
+        private ArticleTableColumnNames(){
+
+        }
     }
 
 

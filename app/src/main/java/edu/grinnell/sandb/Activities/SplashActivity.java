@@ -16,7 +16,7 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
 /**
- * Startup Activity for S&B. Initializations to both the remote and local databases
+ * Startup Activity for S & B. Initializations to both the remote and local databases
  * are made in this class.
  *
  * @author Albert Owusu-Asare
@@ -26,6 +26,7 @@ import io.realm.RealmConfiguration;
  * @since 4/21/16.
  */
 public class SplashActivity extends AppCompatActivity implements Observer {
+<<<<<<< HEAD
     NetworkClient networkClient;
 
     @Override
@@ -43,13 +44,29 @@ public class SplashActivity extends AppCompatActivity implements Observer {
             startActivity(intent);
             finish();
         }
+=======
+    private NetworkClient networkClient;
+    private static final String TAG = SplashActivity.class.getName();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.i(TAG, "Initializing Network Client");
+        networkClient = new NetworkClient();
+        networkClient.addObserver(this);
+        networkClient.initialDataFetch();
+>>>>>>> httpClientIntegrationRealm
     }
 
     @Override
     public void update(Observable observable, Object data) {
         SyncMessage syncMessage = (SyncMessage) data;
+<<<<<<< HEAD
         if (updateSuccessful(syncMessage)) {
             Log.i("Splash Activity", "Update Type :INITIALIZE, Remote Call ; SUCCESS");
+=======
+        if(updateSuccessful(syncMessage)){
+            Log.i(TAG, "Initial data fetch successful");
+>>>>>>> httpClientIntegrationRealm
             networkClient.topUpCategories();
 
         }

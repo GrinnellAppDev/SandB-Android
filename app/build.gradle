@@ -40,9 +40,14 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta4'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.google.code.gson:gson:2.6.1'
+<<<<<<< HEAD
     compile 'com.github.johnkil.android-robototextview:robototextview:2.5.0'
+=======
+    compile 'com.squareup.picasso:picasso:2.5.2'
+>>>>>>> httpClientIntegrationRealm
     testCompile "org.mockito:mockito-core:1.+"
     testCompile 'junit:junit:4.12'
+
 
 
 }

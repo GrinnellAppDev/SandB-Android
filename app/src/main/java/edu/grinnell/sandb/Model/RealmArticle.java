@@ -11,6 +11,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 public class RealmArticle extends RealmObject {
+<<<<<<< HEAD
     @SerializedName("ID")
     @PrimaryKey
     protected int articleID;
@@ -33,6 +34,29 @@ public class RealmArticle extends RealmObject {
 
     public RealmArticle() {
     }
+=======
+        @SerializedName("ID")
+        @PrimaryKey
+        protected int articleID;
+        protected String title;
+        @SerializedName("URL")
+        protected String link;
+        @SerializedName("content")
+        protected String body; //TODO : change to content
+        @SerializedName("date")
+        protected String pubDate;
+        protected Date realmDate;
+        @SerializedName("excerpt")
+        protected String description;
+        protected String category;
+        @SerializedName("featured_image")
+        String thumbnailUrl;
+        @Ignore
+        protected RealmArticleAuthor author;
+
+        public RealmArticle() {
+        }
+>>>>>>> httpClientIntegrationRealm
 
     public RealmArticle(String articleTitle, String articleBody) {
         title = articleTitle;
@@ -40,6 +64,7 @@ public class RealmArticle extends RealmObject {
 
     }
 
+<<<<<<< HEAD
     public RealmArticle(int id, String url, String title, String content, String date, String excerpt
             , RealmArticleAuthor author) {
         this.articleID = id;
@@ -51,6 +76,18 @@ public class RealmArticle extends RealmObject {
         //this.categories = categories;
         this.author = author;
     }
+=======
+        public RealmArticle(int id,String url, String title,String content,String date,String excerpt
+                , RealmArticleAuthor author){
+            this.articleID = id;
+            this.link = url;
+            this.title = title;
+            this.body = content;
+            this.pubDate = date;
+            this.description = excerpt;
+            this.author = author;
+        }
+>>>>>>> httpClientIntegrationRealm
 
     public RealmArticle(String articleTitle, String articleLink,
                         String publicationDate, String description,
@@ -91,17 +128,32 @@ public class RealmArticle extends RealmObject {
         return featuredImgUrl;
     }
 
+<<<<<<< HEAD
     public Date getRealmDate() {
         return this.realmDate;
     }
+=======
+        public String getThumbnailUrl(){return this.thumbnailUrl;}
+
+        public String getBody() {
+            return body;
+        }
+>>>>>>> httpClientIntegrationRealm
 
     public String getBody() {
         return body;
     }
 
+<<<<<<< HEAD
     public String getPubDate() {
         return pubDate;
     }
+=======
+
+        public void setArticleID(int articleID) {
+            this.articleID = articleID;
+        }
+>>>>>>> httpClientIntegrationRealm
 
     public void setArticleID(int articleID) {
         this.articleID = articleID;
@@ -131,6 +183,7 @@ public class RealmArticle extends RealmObject {
         this.body = body;
     }
 
+<<<<<<< HEAD
     public void setFeaturedImgUrl(String url) {
         this.featuredImgUrl = url;
     }
@@ -140,6 +193,34 @@ public class RealmArticle extends RealmObject {
             this.realmDate = ISO8601.toDate(iso8601Date);
         } catch (ParseException e) {
             this.realmDate = null;
+=======
+        public void setThumbnailUrl(String thumbnailUrl){this.thumbnailUrl = thumbnailUrl;}
+
+        public String toString(){
+            StringBuffer sb = new StringBuffer();
+            sb.append("{ ");
+            //sb.append(" id: " + this.id);
+            sb.append("   url: " + this.link);
+            sb.append("   title: " + this.title);
+            sb.append("   content: " + this.body);
+            sb.append("   excerpt: " + this.description);
+            sb.append("   date: " + this.pubDate);
+            //sb.append("   categories: " + this.categories);
+            sb.append("   author " + this.author);
+            sb.append("}\n");
+            return sb.toString();
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (!(obj instanceof Article))
+                return false;
+            Article other = (Article) obj;
+            return pubDate == null ? other.getPubDate() == null : pubDate.equals(other.getPubDate());
+>>>>>>> httpClientIntegrationRealm
         }
     }
 

@@ -33,6 +33,7 @@ public interface LocalCacheClient {
      */
     void saveArticle(RealmArticle article);
 
+<<<<<<< HEAD
     /**
      * Returns the Article that sits on top  of the local  cache.
      * <p/>
@@ -43,6 +44,8 @@ public interface LocalCacheClient {
      * @return
      */
     RealmArticle getFirst();
+=======
+>>>>>>> httpClientIntegrationRealm
 
     /**
      * Returns a list of the most recent articles belonging to a particular category.
@@ -52,9 +55,12 @@ public interface LocalCacheClient {
      *
      * @param categoryName the category to query the local cache by.
      * @return the list of Articles of category : "category".
+     * //TODO params
      */
-    List<RealmArticle> getArticlesByCategory(String categoryName);
+    List<RealmArticle> getArticlesByCategory(String categoryName, int pageNum);
 
+
+<<<<<<< HEAD
     /**
      * @return a list of all the categories represented in the Articles cache.
      */
@@ -71,6 +77,8 @@ public interface LocalCacheClient {
      * @return a list of Articles satisfying the query.
      */
     List<Article> getNextPage(String categoryName, int currentPageNumber, String lastVisibleArticleDate);
+=======
+>>>>>>> httpClientIntegrationRealm
 
     /**
      * @return true if the cache is empty.
@@ -82,7 +90,7 @@ public interface LocalCacheClient {
      *
      * @return list of all the articles
      */
-    List<RealmArticle> getAll();
+    List<RealmArticle> getAll(int pageNum);
 
     /**
      * Drops the table referenced to by clazz in the SQLiteDb
@@ -102,6 +110,7 @@ public interface LocalCacheClient {
      */
     List<RealmArticle> getArticlesAfter(String category, Date date);
 
+<<<<<<< HEAD
     /**
      * Sets the number of articles per page.
      * <p> This is useful in determining how many articles to query for each page.</p>
@@ -109,17 +118,9 @@ public interface LocalCacheClient {
      * @param numArticlesPerPage, the number of articles to query per page.
      */
     void setNumArticlesPerPage(int numArticlesPerPage);
+=======
+>>>>>>> httpClientIntegrationRealm
 
-    /**
-     * @return the number of articles per page;
-     */
-    int getNumArticlesPerPage();
-
-    /**
-     * Updates the number of articles for all the categories
-     */
-
-    void updateCategorySizes();
 
     /**
      * Updates the number of articles of the specific category that exist in the database
@@ -127,7 +128,16 @@ public interface LocalCacheClient {
 
     void initialize();
 
+<<<<<<< HEAD
     void updateNumEntriesPerCategory(String category, int updatedArticlesSize);
+=======
+    /**
+      *
+      * @return the metaData on the state of the local cache.
+      */
+    Map<String, Pair<Integer, String>> getDbMetaData();
+
+>>>>>>> httpClientIntegrationRealm
 
     void updateNumEntriesAll(int numRecentUpdates, String latestDateUpdated);
 

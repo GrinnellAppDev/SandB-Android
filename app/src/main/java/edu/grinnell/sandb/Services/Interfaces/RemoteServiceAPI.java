@@ -75,6 +75,7 @@ public interface RemoteServiceAPI {
      */
     void syncWithLocalCache(RealmArticle localFirst, String category);
 
+<<<<<<< HEAD
     /**
      * Sets the number of articles per page for each query made to the remote database.
      * <p> This is useful in determining how many articles to query for each page.</p>
@@ -85,6 +86,11 @@ public interface RemoteServiceAPI {
 
     void getNextPage(String category, int page, int numArticlesPerPage);
 
+=======
+
+
+    void getNextPage(int page, int offset,String category, int number);
+>>>>>>> httpClientIntegrationRealm
     void initialize();
 
     void getByCategory(String category, String lastArticleUpdated, Integer topUpNum);
