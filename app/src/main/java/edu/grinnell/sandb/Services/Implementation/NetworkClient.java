@@ -1,22 +1,18 @@
 package edu.grinnell.sandb.Services.Implementation;
 
-import android.net.Network;
 import android.util.Log;
 import android.util.Pair;
 
-import com.google.gson.internal.bind.util.ISO8601Utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
 import edu.grinnell.sandb.Constants;
-import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.Services.Interfaces.AppNetworkClientAPI;
 import edu.grinnell.sandb.Services.Interfaces.LocalCacheClient;
@@ -46,7 +42,7 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
     private int numArticlesPerPage;
     private int currentPage;
     private boolean syncing;
-    private String latestSyncedArticleDate;
+    private static final String TAG= NetworkClient.class.getName();
 
     public NetworkClient(){
         this(new RealmDbClient());
@@ -62,57 +58,34 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
         this.localClient = localClient;
         this.remoteClient = remoteClient;;
         this.syncing = false;
-        this.latestSyncedArticleDate = null;
         addRemoteServiceListeners();
     }
 
 
     @Override
     public List<RealmArticle> getArticles(String category, int pageNum) {
-        //updateLocalCache(category);
-        List<RealmArticle> articles = localClient.getArticlesByCategory(category,pageNum);
-
-        return articles;
+        return localClient.getArticlesByCategory(category,pageNum);
     }
 
-    /*
     @Override
-    public void getNextPage(String category,int currentPageNumber) {
-       // updateLocalCache(category);
-        //return localClient.getNextPage(category, currentPageNumber, lastVisibleArticleDate);
-        remoteClient.getNextPage(category,currentPageNumber,numArticlesPerPage);
-    }
-    */
-
-
     public List<RealmArticle> getNextPage(String category, int pageNumber){
-        Log.i("Network Client","Fetching  Page " + pageNumber + "for "+ category);
+        Log.i(TAG,"Fetching  Page " + pageNumber + "for "+ category);
         List<RealmArticle> articles = localClient.getArticlesByCategory(category,pageNumber);
         if(articles.isEmpty()) {
             Map<String, Pair<Integer, String>> dbMetaData = localClient.getDbMetaData();
             Pair<Integer, String> pair = dbMetaData.get(category);
             int numberToFetch = pair.first % Constants.DEFAULT_NUM_ARTICLES_PER_PAGE;
-            String latestArticleInCategory = pair.second;
             remoteClient.getNextPage(pageNumber,Constants.DEFAULT_NUM_ARTICLES_PER_PAGE,category,numberToFetch);
         }
         return  articles;
     }
 
-    @Override
-    public List<String> getCategories() {
-       // updateLocalCache();
-        return localClient.getCategories();
-    }
 
-    public List<RealmArticle> getInitialArticles(String category){
-        return getNextPage(category, 0);
-    }
+
 
     @Override
     public void setNumArticlesPerPage(int number) {
         this.numArticlesPerPage = number;
-        this.localClient.setNumArticlesPerPage(numArticlesPerPage);
-        this.remoteClient.setNumArticlesPerPage(numArticlesPerPage);
     }
 
     @Override
@@ -135,16 +108,17 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
         return localClient.getDbMetaData();
     }
 
+    @Override
     public List<RealmArticle> getLatestArticles(String category,Date mostRecentArticleDate){
         if(syncing){
             remoteClient.getAfter(ISO8601.fromCalendar(mostRecentArticleDate),category);
-            //updateLocalCache(category);
         }
         return localClient.getArticlesAfter(category.toLowerCase(), mostRecentArticleDate);
     }
 
     /**
      *  Updates the local cache when necessary with data from the remote server.
+     *
      */
     public void updateLocalCache(String category) {
         if(category.equals(Constants.ArticleCategories.ALL.toString())
@@ -152,89 +126,73 @@ public class NetworkClient extends Observable implements Observer, AppNetworkCli
             Constants.FIRST_CALL_TO_UPDATE = false;
             firstTimeSyncLocalAndRemoteData();
         }else {
-            syncLocalAndRemoteData(category);
+           syncLocalAndRemoteData(category);
         }
     }
 
     public void syncLocalAndRemoteData(String category){
-        RealmArticle localFirst= this.localClient.getFirst();
-        remoteClient.syncWithLocalCache(localFirst, category);
+        //TODO : Check if this method is needed or not
+      //  RealmArticle localFirst= this.localClient.getFirst();
+      //  remoteClient.syncWithLocalCache(localFirst, category);
     }
     @Override
     public void update(Observable observable, Object data) {
-        Log.i("Network Client", "Message Reached Update");
+        Log.i(TAG, "Message Reached Update");
         SyncMessage message = (SyncMessage) data;
         if(message != null) {
+            syncing = false;
             if (message.updateType.equals(Constants.UpdateType.INITIALIZE)) {
-                Log.i("Network Client", "Update Type :INITIALIZE, Remote Call ; SUCCESS");
-                setChanged();
-                notifyObservers(message);
+                Log.i(TAG, "Update Type :INITIALIZE, Remote Call ; SUCCESS");
             }
             if(message.updateType.equals(Constants.UpdateType.REFRESH)){
-                Log.i("Network Client","Update type : REFRESH");
-                setChanged();
-                notifyObservers(message);
+                Log.i(TAG,"Update type : REFRESH");
             }
             if(message.updateType.equals(Constants.UpdateType.NEXT_PAGE)){
-                Log.i("Network Client","Update type : NEXT_PAGE for "+ message.getCategory());
-                setChanged();
-                notifyObservers(message);
+                Log.i(TAG,"Update type : NEXT_PAGE for "+ message.getCategory());
+            }
+            setChanged();
+            notifyObservers(message);
+        }
+
+    }
+
+    /**
+     *  Enforces that there are enough articles per category to fill up the UI tab.
+     */
+    public void topUpCategories(){
+        Map<String, Pair<Integer, String>> dbMetaData = localClient.getDbMetaData();
+        for(String category : Constants.CATEGORIES){
+            if(!category.toLowerCase()
+                    .equals(Constants.ArticleCategories.ALL.toString().toLowerCase())){
+                Pair<Integer, String> pair = dbMetaData.get(category.toLowerCase());
+                Integer numSoFar = pair.first;
+                Integer topUpNum = Constants.DEFAULT_NUM_ARTICLES_PER_PAGE -
+                        (numSoFar % Constants.DEFAULT_NUM_ARTICLES_PER_PAGE);
+                String dateBefore = pair.second;
+                Log.i(TAG, "Topping up " +numSoFar +" " + category + "after " + dateBefore
+                        +  " by " + topUpNum);
+                remoteClient.getByCategory(category, dateBefore, topUpNum);
             }
         }
 
-        /*
-        if(message != null && message.getMessageData() != null) {
-            Log.i("Network Client", message.getCategory()+ " Message is not null");
-            Log.i("Network Client", "Sending message to the Main Activity");
-            setChanged();
-            Log.i("Network Client ", "Num observers: " + this.countObservers());
-            notifyObservers(message);
-        }
-        */
     }
 
+    public void  setSyncing(boolean sync){
+        this.syncing = sync;
+    }
 
-    public void firstTimeSyncLocalAndRemoteData(){
+    private void firstTimeSyncLocalAndRemoteData(){
         String currentTimeAsISO = StringUtility.dateToISO8601(new Date());
         this.remoteClient.getAll(currentPage, numArticlesPerPage, currentTimeAsISO);
     }
+
+
     private void addRemoteServiceListeners() {
         List<Observer> remoteServiceObservers = new ArrayList<>(1);
         remoteServiceObservers.add(this);
         this.remoteClient.addObservers(remoteServiceObservers);
     }
 
-    public void setSyncing(boolean syncing){
-        this.syncing = syncing;
-    }
 
-    private void topUpArticlesPerCategory(){
-       /* for(Map.Entry<String,Integer> entry : categoryMap){
-            String category = entry.getKey();
-            int mod;
-            if(category != "ALL" && ((mod = (entry.getValue() % numArticlesPerPage)) != 0)){
-                String date = localClient.getLastDate(category);
-                remoteClient.getAfter(category,date);
-
-            }
-        }
-        */
-
-    }
-
-    public void topUpCategories(){
-        Map<String, Pair<Integer, String>> dbMetaData = localClient.getDbMetaData();
-        for(String category : Constants.CATEGORIES){
-            if(!category.toLowerCase().equals("all")){
-                Pair<Integer, String> pair = dbMetaData.get(category.toLowerCase());
-                Integer numSoFar = pair.first;
-                Integer topUpNum = 10 - (numSoFar % 10);
-                String dateBefore = pair.second;
-                Log.i("Network Client", "Topping up " +numSoFar +" " + category + "after " + dateBefore +  " by " + topUpNum);
-                remoteClient.getByCategory(category, dateBefore, topUpNum);
-            }
-        }
-
-    }
 
 }

@@ -118,5 +118,13 @@ public class Constants {
         INITIALIZE;
     }
 
+    public final class ArticleTableColumnNames {
+        public static final String CATEGORY ="category";
+        public static final String REALM_DATE ="realmDate";
+        private ArticleTableColumnNames(){
+
+        }
+    }
+
 
 }

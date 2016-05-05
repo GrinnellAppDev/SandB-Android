@@ -15,7 +15,6 @@ import java.util.Random;
 
 import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.ArticleAuthor;
-import edu.grinnell.sandb.Services.Implementation.SugarDbClient;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
@@ -28,9 +27,10 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SugarDbClientTest {
+    /*
     @Mock private Article article;
     @Mock private ArticleAuthor author;
-    /* Allows the stubbing of methods  when necessary. Otherwise real methods are called. */
+    /* Allows the stubbing of methods  when necessary. Otherwise real methods are called.
     @Spy private SugarDbClient sugarDbClient;
     private Random random;
 
@@ -47,7 +47,7 @@ public class SugarDbClientTest {
      *
      * <p> The behavior of setting the article category is mocked. we verify that indeed
      * the category field was set and the article was saved. </p>
-     */
+
     public void saveArticleTest(){
         String category = "SPORTS";
         when(article.getAuthor()).thenReturn(author);
@@ -60,7 +60,7 @@ public class SugarDbClientTest {
 
     /*
      * Verify that indeed the saveArticle method is called some number of times.
-     */
+
     @Test
     public void saveArticlesTest(){
         List<Article> articles =  new ArrayList<>();
@@ -74,7 +74,7 @@ public class SugarDbClientTest {
     /*
     Verifies that when null argument passed, the getAll() method is called once and that the results
     of the getAll() call are returned.
-   */
+
     @Test
     public void getArticlesByCategoryNullCategory(){
         String category = null;

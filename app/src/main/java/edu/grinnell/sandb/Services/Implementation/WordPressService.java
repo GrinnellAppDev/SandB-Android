@@ -58,9 +58,6 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
     private Retrofit retrofit;
     private RestAPI restService;
     private LocalCacheClient localCacheClient;
-    private final List<Article> articles = Collections.synchronizedList(new ArrayList<Article>());
-    private int numArticlesPerPage;
-    private int currentPageNumber;
     private Map<String,Boolean> completedMap;
 
 
@@ -72,8 +69,6 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
         this.retrofit = initializeRetrofit();
         this.restService = this.retrofit.create(RestAPI.class);
         this.localCacheClient = localCacheClient;
-        this.numArticlesPerPage = localCacheClient.getNumArticlesPerPage();
-        this.currentPageNumber = Constants.FIRST_PAGE;
         this.completedMap = new HashMap<>();
     }
 
@@ -88,7 +83,6 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
                 List<RealmArticle> posts = response.body().getPosts();
                 int numPosts = posts.size();
                 localCacheClient.saveArticles(posts);
-                localCacheClient.updateNumEntriesAll(numPosts, lastArticleDate);
                 SyncMessage message;
                 setChanged();
                 message = new SyncMessage(responseCode,Constants.ArticleCategories.ALL.toString()
@@ -198,10 +192,7 @@ public class WordPressService extends Observable implements RemoteServiceAPI,Ser
         });
     }
 
-    @Override
-    public void setNumArticlesPerPage(int numArticlesPerPage) {
-        this.numArticlesPerPage = numArticlesPerPage;
-    }
+
 
 
 

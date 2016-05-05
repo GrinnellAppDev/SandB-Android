@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.util.Date;
 
 import edu.grinnell.sandb.Util.ISO8601;
-import edu.grinnell.sandb.Util.StringUtility;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -26,10 +25,8 @@ public class RealmArticle extends RealmObject {
         @SerializedName("excerpt")
         protected String description;
         protected String category;
-        @SerializedName("post_thumbnail")
-        protected RealmImage articleThumbnail;
-        //@Ignore
-        //protected transient List<ArticleCategory> categories;
+        @SerializedName("featured_image")
+        String thumbnailUrl;
         @Ignore
         protected RealmArticleAuthor author;
 
@@ -50,7 +47,6 @@ public class RealmArticle extends RealmObject {
             this.body = content;
             this.pubDate = date;
             this.description = excerpt;
-            //this.categories = categories;
             this.author = author;
         }
 
@@ -87,6 +83,8 @@ public class RealmArticle extends RealmObject {
 
         public Date getRealmDate(){ return this.realmDate;}
 
+        public String getThumbnailUrl(){return this.thumbnailUrl;}
+
         public String getBody() {
             return body;
         }
@@ -95,7 +93,6 @@ public class RealmArticle extends RealmObject {
             return pubDate;
         }
 
-        public RealmImage getArticleThumbnail(){return this.articleThumbnail;}
 
         public void setArticleID(int articleID) {
             this.articleID = articleID;
@@ -132,6 +129,8 @@ public class RealmArticle extends RealmObject {
                 this.realmDate = null;
             }
         }
+
+        public void setThumbnailUrl(String thumbnailUrl){this.thumbnailUrl = thumbnailUrl;}
 
         public String toString(){
             StringBuffer sb = new StringBuffer();

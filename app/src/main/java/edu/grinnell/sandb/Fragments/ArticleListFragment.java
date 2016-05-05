@@ -56,7 +56,7 @@ public class ArticleListFragment extends Fragment  {
     private Bundle args;
     private SwipeRefreshLayout.OnRefreshListener swipeRefreshListener;
     private int currentPage = 1;
-    private static final String TAG = MainActivity.class.getName();
+    private static final String TAG = ArticleListFragment.class.getName();
 
     /*
     Provides a convenient means of instantiating a new object by handling the
@@ -99,8 +99,8 @@ public class ArticleListFragment extends Fragment  {
         mRecyclerView.addOnScrollListener(new EndlessScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                Log.i(TAG,mCategory + ":Request to load page" + page);
-                List<RealmArticle> newData = networkClient.getNextPage(mCategory,page);
+                Log.i(TAG, mCategory + ":Request to load page" + page);
+                List<RealmArticle> newData = networkClient.getNextPage(mCategory, page);
                 mAdapter.updateDataBelow(newData);
                 currentPage = page;
             }
