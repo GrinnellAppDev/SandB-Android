@@ -32,15 +32,14 @@ import edu.grinnell.sandb.Fragments.CommentListFragment;
 import edu.grinnell.sandb.Model.Comment;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Util.VersionUtil;
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 /* This activity displays the text, images, and comments for a selected article */
 public class ArticleDetailActivity extends AppCompatActivity {
 
     public static final String TAG = "ArticleDetailActivity";
     public static final String COMMENTS_FEED = "Comments Feed";
-    public static final int SCROLL_THRESHOLD = 10;
+    public static final int SCROLL_DOWN_THRESHOLD = 10;
+    public static final int SCROLL_UP_THRESHOLD = 2;
 
     private long articleId = 0;
     private ArticleDetailFragment fragment;
@@ -102,9 +101,9 @@ public class ArticleDetailActivity extends AppCompatActivity {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 int dy = scrollY - oldScrollY;
-                if (dy < 0 && !isToolbarShown) {
+                if (dy < 0 && Math.abs(dy) > SCROLL_UP_THRESHOLD && !isToolbarShown) {
                     showToolbar();
-                } else if (dy > 0 && dy > SCROLL_THRESHOLD && isToolbarShown) {
+                } else if (dy > 0 && dy > SCROLL_DOWN_THRESHOLD && isToolbarShown) {
                     hideToolbar();
                 }
             }
