@@ -83,7 +83,7 @@ public interface RemoteServiceAPI {
      */
     void setNumArticlesPerPage(int numArticlesPerPage);
 
-    void getNextPage(String category, int page, int numArticlesPerPage);
+    void getNextPage(int page, int offset, String category, int number);
 
     void initialize();
 

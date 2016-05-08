@@ -98,7 +98,9 @@ public class ArticleListFragment extends Fragment {
         recyclerView.addOnScrollListener(new EndlessScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                adapter.addPage(networkClient.getNextPage(category, page));
+                Log.i("Fragment " + category, "Request to load more" + page);
+                List<RealmArticle> newData = networkClient.getNextPage(category, page);
+                adapter.updateDataBelow(newData);
             }
         });
 
@@ -130,6 +132,11 @@ public class ArticleListFragment extends Fragment {
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
         }
         // triggerSwipeRefresh();
+    }
+
+
+    public void updateNextPageData(List<RealmArticle> articles) {
+        adapter.updateDataBelow(articles);
     }
 
     @Override
