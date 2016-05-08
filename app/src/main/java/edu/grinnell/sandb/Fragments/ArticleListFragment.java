@@ -98,7 +98,7 @@ public class ArticleListFragment extends Fragment {
         recyclerView.addOnScrollListener(new EndlessScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                networkClient.getNextPage(category, page);
+                adapter.addPage(networkClient.getNextPage(category, page));
             }
         });
 
