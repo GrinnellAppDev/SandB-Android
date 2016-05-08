@@ -54,10 +54,8 @@ public class WordPressService extends Observable implements RemoteServiceAPI, Se
     private Retrofit retrofit;
     private RestAPI restService;
     private LocalCacheClient localCacheClient;
-    private final List<Article> articles = Collections.synchronizedList(new ArrayList<Article>());
-    private int numArticlesPerPage;
-    private int currentPageNumber;
-    private Map<String, Boolean> completedMap;
+
+    private Map<String,Boolean> completedMap;
 
 
     public WordPressService() {
@@ -68,8 +66,6 @@ public class WordPressService extends Observable implements RemoteServiceAPI, Se
         this.retrofit = initializeRetrofit();
         this.restService = this.retrofit.create(RestAPI.class);
         this.localCacheClient = localCacheClient;
-        this.numArticlesPerPage = localCacheClient.getNumArticlesPerPage();
-        this.currentPageNumber = Constants.FIRST_PAGE;
         this.completedMap = new HashMap<>();
     }
 
@@ -84,7 +80,6 @@ public class WordPressService extends Observable implements RemoteServiceAPI, Se
                 List<RealmArticle> posts = response.body().getPosts();
                 int numPosts = posts.size();
                 localCacheClient.saveArticles(posts);
-                localCacheClient.updateNumEntriesAll(numPosts, lastArticleDate);
                 SyncMessage message;
                 setChanged();
                 message = new SyncMessage(responseCode, Constants.ArticleCategories.ALL.toString()
@@ -106,9 +101,9 @@ public class WordPressService extends Observable implements RemoteServiceAPI, Se
     }
 
     @Override
-    public void getAfter(final String date, final String category) {
+    public void  getAfter(final String date, final String category) {
         Log.i("WordPressService", "Fetching most recent " + category);
-        if (category.equals("all")) {
+        if(category.equals("all")) {
             getAllAfter(date, category);
         } else {
             getAfterByCategory(date, category);
@@ -184,7 +179,6 @@ public class WordPressService extends Observable implements RemoteServiceAPI, Se
                     //SyncMessage message = new SyncMessage(responseCode,category,currentPageNumber,null);
                     setChanged();
                     notifyObservers();
-
                 }
             }
 
@@ -196,32 +190,30 @@ public class WordPressService extends Observable implements RemoteServiceAPI, Se
         });
     }
 
+
     @Override
-    public void setNumArticlesPerPage(int numArticlesPerPage) {
-        this.numArticlesPerPage = numArticlesPerPage;
-    }
-
-
-    public void getNextPage(final String category, int page, int numArticlesPerPage) {
-        Log.i("getNextPage()", "Next Page called " + category);
-        Call<QueryResponse> call = restService.posts(category, page, numArticlesPerPage);
+    public void getNextPage(final int page, int offset, final String category, int number){
+        Log.i("Remote Client","Getting page "+ 2 +" for " + category);
+        Call<QueryResponse> call = restService.postsNextPage(page,offset,category,number);
         call.enqueue(new Callback<QueryResponse>() {
             @Override
             public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
+                Log.i("Remote Client", "Response Recieved get next page for "+ category);
                 int responseCode = response.code();
                 List<RealmArticle> articles = response.body().getPosts();
-
-                SyncMessage message = new SyncMessage(responseCode, category, articles);
-                message.setUpdateType(Constants.UpdateType.NEXT_PAGE);
+                localCacheClient.saveArticles(articles);
+                SyncMessage message =
+                        new SyncMessage(Constants.UpdateType.NEXT_PAGE,200,page,category,null,articles);
                 setChanged();
                 notifyObservers(message);
             }
 
             @Override
             public void onFailure(Call<QueryResponse> call, Throwable t) {
-
+                Log.i("Remote Client", "NOT SUCCESSFUL get next page for "+ category);
             }
         });
+
     }
 
     @Override
@@ -373,21 +365,22 @@ public class WordPressService extends Observable implements RemoteServiceAPI, Se
         Call<QueryResponse> posts(@Query("page") int pageNumber, @Query("number") int count);
 
         @GET("posts/")
-        Call<QueryResponse> postsAfter(@Query("after") String dateTime);
+         Call<QueryResponse> postsAfter(@Query("after") String dateTime);
+         @GET("posts/")
+        // https://public-api.wordpress.com/rest/v1.1/sites/www.thesandb.com/posts/?category=%22news%22&page=1&number=4
+         Call<QueryResponse> posts(@Query("category") String category,@Query("page") int pageNumber,
+                                   @Query("number") int count);
+         @GET("posts/")
+         Call<QueryResponse> postsBefore(@Query("before") String dateBefore,@Query("number") int count,
+                                   @Query("category") String category);
+         @GET("posts/")
+         Call<QueryResponse> postsAfter(@Query("after") String dateAfter,@Query("number") int count,
+                                         @Query("category") String category);
+         @GET("posts/")
+         Call<QueryResponse> postsNextPage(@Query("page") int page,@Query("offset") int offset,
+                                        @Query("category") String category, @Query("number") int number);
 
-        @GET("posts/")
-            // https://public-api.wordpress.com/rest/v1.1/sites/www.thesandb.com/posts/?category=%22news%22&page=1&number=4
-        Call<QueryResponse> posts(@Query("category") String category, @Query("page") int pageNumber,
-                                  @Query("number") int count);
-
-        @GET("posts/")
-        Call<QueryResponse> postsBefore(@Query("before") String dateBefore, @Query("number") int count,
-                                        @Query("category") String category);
-
-        @GET("posts/")
-        Call<QueryResponse> postsAfter(@Query("after") String dateAfter, @Query("number") int count,
-                                       @Query("category") String category);
-    }
+     }
 
     /*
      * This class is useful in the deserialization process by the Gson Converter. It specifies

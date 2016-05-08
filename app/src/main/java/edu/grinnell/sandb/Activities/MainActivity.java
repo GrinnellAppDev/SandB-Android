@@ -59,11 +59,13 @@ public class MainActivity extends AppCompatActivity implements Observer {
     private CoordinatorLayout coordinatorLayout;
     private boolean updateInProgress;
     private NetworkClient networkClient;
+    private String FLURRY_AGENT_KEY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Crashlytics.start(this);
+        FLURRY_AGENT_KEY = getResources().getString(R.string.FlurryKey);
         setContentView(R.layout.activity_main);
 
         //Coordinator layout reference for use by SnackBar
@@ -78,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
     @Override
     protected void onStart() {
         super.onStart();
-        FlurryAgent.onStartSession(this, "B3PJX5MJNYMNSB9XQS3P");
+        FlurryAgent.onStartSession(this, FLURRY_AGENT_KEY);
     }
 
     @Override
@@ -114,26 +116,27 @@ public class MainActivity extends AppCompatActivity implements Observer {
         super.onSaveInstanceState(state);
     }
 
+    /* Call back method called whenever observable changes state */
     @Override
     public void update(Observable observable, Object data) {
-        Log.i("Main Activity", "Message reached main activity");
+        Log.i(TAG, "Call back message received");
+        SyncMessage message = (SyncMessage)data;
+        if(message !=null){
+            String activeFragmentCategory = articleListFragment.getCategory();
+            Constants.UpdateType updateType = message.getUpdateType();
+            String messageCategory = message.getCategory();
 
-        SyncMessage message = (SyncMessage) data;
-
-        if (message != null) {
-            if (message.getUpdateType().equals(Constants.UpdateType.REFRESH)
-                    && articleListFragment.getCategory().equals(message.getCategory())) {
-                Log.i("Main Activity", "Active Fragment " + message.getCategory() + " Refreshing..");
-                articleListFragment.refreshList((List<RealmArticle>) message.getMessageData());
+            if(updateType.equals(Constants.UpdateType.REFRESH)
+                    && activeFragmentCategory.equals(messageCategory)){
+                Log.i(TAG, "Active Fragment " + message.getCategory() + " Refreshing..");
+                articleListFragment.refreshList((List< RealmArticle>) message.getMessageData());
             }
-        }
-        // Get current fragment
-        if (message != null && message.getMessageData() != null) {
-
-            // activeFragment.update();
-            // Ask fragment to update its list
-            // activeFragment.update(message.getMessageData());
-            //Log.i("Main Activity", "Message contents " + message.getMessageData().size());
+            if(updateType.equals(Constants.UpdateType.NEXT_PAGE)
+                    && activeFragmentCategory.equals(messageCategory)){
+                Log.i(TAG, "Active Fragment " + message.getCategory() + " Next Page.."
+                        +message.getCategory());
+                articleListFragment.updateNextPageData((List<RealmArticle>) message.getMessageData());
+            }
         }
         articleListFragment.setRefreshing(false);
     }
@@ -160,13 +163,14 @@ public class MainActivity extends AppCompatActivity implements Observer {
         ft.commit();
 
         drawerListView.setItemChecked(category, true);
+
     }
 
     public void openNavigationDrawer() {
         drawerLayout.openDrawer(GravityCompat.START);
     }
 
-
+    /* Private Methods  */
     private void initializeNetworkClient() {
         this.networkClient = new NetworkClient();
         this.networkClient.addObserver(this);
@@ -199,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 R.layout.drawer_list_item, CATEGORIES));
         drawerListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 drawerListView.setSelection(position);
@@ -218,7 +223,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
                         switchToFragment(currentCategory);
                     }
                 });
-
             }
         });
     }
@@ -230,5 +234,4 @@ public class MainActivity extends AppCompatActivity implements Observer {
             category = savedInstanceState.getInt(SELECTED_CATEGORY);
         switchToFragment(category);
     }
-
 }

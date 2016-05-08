@@ -52,8 +52,11 @@ public class ArticleListFragment extends Fragment {
     private SwipeRefreshLayout pullToRefresh;
     private NetworkClient networkClient;
     private SwipeRefreshLayout.OnRefreshListener swipeRefreshListener;
+    private int currentPage = 1;
+    private static final String TAG = ArticleListFragment.class.getName();
 
-    /* This method provides a convenient means of instantiating a new object by handling the
+    /*
+    Provides a convenient means of instantiating a new object by handling the
     bundling of the necessary parameters locally instead of having to do so externally.(Outside of
     this class.) */
     public static ArticleListFragment newInstance(String category) {
@@ -73,7 +76,7 @@ public class ArticleListFragment extends Fragment {
         activity = (MainActivity) getActivity();
         networkClient = activity.getNetworkClient();
         Log.i("Fragment" + category, "Num observers :" + networkClient.countObservers());
-        data = networkClient.getArticles(category);
+        data = networkClient.getArticles(category, currentPage);
         adapter = new ArticleRecyclerViewAdapter(activity, data);
     }
 
@@ -93,14 +96,16 @@ public class ArticleListFragment extends Fragment {
                 new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+        recyclerView.setVerticalScrollBarEnabled(true);
 
 
         recyclerView.addOnScrollListener(new EndlessScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                Log.i("Fragment " + category, "Request to load more" + page);
+                Log.i(TAG, category + ":Request to load page" + page);
                 List<RealmArticle> newData = networkClient.getNextPage(category, page);
                 adapter.updateDataBelow(newData);
+                currentPage = page;
             }
         });
 
@@ -116,7 +121,7 @@ public class ArticleListFragment extends Fragment {
                 RealmArticle mostRecentArticle = data.get(0);
                 List<RealmArticle> latestArticles
                         = networkClient.getLatestArticles(category, mostRecentArticle.getRealmDate());
-                adapter.updateData(latestArticles);
+                adapter.updateDataAbove(latestArticles);
             }
         };
         pullToRefresh.setOnRefreshListener(swipeRefreshListener);
@@ -131,12 +136,6 @@ public class ArticleListFragment extends Fragment {
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
         }
-        // triggerSwipeRefresh();
-    }
-
-
-    public void updateNextPageData(List<RealmArticle> articles) {
-        adapter.updateDataBelow(articles);
     }
 
     @Override
@@ -147,6 +146,13 @@ public class ArticleListFragment extends Fragment {
         }
     }
 
+    /**
+     * Updates the top of the data list with new data.
+     * <p/>
+     * <p> Turns off the refreshing spinning wheel</p>
+     *
+     * @param articles the new data to add to existing data.
+     */
     public void refreshList(List<RealmArticle> articles) {
         adapter.updateDataAbove(articles);
         if (pullToRefresh.isRefreshing()) {
@@ -154,40 +160,26 @@ public class ArticleListFragment extends Fragment {
         }
     }
 
+    /**
+     * Updates the bottom of the data list with new data.
+     * <p/>
+     * <p>This method will usually be called by the underlying activity whenevever new data for the
+     * next page arrives at the activity</p>
+     *
+     * @param articles
+     */
+    public void updateNextPageData(List<RealmArticle> articles) {
+        adapter.updateDataBelow(articles);
+    }
+
+    /**
+     * @return the category that this fragment belongs to
+     */
     public String getCategory() {
-        return this.category;
+        return category;
     }
 
-    /* This method is called whenever the observable updates its state */
-    public void update(List<RealmArticle> articles) {
-        Log.i("Fragment " + this.category, "Updating Fragment Data set");
-        adapter.updateData(articles);
-        /*
-        Log.i("Fragment Update", category);
-        networkClient.setSyncing(false);
-        SyncMessage message = (SyncMessage) data;
-        if(message != null) {
-
-            if (message.getCategory() != null) {
-                Log.i("Fragment Update", "inside if " + category);
-                data = networkClient.getLatestArticles(category);
-                adapter.updateData(data);
-            }
-            if ((message.getUpdateType() == Constants.UpdateType.NEXT_PAGE)
-                    && category.equals(message.getCategory())) {
-                List<Article> newPage = message.getMessageData();
-                Log.i("NextPage "+category,""+newPage.size());
-                adapter.addPage(newPage);
-            }
-        }
-        if(pullToRefresh.isRefreshing()) {
-            pullToRefresh.setRefreshing(false);
-        }
-        */
-
-    }
-
-    /* Private Helper methods */
+    /* Private helper methods */
     private void setCategory() {
         /* Set the category of this fragment */
         category = null;

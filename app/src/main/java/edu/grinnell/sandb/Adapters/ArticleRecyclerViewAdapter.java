@@ -15,18 +15,22 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
+import java.util.AbstractList;
 import java.util.Date;
 import java.util.List;
+import java.util.ListIterator;
 
 import edu.grinnell.sandb.Activities.ArticleDetailActivity;
 import edu.grinnell.sandb.Activities.MainActivity;
 import edu.grinnell.sandb.Fragments.ArticleDetailFragment;
 import edu.grinnell.sandb.Model.RealmArticle;
+import edu.grinnell.sandb.Model.RealmImage;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Util.ISO8601;
 import edu.grinnell.sandb.Util.VersionUtil;
 
 public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecyclerViewAdapter.ViewHolder> {
+    private static final String TAG = ArticleRecyclerViewAdapter.class.getSimpleName();
     private MainActivity activity;
     private List<RealmArticle> data;
     private SimpleDateFormat dateFormat;
@@ -64,12 +68,12 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
         if (a != null) {
             holder.image.setVisibility(View.VISIBLE);
 
-            String imgUrl = a.getFeaturedImgUrl();
+            String imgUrl = a.getThumbnailUrl();
 
             if (imgUrl != null && !imgUrl.isEmpty()) {
                 holder.image.setVisibility(View.VISIBLE);
                 Picasso.with(activity)
-                        .load(a.getFeaturedImgUrl())
+                        .load(imgUrl)
                         .placeholder(R.drawable.sb)
                         .error(R.drawable.sb)
                         .resize(imgThumbWidth, imgThumbHeight)
@@ -84,8 +88,7 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
             holder.category.setText(a.getCategory());
             try {
                 holder.date.setVisibility(View.VISIBLE);
-                Date date = ISO8601.toDate(a.getPubDate());
-                holder.date.setText(dateFormat.format(date));
+                holder.date.setText(dateFormat.format(a.getRealmDate()));
 
             } catch (Exception e) {
                 holder.date.setVisibility(View.INVISIBLE);
@@ -115,7 +118,6 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
             });
         }
     }
-
     @Override
     public int getItemCount() {
         return data.size();
@@ -147,33 +149,36 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
         }
     }
 
-    public void updateData(List<RealmArticle> newData) {
-        if (data != null) {
-            Log.i("Tabs Adapter:", "Updating dataSet in Adapter");
-            // data.clear();
+    /**
+     * Adds data to the top of the list containing the current data.
+     *
+     * <P> This method is called on whenever a fragment refreshes to fetch most recent data</P>
+     * @param newData the incoming data to be added to the existing data
+     */
+    public void updateDataAbove(List<RealmArticle> newData){
+        if(data != null) {
+            Log.i(TAG, "Updating dataSet above  in Adapter");
             newData.addAll(data);
-            data = newData;
-            // data.addAll(newData);
-            notifyDataSetChanged();
-        }
-    }
-
-    public void updateDataAbove(List<RealmArticle> newData) {
-        if (data != null) {
-            Log.i("Tabs Adapter:", "Updating dataSet above  in Adapter");
-            newData.addAll(data);
-            data = newData;
+            data =  newData;
             notifyDataSetChanged();
         }
 
     }
 
-    public void addPage(List<RealmArticle> newPageData) {
-        int curSize = getItemCount();
-        data.addAll(newPageData);
 
-        // for efficiency purposes, only notify the adapter of what elements that got changed
-        // curSize will equal to the index of the first element inserted because the list is 0-indexed
-        notifyItemRangeInserted(curSize, data.size() - 1);
+    /**
+     * Adds data to the top of the list containing the current data.
+     *
+     * <P> This method is called on whenever a fragment receives the next page of data</P>
+     * @param newData the incoming data to be added to the existing data
+     */
+    public void updateDataBelow(List<RealmArticle> newData){
+        if(data != null) {
+            Log.i(TAG, "Updating dataSet above  in Adapter");
+            int curSize = getItemCount();
+            data.addAll(newData);
+            notifyItemRangeInserted(curSize, data.size() - 1);
+        }
+
     }
 }

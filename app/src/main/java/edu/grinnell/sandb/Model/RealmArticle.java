@@ -26,8 +26,7 @@ public class RealmArticle extends RealmObject {
     protected String description;
     protected String category;
     @SerializedName("featured_image")
-    protected String featuredImgUrl;
-
+    String thumbnailUrl;
     @Ignore
     protected RealmArticleAuthor author;
 
@@ -48,7 +47,6 @@ public class RealmArticle extends RealmObject {
         this.body = content;
         this.pubDate = date;
         this.description = excerpt;
-        //this.categories = categories;
         this.author = author;
     }
 
@@ -77,6 +75,10 @@ public class RealmArticle extends RealmObject {
         return link;
     }
 
+    public Date getRealmDate() {
+        return realmDate;
+    }
+
 
     public RealmArticleAuthor getAuthor() {
         return this.author;
@@ -87,12 +89,8 @@ public class RealmArticle extends RealmObject {
         return description;
     }
 
-    public String getFeaturedImgUrl() {
-        return featuredImgUrl;
-    }
-
-    public Date getRealmDate() {
-        return this.realmDate;
+    public String getThumbnailUrl() {
+        return this.thumbnailUrl;
     }
 
     public String getBody() {
@@ -103,9 +101,11 @@ public class RealmArticle extends RealmObject {
         return pubDate;
     }
 
+
     public void setArticleID(int articleID) {
         this.articleID = articleID;
     }
+
 
     public void setTitle(String title) {
         this.title = title;
@@ -131,13 +131,13 @@ public class RealmArticle extends RealmObject {
         this.body = body;
     }
 
-    public void setFeaturedImgUrl(String url) {
-        this.featuredImgUrl = url;
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
     }
 
-    public void setRealmDate(final String iso8601Date) {
+    public void setRealmDate(String date) {
         try {
-            this.realmDate = ISO8601.toDate(iso8601Date);
+            this.realmDate = ISO8601.toDate(date);
         } catch (ParseException e) {
             this.realmDate = null;
         }

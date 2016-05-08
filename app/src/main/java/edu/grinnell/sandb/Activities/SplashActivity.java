@@ -16,7 +16,7 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
 /**
- * Startup Activity for S&B. Initializations to both the remote and local databases
+ * Startup Activity for S & B. Initializations to both the remote and local databases
  * are made in this class.
  *
  * @author Albert Owusu-Asare
@@ -31,9 +31,6 @@ public class SplashActivity extends AppCompatActivity implements Observer {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /* Realm model persistence config */
-        RealmConfiguration config = new RealmConfiguration.Builder(this).build();
-        Realm.setDefaultConfiguration(config);
         if (NetworkUtil.isNetworkEnabled(this)) {
             networkClient = new NetworkClient();
             networkClient.addObserver(this);

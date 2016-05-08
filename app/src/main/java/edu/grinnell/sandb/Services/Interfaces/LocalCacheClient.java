@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.RealmArticle;
 
 /**
@@ -34,17 +33,6 @@ public interface LocalCacheClient {
     void saveArticle(RealmArticle article);
 
     /**
-     * Returns the Article that sits on top  of the local  cache.
-     * <p/>
-     * <p> Note that it may be assumed that the data is stored in chronological order such that
-     * the most recent {@link Article} in terms of time posted will be the most recent entry in the
-     * Article cache.</p>
-     *
-     * @return
-     */
-    RealmArticle getFirst();
-
-    /**
      * Returns a list of the most recent articles belonging to a particular category.
      * <p/>
      * Note that the number of articles returns depends on a set default value for what a page is.
@@ -52,25 +40,9 @@ public interface LocalCacheClient {
      *
      * @param categoryName the category to query the local cache by.
      * @return the list of Articles of category : "category".
+     * //TODO params
      */
-    List<RealmArticle> getArticlesByCategory(String categoryName);
-
-    /**
-     * @return a list of all the categories represented in the Articles cache.
-     */
-    List<String> getCategories();
-
-    /**
-     * Returns the next page of results as specified by the set default value for the number of
-     * articles in a page.
-     *
-     * @param categoryName           the category to query from
-     * @param currentPageNumber      the page that last accessed.
-     * @param lastVisibleArticleDate the date of the last visible Article. This is useful
-     *                               to query the local database for the next page
-     * @return a list of Articles satisfying the query.
-     */
-    List<Article> getNextPage(String categoryName, int currentPageNumber, String lastVisibleArticleDate);
+    List<RealmArticle> getArticlesByCategory(String categoryName, int pageNum);
 
     /**
      * @return true if the cache is empty.
@@ -82,7 +54,7 @@ public interface LocalCacheClient {
      *
      * @return list of all the articles
      */
-    List<RealmArticle> getAll();
+    List<RealmArticle> getAll(int pageNum);
 
     /**
      * Drops the table referenced to by clazz in the SQLiteDb
@@ -102,24 +74,6 @@ public interface LocalCacheClient {
      */
     List<RealmArticle> getArticlesAfter(String category, Date date);
 
-    /**
-     * Sets the number of articles per page.
-     * <p> This is useful in determining how many articles to query for each page.</p>
-     *
-     * @param numArticlesPerPage, the number of articles to query per page.
-     */
-    void setNumArticlesPerPage(int numArticlesPerPage);
-
-    /**
-     * @return the number of articles per page;
-     */
-    int getNumArticlesPerPage();
-
-    /**
-     * Updates the number of articles for all the categories
-     */
-
-    void updateCategorySizes();
 
     /**
      * Updates the number of articles of the specific category that exist in the database
@@ -127,11 +81,11 @@ public interface LocalCacheClient {
 
     void initialize();
 
-    void updateNumEntriesPerCategory(String category, int updatedArticlesSize);
-
-    void updateNumEntriesAll(int numRecentUpdates, String latestDateUpdated);
-
+    /**
+     * @return the metaData on the state of the local cache.
+     */
     Map<String, Pair<Integer, String>> getDbMetaData();
+
 
 
 }

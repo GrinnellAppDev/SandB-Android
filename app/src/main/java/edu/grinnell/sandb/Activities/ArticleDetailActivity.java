@@ -32,8 +32,6 @@ import edu.grinnell.sandb.Fragments.CommentListFragment;
 import edu.grinnell.sandb.Model.Comment;
 import edu.grinnell.sandb.R;
 import edu.grinnell.sandb.Util.VersionUtil;
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 /* This activity displays the text, images, and comments for a selected article */
 public class ArticleDetailActivity extends AppCompatActivity {
@@ -55,8 +53,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle ofJoy) {
         super.onCreate(ofJoy);
-
-        Realm.setDefaultConfiguration(new RealmConfiguration.Builder(this).build());
 
         // set transition things for lollipop
         if (VersionUtil.isLollipop()) {
