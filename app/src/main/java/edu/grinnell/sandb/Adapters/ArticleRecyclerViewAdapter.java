@@ -15,10 +15,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
-<<<<<<< HEAD
-=======
 import java.util.AbstractList;
->>>>>>> httpClientIntegrationRealm
 import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
@@ -29,59 +26,25 @@ import edu.grinnell.sandb.Fragments.ArticleDetailFragment;
 import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.Model.RealmImage;
 import edu.grinnell.sandb.R;
-<<<<<<< HEAD
 import edu.grinnell.sandb.Util.ISO8601;
 import edu.grinnell.sandb.Util.VersionUtil;
 
 public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecyclerViewAdapter.ViewHolder> {
+    private static final String TAG = ArticleRecyclerViewAdapter.class.getSimpleName();
     private MainActivity activity;
     private List<RealmArticle> data;
     private SimpleDateFormat dateFormat;
     private int imgThumbWidth;
     private int imgThumbHeight;
 
-=======
-import edu.grinnell.sandb.Util.DatabaseUtil;
-import edu.grinnell.sandb.Util.ISO8601;
-import edu.grinnell.sandb.Util.UniversalLoaderUtility;
-import edu.grinnell.sandb.Util.VersionUtil;
-
-/**
- * This class acts as the bridge between the recycler view and the underlying data that will
- * be populated in the view.
- *
- * @author Prabir Pradhan
- * @author Albert Owusu-Asare
- * Create  on 2/7/16.
- */
-public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecyclerViewAdapter.ViewHolder> {
-    private MainActivity mActivity;
-    private List<RealmArticle> mData;
-    protected UniversalLoaderUtility mLoader;
-    private final String TAG = ArticleRecyclerViewAdapter.class.getName();
-    private int imgThumbWidth;
-    private int imgThumbHeight;
-
-    private SimpleDateFormat dateFormat;
-
->>>>>>> httpClientIntegrationRealm
 
     public ArticleRecyclerViewAdapter(MainActivity a, List<RealmArticle> data) {
         super();
-<<<<<<< HEAD
         activity = a;
         this.data = data;
         dateFormat = new SimpleDateFormat("d MMMM, yyyy");
         imgThumbWidth = Math.round(activity.getResources().getDimension(R.dimen.article_image_thumb_width));
         imgThumbHeight = Math.round(activity.getResources().getDimension(R.dimen.article_image_thumb_height));
-=======
-        mActivity = a;
-        mData = data;
-        mLoader = new UniversalLoaderUtility();
-        dateFormat = new SimpleDateFormat("d MMMM, yyyy");
-        imgThumbWidth = Math.round(mActivity.getResources().getDimension(R.dimen.article_image_thumb_width));
-        imgThumbHeight = Math.round(mActivity.getResources().getDimension(R.dimen.article_image_thumb_height));
->>>>>>> httpClientIntegrationRealm
     }
 
 
@@ -105,21 +68,12 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
         if (a != null) {
             holder.image.setVisibility(View.VISIBLE);
 
-<<<<<<< HEAD
-            String imgUrl = a.getFeaturedImgUrl();
-
-            if (imgUrl != null && !imgUrl.isEmpty()) {
-                holder.image.setVisibility(View.VISIBLE);
-                Picasso.with(activity)
-                        .load(a.getFeaturedImgUrl())
-=======
             String imgUrl = a.getThumbnailUrl();
 
             if (imgUrl != null && !imgUrl.isEmpty()) {
                 holder.image.setVisibility(View.VISIBLE);
-                Picasso.with(mActivity)
+                Picasso.with(activity)
                         .load(imgUrl)
->>>>>>> httpClientIntegrationRealm
                         .placeholder(R.drawable.sb)
                         .error(R.drawable.sb)
                         .resize(imgThumbWidth, imgThumbHeight)
@@ -134,8 +88,7 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
             holder.category.setText(a.getCategory());
             try {
                 holder.date.setVisibility(View.VISIBLE);
-                Date date = ISO8601.toDate(a.getPubDate());
-                holder.date.setText(dateFormat.format(date));
+                holder.date.setText(dateFormat.format(a.getRealmDate()));
 
             } catch (Exception e) {
                 holder.date.setVisibility(View.INVISIBLE);
@@ -156,13 +109,8 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
                         Pair<View, String> p1 = new Pair<>((View) holder.title, "article_title");
                         //activity.startActivity(detailIntent,
                         //        ActivityOptionsCompat.makeSceneTransitionAnimation(activity, p1).toBundle());;
-<<<<<<< HEAD
                         activity.startActivity(detailIntent,
                                 ActivityOptionsCompat.makeSceneTransitionAnimation(activity).toBundle());
-=======
-                        mActivity.startActivity(detailIntent,
-                                ActivityOptionsCompat.makeSceneTransitionAnimation(mActivity).toBundle());
->>>>>>> httpClientIntegrationRealm
                     } else {
                         activity.startActivity(detailIntent);
                     }
@@ -201,24 +149,6 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
         }
     }
 
-<<<<<<< HEAD
-    public void updateData(List<RealmArticle> newData) {
-        if (data != null) {
-            Log.i("Tabs Adapter:", "Updating dataSet in Adapter");
-            // data.clear();
-            newData.addAll(data);
-            data = newData;
-            // data.addAll(newData);
-            notifyDataSetChanged();
-        }
-    }
-
-    public void updateDataAbove(List<RealmArticle> newData) {
-        if (data != null) {
-            Log.i("Tabs Adapter:", "Updating dataSet above  in Adapter");
-            newData.addAll(data);
-            data = newData;
-=======
     /**
      * Adds data to the top of the list containing the current data.
      *
@@ -226,25 +156,16 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
      * @param newData the incoming data to be added to the existing data
      */
     public void updateDataAbove(List<RealmArticle> newData){
-        if(mData != null) {
+        if(data != null) {
             Log.i(TAG, "Updating dataSet above  in Adapter");
-            newData.addAll(mData);
-            mData =  newData;
->>>>>>> httpClientIntegrationRealm
+            newData.addAll(data);
+            data =  newData;
             notifyDataSetChanged();
         }
 
     }
 
-<<<<<<< HEAD
-    public void addPage(List<RealmArticle> newPageData) {
-        int curSize = getItemCount();
-        data.addAll(newPageData);
 
-        // for efficiency purposes, only notify the adapter of what elements that got changed
-        // curSize will equal to the index of the first element inserted because the list is 0-indexed
-        notifyItemRangeInserted(curSize, data.size() - 1);
-=======
     /**
      * Adds data to the top of the list containing the current data.
      *
@@ -252,13 +173,12 @@ public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecy
      * @param newData the incoming data to be added to the existing data
      */
     public void updateDataBelow(List<RealmArticle> newData){
-        if(mData != null) {
+        if(data != null) {
             Log.i(TAG, "Updating dataSet above  in Adapter");
             int curSize = getItemCount();
-            mData.addAll(newData);
-            notifyItemRangeInserted(curSize, mData.size() - 1);
+            data.addAll(newData);
+            notifyItemRangeInserted(curSize, data.size() - 1);
         }
 
->>>>>>> httpClientIntegrationRealm
     }
 }

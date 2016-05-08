@@ -32,12 +32,7 @@ public class Constants {
     public static final int OK = 200;
 
     /* Table Names */
-<<<<<<< HEAD
-
-    public enum TableNames {
-=======
     public enum TableNames{
->>>>>>> httpClientIntegrationRealm
         ARTICLE("Article"),
         CATEGORY("Category");
         private final String name;
@@ -59,12 +54,8 @@ public class Constants {
     public static final int TOOLBAR_ANIMATION_DURATION = 200;
 
     /* Snack Bar Messages */
-<<<<<<< HEAD
 
-    public enum SnackBarMessages {
-=======
     public enum SnackBarMessages{
->>>>>>> httpClientIntegrationRealm
         CONNECTED("Connection Established"),
         CHECK_UPDATES("Checking for New Articles ..."),
         FOUND_NEW("Found new articles.."),

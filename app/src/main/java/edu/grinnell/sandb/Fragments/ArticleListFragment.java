@@ -58,14 +58,8 @@ public class ArticleListFragment extends Fragment {
     /*
     Provides a convenient means of instantiating a new object by handling the
     bundling of the necessary parameters locally instead of having to do so externally.(Outside of
-<<<<<<< HEAD
     this class.) */
     public static ArticleListFragment newInstance(String category) {
-=======
-    this class.)
-     */
-    public static ArticleListFragment newInstance(String category){
->>>>>>> httpClientIntegrationRealm
         ArticleListFragment fragment = new ArticleListFragment();
         Bundle bundle = new Bundle();
         bundle.putString(Constants.ARTICLE_CATEGORY_KEY, category);
@@ -79,19 +73,11 @@ public class ArticleListFragment extends Fragment {
         setRetainInstance(true);
 
         setCategory();
-<<<<<<< HEAD
         activity = (MainActivity) getActivity();
         networkClient = activity.getNetworkClient();
         Log.i("Fragment" + category, "Num observers :" + networkClient.countObservers());
-        data = networkClient.getArticles(category);
+        data = networkClient.getArticles(category, currentPage);
         adapter = new ArticleRecyclerViewAdapter(activity, data);
-=======
-        mActivity = (MainActivity) getActivity();
-        networkClient = mActivity.getNetworkClient();
-        mData = networkClient.getArticles(mCategory,currentPage);
-        mAdapter = new ArticleRecyclerViewAdapter((MainActivity) getActivity(),
-                R.layout.articles_row, mData);
->>>>>>> httpClientIntegrationRealm
     }
 
     @Override
@@ -115,14 +101,10 @@ public class ArticleListFragment extends Fragment {
         recyclerView.addOnScrollListener(new EndlessScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-<<<<<<< HEAD
-                networkClient.getNextPage(category, page);
-=======
-                Log.i(TAG, mCategory + ":Request to load page" + page);
-                List<RealmArticle> newData = networkClient.getNextPage(mCategory, page);
-                mAdapter.updateDataBelow(newData);
+                Log.i(TAG, category + ":Request to load page" + page);
+                List<RealmArticle> newData = networkClient.getNextPage(category, page);
+                adapter.updateDataBelow(newData);
                 currentPage = page;
->>>>>>> httpClientIntegrationRealm
             }
         });
 
@@ -137,13 +119,8 @@ public class ArticleListFragment extends Fragment {
                 networkClient.setSyncing(true);
                 RealmArticle mostRecentArticle = data.get(0);
                 List<RealmArticle> latestArticles
-<<<<<<< HEAD
                         = networkClient.getLatestArticles(category, mostRecentArticle.getRealmDate());
-                adapter.updateData(latestArticles);
-=======
-                        = networkClient.getLatestArticles(mCategory,mostRecentArticle.getRealmDate());
-                mAdapter.updateDataAbove(latestArticles);
->>>>>>> httpClientIntegrationRealm
+                adapter.updateDataAbove(latestArticles);
             }
         };
         pullToRefresh.setOnRefreshListener(swipeRefreshListener);
@@ -158,10 +135,6 @@ public class ArticleListFragment extends Fragment {
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
         }
-<<<<<<< HEAD
-        // triggerSwipeRefresh();
-=======
->>>>>>> httpClientIntegrationRealm
     }
 
     @Override
@@ -172,7 +145,13 @@ public class ArticleListFragment extends Fragment {
         }
     }
 
-<<<<<<< HEAD
+    /**
+     * Updates the top of the data list with new data.
+     * <p/>
+     * <p> Turns off the refreshing spinning wheel</p>
+     *
+     * @param articles the new data to add to existing data.
+     */
     public void refreshList(List<RealmArticle> articles) {
         adapter.updateDataAbove(articles);
         if (pullToRefresh.isRefreshing()) {
@@ -180,63 +159,23 @@ public class ArticleListFragment extends Fragment {
         }
     }
 
-    public String getCategory() {
-        return this.category;
-    }
-
-    /* This method is called whenever the observable updates its state */
-    public void update(List<RealmArticle> articles) {
-        Log.i("Fragment " + this.category, "Updating Fragment Data set");
-        adapter.updateData(articles);
-        /*
-        Log.i("Fragment Update", category);
-        networkClient.setSyncing(false);
-        SyncMessage message = (SyncMessage) data;
-        if(message != null) {
-
-            if (message.getCategory() != null) {
-                Log.i("Fragment Update", "inside if " + category);
-                data = networkClient.getLatestArticles(category);
-                adapter.updateData(data);
-            }
-            if ((message.getUpdateType() == Constants.UpdateType.NEXT_PAGE)
-                    && category.equals(message.getCategory())) {
-                List<Article> newPage = message.getMessageData();
-                Log.i("NextPage "+category,""+newPage.size());
-                adapter.addPage(newPage);
-            }
-        }
-=======
-    /**
-     * Updates the top of the data list with new data.
-     *
-     * <p> Turns off the refreshing spinning wheel</p>
-     * @param articles the new data to add to existing data.
-     */
-    public void refreshList(List<RealmArticle> articles){
-        mAdapter.updateDataAbove(articles);
->>>>>>> httpClientIntegrationRealm
-        if(pullToRefresh.isRefreshing()) {
-            pullToRefresh.setRefreshing(false);
-        }
-    }
-
     /**
      * Updates the bottom of the data list with new data.
-     *
+     * <p/>
      * <p>This method will usually be called by the underlying activity whenevever new data for the
      * next page arrives at the activity</p>
+     *
      * @param articles
      */
-    public void updateNextPageData(List<RealmArticle> articles){
-        mAdapter.updateDataBelow(articles);
+    public void updateNextPageData(List<RealmArticle> articles) {
+        adapter.updateDataBelow(articles);
     }
 
     /**
      * @return the category that this fragment belongs to
      */
-    public String getCategory(){
-        return mCategory;
+    public String getCategory() {
+        return category;
     }
 
     /* Private helper methods */
@@ -247,7 +186,6 @@ public class ArticleListFragment extends Fragment {
         if (args != null)
             category = Constants.titleToKey.get(args.getString(Constants.ARTICLE_CATEGORY_KEY));
     }
-<<<<<<< HEAD
 
     private void initializeNetworkClient() {
         Bundle args = getArguments();
@@ -263,6 +201,4 @@ public class ArticleListFragment extends Fragment {
     public void setRefreshing(boolean refreshing) {
         pullToRefresh.setRefreshing(refreshing);
     }
-=======
->>>>>>> httpClientIntegrationRealm
 }

@@ -21,17 +21,11 @@ import edu.grinnell.sandb.Model.RealmArticle;
 public interface AppNetworkClientAPI {
     /**
      * Fetches all articles according to a specific category
-<<<<<<< HEAD
-     * returns the articles through the ArticlesCallback
-     */
 
-    List<RealmArticle> getArticles(String category);
-=======
      * @return
      * //TODO : params
      */
     List<RealmArticle> getArticles(String category,int pageNum);
->>>>>>> httpClientIntegrationRealm
 
     /**
      * Fetches all the articles according to a specific category by the page we are currently on.

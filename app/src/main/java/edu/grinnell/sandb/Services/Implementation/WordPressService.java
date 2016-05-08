@@ -54,14 +54,8 @@ public class WordPressService extends Observable implements RemoteServiceAPI, Se
     private Retrofit retrofit;
     private RestAPI restService;
     private LocalCacheClient localCacheClient;
-<<<<<<< HEAD
-    private final List<Article> articles = Collections.synchronizedList(new ArrayList<Article>());
-    private int numArticlesPerPage;
-    private int currentPageNumber;
-    private Map<String, Boolean> completedMap;
-=======
+
     private Map<String,Boolean> completedMap;
->>>>>>> httpClientIntegrationRealm
 
 
     public WordPressService() {
@@ -107,15 +101,9 @@ public class WordPressService extends Observable implements RemoteServiceAPI, Se
     }
 
     @Override
-<<<<<<< HEAD
-    public void getAfter(final String date, final String category) {
-        Log.i("WordPressService", "Fetching most recent " + category);
-        if (category.equals("all")) {
-=======
-    public void  getAfter(final String date,final String category) {
+    public void  getAfter(final String date, final String category) {
         Log.i("WordPressService", "Fetching most recent " + category);
         if(category.equals("all")) {
->>>>>>> httpClientIntegrationRealm
             getAllAfter(date, category);
         } else {
             getAfterByCategory(date, category);
@@ -203,19 +191,10 @@ public class WordPressService extends Observable implements RemoteServiceAPI, Se
     }
 
 
-
-<<<<<<< HEAD
-    public void getNextPage(final String category, int page, int numArticlesPerPage) {
-        Log.i("getNextPage()", "Next Page called " + category);
-        Call<QueryResponse> call = restService.posts(category, page, numArticlesPerPage);
-=======
-
-
     @Override
     public void getNextPage(final int page, int offset, final String category, int number){
         Log.i("Remote Client","Getting page "+ 2 +" for " + category);
         Call<QueryResponse> call = restService.postsNextPage(page,offset,category,number);
->>>>>>> httpClientIntegrationRealm
         call.enqueue(new Callback<QueryResponse>() {
             @Override
             public void onResponse(Call<QueryResponse> call, Response<QueryResponse> response) {
@@ -386,23 +365,6 @@ public class WordPressService extends Observable implements RemoteServiceAPI, Se
         Call<QueryResponse> posts(@Query("page") int pageNumber, @Query("number") int count);
 
         @GET("posts/")
-<<<<<<< HEAD
-        Call<QueryResponse> postsAfter(@Query("after") String dateTime);
-
-        @GET("posts/")
-            // https://public-api.wordpress.com/rest/v1.1/sites/www.thesandb.com/posts/?category=%22news%22&page=1&number=4
-        Call<QueryResponse> posts(@Query("category") String category, @Query("page") int pageNumber,
-                                  @Query("number") int count);
-
-        @GET("posts/")
-        Call<QueryResponse> postsBefore(@Query("before") String dateBefore, @Query("number") int count,
-                                        @Query("category") String category);
-
-        @GET("posts/")
-        Call<QueryResponse> postsAfter(@Query("after") String dateAfter, @Query("number") int count,
-                                       @Query("category") String category);
-    }
-=======
          Call<QueryResponse> postsAfter(@Query("after") String dateTime);
          @GET("posts/")
         // https://public-api.wordpress.com/rest/v1.1/sites/www.thesandb.com/posts/?category=%22news%22&page=1&number=4
@@ -419,7 +381,6 @@ public class WordPressService extends Observable implements RemoteServiceAPI, Se
                                         @Query("category") String category, @Query("number") int number);
 
      }
->>>>>>> httpClientIntegrationRealm
 
     /*
      * This class is useful in the deserialization process by the Gson Converter. It specifies

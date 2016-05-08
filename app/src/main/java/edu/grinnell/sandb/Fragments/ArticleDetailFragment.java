@@ -34,10 +34,8 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import edu.grinnell.sandb.Activities.ArticleDetailActivity;
 import edu.grinnell.sandb.Activities.ImagePagerActivity;
@@ -48,10 +46,8 @@ import edu.grinnell.sandb.Model.Image;
 import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.Preferences.MainPrefs;
 import edu.grinnell.sandb.R;
-import edu.grinnell.sandb.Util.ISO8601;
 import edu.grinnell.sandb.Util.UniversalLoaderUtility;
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 
 /*
@@ -136,10 +132,11 @@ public class ArticleDetailFragment extends Fragment {
 
     /**
      * Check to see if the current article has an associated feature image
+     *
      * @return
      */
     public boolean hasFeatureImage() {
-        String url = article.getFeaturedImgUrl();
+        String url = article.getThumbnailUrl();
         return url != null && !url.isEmpty();
     }
 
@@ -183,14 +180,8 @@ public class ArticleDetailFragment extends Fragment {
         // add the author to the article
 
         String dateString;
-        try {
-            Date articleDate = ISO8601.toDate(article.getPubDate());
-            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMMM, yyyy");
-            dateString = dateFormat.format(articleDate);
-        } catch (ParseException e) {
-            Log.e(TAG, e.getMessage());
-            dateString = "";
-        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("d MMMM, yyyy");
+        dateString = dateFormat.format(article.getRealmDate());
         // add the date to the article
         ((TextView) rootView.findViewById(R.id.article_date)).setText(dateString);
 
@@ -199,7 +190,7 @@ public class ArticleDetailFragment extends Fragment {
                 .getTitle()));
 
         // load the feature image
-        String featureImgUrl = article.getFeaturedImgUrl();
+        String featureImgUrl = article.getThumbnailUrl();
         ImageView featureImageView = (ImageView) rootView.findViewById(R.id.feature_image);
         if (featureImgUrl != null && !featureImgUrl.isEmpty()) {
             featureImageView.setVisibility(View.VISIBLE);
