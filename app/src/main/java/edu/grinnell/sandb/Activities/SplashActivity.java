@@ -31,9 +31,6 @@ public class SplashActivity extends AppCompatActivity implements Observer {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /* Realm model persistence config */
-        RealmConfiguration config = new RealmConfiguration.Builder(this).build();
-        Realm.setDefaultConfiguration(config);
         if (NetworkUtil.isNetworkEnabled(this)) {
             networkClient = new NetworkClient();
             networkClient.addObserver(this);

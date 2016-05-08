@@ -55,8 +55,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
     public void onCreate(Bundle ofJoy) {
         super.onCreate(ofJoy);
 
-        Realm.setDefaultConfiguration(new RealmConfiguration.Builder(this).build());
-
         // set transition things for lollipop
         if (VersionUtil.isLollipop()) {
             getWindow().setEnterTransition(new Slide());

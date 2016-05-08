@@ -96,6 +96,7 @@ public class ArticleListFragment extends Fragment {
                 new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+        recyclerView.setVerticalScrollBarEnabled(true);
 
 
         recyclerView.addOnScrollListener(new EndlessScrollListener(layoutManager) {
