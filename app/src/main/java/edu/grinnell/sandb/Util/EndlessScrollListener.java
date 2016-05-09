@@ -3,6 +3,7 @@ package edu.grinnell.sandb.Util;
 /*This code was lifted verbatim from
 https://github.com/codepath/android_guides/wiki/Endless-Scrolling-with-AdapterViews
  */
+
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.util.Log;
 /**
  * This class a derived class from the @code{RecyclerView.OnScrollListener} class responsible
  * for receiving messages whenever a scrolling event is detected on the recyclerView.
+ *
  * @Version 1.1 Sun Mar 27 23:11:11 CDT 2016
  * @see android.support.v7.widget.RecyclerView.OnScrollListener
  */
@@ -30,19 +32,14 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
 
     RecyclerView.LayoutManager mLayoutManager;
 
-    public EndlessScrollListener(LinearLayoutManager layoutManager) {
+    public EndlessScrollListener(RecyclerView.LayoutManager layoutManager) {
         this.mLayoutManager = layoutManager;
-    }
-
-    public EndlessScrollListener(GridLayoutManager layoutManager) {
-        this.mLayoutManager = layoutManager;
-        visibleThreshold = visibleThreshold * layoutManager.getSpanCount();
-    }
-
-
-    public EndlessScrollListener(StaggeredGridLayoutManager layoutManager) {
-        this.mLayoutManager = layoutManager;
-        visibleThreshold = visibleThreshold * layoutManager.getSpanCount();
+        if (layoutManager instanceof GridLayoutManager)
+            visibleThreshold = visibleThreshold *
+                    ((GridLayoutManager) layoutManager).getSpanCount();
+        else if (layoutManager instanceof StaggeredGridLayoutManager)
+            visibleThreshold = visibleThreshold *
+                    ((StaggeredGridLayoutManager) layoutManager).getSpanCount();
     }
 
     public int getLastVisibleItem(int[] lastVisibleItemPositions) {
@@ -50,8 +47,7 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
         for (int i = 0; i < lastVisibleItemPositions.length; i++) {
             if (i == 0) {
                 maxSize = lastVisibleItemPositions[i];
-            }
-            else if (lastVisibleItemPositions[i] > maxSize) {
+            } else if (lastVisibleItemPositions[i] > maxSize) {
                 maxSize = lastVisibleItemPositions[i];
             }
         }
@@ -66,7 +62,7 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
 
         int lastVisibleItemPosition = 0;
         int totalItemCount = mLayoutManager.getItemCount();
-       // Log.i("Endless Scroll", "Total items " +totalItemCount);
+        // Log.i("Endless Scroll", "Total items " +totalItemCount);
 
         if (mLayoutManager instanceof StaggeredGridLayoutManager) {
             int[] lastVisibleItemPositions = ((StaggeredGridLayoutManager) mLayoutManager).findLastVisibleItemPositions(null);

@@ -3,7 +3,6 @@ package edu.grinnell.sanb.TestServices;
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Services.Implementation.WordPressService;
 
 import static org.junit.Assert.assertTrue;

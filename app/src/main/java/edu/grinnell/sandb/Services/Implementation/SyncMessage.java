@@ -5,7 +5,6 @@ package edu.grinnell.sandb.Services.Implementation;
 import java.util.List;
 
 import edu.grinnell.sandb.Constants;
-import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.RealmArticle;
 
 /**

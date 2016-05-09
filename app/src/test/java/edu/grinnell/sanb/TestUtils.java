@@ -3,8 +3,6 @@ package edu.grinnell.sanb;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.grinnell.sandb.Model.Article;
-
 /**
  * Created by albertowusu-asare on 3/17/16.
  */

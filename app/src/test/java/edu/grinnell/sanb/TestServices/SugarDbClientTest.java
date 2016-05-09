@@ -1,23 +1,7 @@
 package edu.grinnell.sanb.TestServices;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
-import static org.mockito.Mockito.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import edu.grinnell.sandb.Model.Article;
-import edu.grinnell.sandb.Model.ArticleAuthor;
-
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
 
 
 /**

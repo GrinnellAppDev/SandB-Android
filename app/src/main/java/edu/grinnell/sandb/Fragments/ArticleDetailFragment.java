@@ -1,14 +1,9 @@
 package edu.grinnell.sandb.Fragments;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.DownloadManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -16,7 +11,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.widget.NestedScrollView;
 import android.text.Html;
 import android.transition.Transition;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -24,8 +18,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -35,14 +27,11 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 
 import edu.grinnell.sandb.Activities.ArticleDetailActivity;
-import edu.grinnell.sandb.Activities.ImagePagerActivity;
 import edu.grinnell.sandb.Activities.MainActivity;
 import edu.grinnell.sandb.Constants;
 import edu.grinnell.sandb.DialogSettings;
-import edu.grinnell.sandb.Model.Image;
 import edu.grinnell.sandb.Model.RealmArticle;
 import edu.grinnell.sandb.Preferences.MainPrefs;
 import edu.grinnell.sandb.R;
@@ -69,7 +58,6 @@ public class ArticleDetailFragment extends Fragment {
     String fileName = "SBimage";
     File file = new File(path, fileName);
     DownloadManager mManager;
-    ArrayList<Image> mImages;
 
 
     //Methods
@@ -225,145 +213,29 @@ public class ArticleDetailFragment extends Fragment {
         //Split the article text around the images
         String[] sections = bodyHTML.split(imgtags);
 
-        //mImages = (ArrayList) DatabaseUtil.getArticleImages(article);
+        // TODO: 5/9/16 Parse in-text images here and add new ImageViews here
 
-        final int maxUrls = (mImages == null) ? 0 : mImages.size();
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        int i = 0;
         for (String section : sections) {
-            String url = (i < maxUrls) ? mImages.get(i++).getURL() : null;
-            addSectionViews(body, inflater, section, url);
+            addTextView(body, inflater, section);
         }
 
         Log.i(TAG, article.getTitle());
     }
 
 
-    //Add Section Views
-    private void addSectionViews(ViewGroup v, LayoutInflater li, String text,
-                                 final String img) {
-        //Check for no image and inflate layout
-        if (img != null) {
-            ImageView imgView = (ImageView) li.inflate(R.layout.img_section, v,
-                    false);
+    private void addTextView(ViewGroup v, LayoutInflater li, String text) {
+        TextView tv = (TextView) li
+                .inflate(R.layout.text_section, v, false);
+        tv.setText(Html.fromHtml(text));
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.FONT_SIZE_TO_SP[fontSize]);
+        tv.setLineSpacing(0, 1.3f);
+        tv.setTypeface(Typeface.SERIF);
+        v.addView(tv);
 
-            // Open a full screen image pager if image is clicked
-            OnClickListener imgClick = new OnClickListener() {
-                public void onClick(View v) {
-                    String[] URLS = new String[mImages.size()];
-                    String[] titles = new String[mImages.size()];
-                    for (int i = 0; i < mImages.size(); i++) {
-                        URLS[i] = universalLoaderUtility.getHiResImage(mImages.get(i).getURL());
-                        titles[i] = mImages.get(i).getImgTitle();
-                    }
-                    Intent intent = new Intent(getActivity(),
-                            ImagePagerActivity.class);
-                    intent.putExtra("ArticleImages", URLS);
-                    intent.putExtra("ImageTitles",
-                            titles);
-
-                    startActivity(intent);
-                }
-            };
-
-            //Display an option to download the image if it is held
-            OnLongClickListener imgHold = new OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                            getActivity());
-
-                    // set title
-                    alertDialogBuilder.setTitle("Download Image?");
-
-                    // set dialog message
-                    alertDialogBuilder
-                            .setCancelable(true)
-                            .setPositiveButton("Cancel",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(
-                                                DialogInterface dialog, int id) {
-                                            dialog.cancel();
-                                        }
-                                    })
-                            .setNegativeButton("Download",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(
-                                                DialogInterface dialog, int id) {
-                                            new DownloadFile().execute(universalLoaderUtility
-                                                    .getHiResImage(img));
-                                            dialog.cancel();
-                                        }
-                                    });
-
-                    // create alert dialog
-                    AlertDialog alertDialog = alertDialogBuilder.create();
-
-                    // show it
-                    alertDialog.show();
-
-                    return false;
-                }
-            };
-
-            //Configure image view actions
-            imgView.setOnClickListener(imgClick);
-            imgView.setOnLongClickListener(imgHold);
-
-            // set max height so that image does not go off screen
-            DisplayMetrics metrics = new DisplayMetrics();
-            getActivity().getWindowManager().getDefaultDisplay()
-                    .getMetrics(metrics);
-
-            int scrnHeight = metrics.heightPixels - 100;
-            imgView.setMaxHeight(scrnHeight);
-
-            //Load the full resolution images using universal image loader
-            universalLoaderUtility.loadHiResArticleImage(img, imgView, getActivity());
-            v.addView(imgView);
-        }
-
-        if (text != null) {
-            TextView tv = (TextView) li
-                    .inflate(R.layout.text_section, v, false);
-            tv.setText(Html.fromHtml(text));
-            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.FONT_SIZE_TO_SP[fontSize]);
-            tv.setLineSpacing(0, 1.3f);
-            tv.setTypeface(Typeface.SERIF);
-            v.addView(tv);
-        }
     }
 
-
-    /* Download the selected image to "downloads" on user request */
-    private class DownloadFile extends AsyncTask<String, Integer, Drawable> {
-
-        @SuppressLint("NewApi")
-        protected Drawable doInBackground(String... sUrl) {
-            Uri img = Uri.parse(sUrl[0]);
-            Uri dest = Uri.fromFile(file);
-
-            //Use the built in Android download manager
-            mManager = (DownloadManager) getActivity()
-                    .getSystemService(getActivity().DOWNLOAD_SERVICE);
-
-            mManager.enqueue(new DownloadManager.Request(img)
-                    .setAllowedNetworkTypes(
-                            DownloadManager.Request.NETWORK_WIFI
-                                    | DownloadManager.Request.NETWORK_MOBILE)
-                    .setAllowedOverRoaming(false)
-                    .setTitle("S&B Image")
-                    .setNotificationVisibility(
-                            DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                    .setDestinationUri(dest));
-            return Drawable
-                    .createFromPath(Environment
-                            .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                            + "/" + fileName);
-        }
-    }
 
     @Override
     public void onResume() {
@@ -392,9 +264,6 @@ public class ArticleDetailFragment extends Fragment {
             // break;
             case R.id.menu_share:
                 share();
-                break;
-            case R.id.menu_comments:
-                ((ArticleDetailActivity) getActivity()).flip();
                 break;
             case R.id.settings:
                 DialogSettings ds = new DialogSettings(getContext()) {

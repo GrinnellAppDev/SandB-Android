@@ -16,9 +16,6 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.orm.query.Condition;
 import com.orm.query.Select;
 
-import edu.grinnell.sandb.Model.Article;
-import edu.grinnell.sandb.Model.Image;
-
 public class UniversalLoaderUtility {
 
 	protected ImageLoader imageLoader = ImageLoader.getInstance();

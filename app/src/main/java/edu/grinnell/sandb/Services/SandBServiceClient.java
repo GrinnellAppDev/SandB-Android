@@ -9,7 +9,6 @@ import com.orm.SugarRecord;
 import java.io.IOException;
 import java.util.List;
 
-import edu.grinnell.sandb.Model.Article;
 import edu.grinnell.sandb.Model.QueryResponse;
 import edu.grinnell.sandb.Services.Interfaces.SandBServiceAPI;
 import retrofit2.Call;
