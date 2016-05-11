@@ -102,8 +102,8 @@ public class UniversalLoaderUtility {
 					.bitmapConfig(Bitmap.Config.RGB_565)
 					.displayer(new FadeInBitmapDisplayer(300)).build();
 
-			imgView.startAnimation(AnimationUtils.loadAnimation(context,
-					R.anim.loading));
+			//imgView.startAnimation(AnimationUtils.loadAnimation(context,
+			//		R.anim.loading));
 
 			spinner = new ProgressBar(context, null,
 					android.R.attr.progressBarStyleSmall);
