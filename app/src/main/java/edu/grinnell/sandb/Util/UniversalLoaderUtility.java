@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -16,10 +15,6 @@ import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.orm.query.Condition;
 import com.orm.query.Select;
-
-import edu.grinnell.sandb.R;
-import edu.grinnell.sandb.Model.Article;
-import edu.grinnell.sandb.Model.Image;
 
 public class UniversalLoaderUtility {
 
@@ -66,7 +61,7 @@ public class UniversalLoaderUtility {
 
     public void loadPrimaryArticleImage(Article article, ImageView imgView, Context context) {
         Select<Image> articleImageQuery = Select.from(Image.class)
-                .where(Condition.prop("article_Id").eq(article.getArticleID()));
+                .where(Condition.prop("article_Id").eq(article.getArticle_id()));
         Image articleImage = articleImageQuery.first();
         loadImage(articleImage.getURL(), imgView, context);
     }

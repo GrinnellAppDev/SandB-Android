@@ -6,9 +6,6 @@ import com.orm.query.Select;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.grinnell.sandb.Model.Article;
-import edu.grinnell.sandb.Model.Image;
-
 public class DatabaseUtil {
 
     public static List<Image> getArticleImages(Article article) {

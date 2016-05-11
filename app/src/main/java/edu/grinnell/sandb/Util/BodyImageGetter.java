@@ -1,15 +1,12 @@
 package edu.grinnell.sandb.Util;
 
-import edu.grinnell.sandb.Model.Article;
-import edu.grinnell.sandb.Model.Image;
-
 public class BodyImageGetter {
 
 	// Read an image from the body as a byte array
 	public static void readImages(Article article) {
 
         addImage(article , "<div");
-//		addImage(body, articleID, "<a");
+//		addImage(body, article_id, "<a");
         addImage(article, "<img");
 	}
 

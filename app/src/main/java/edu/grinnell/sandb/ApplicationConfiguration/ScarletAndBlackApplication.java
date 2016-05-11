@@ -8,6 +8,9 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.orm.SugarApp;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+
 public class ScarletAndBlackApplication extends SugarApp {
 
     public void onCreate() {
@@ -28,5 +31,11 @@ public class ScarletAndBlackApplication extends SugarApp {
         }
         
         ImageLoader.getInstance().init(configb.build());
+        // The realm file will be located in Context.getFilesDir() with name "default.realm"
+        RealmConfiguration config = new RealmConfiguration.Builder(this).
+                deleteRealmIfMigrationNeeded().build();
+                //TODO : Check that deleteRealm is the right thing to do
+        Realm.setDefaultConfiguration(config);
+
     }
 }
